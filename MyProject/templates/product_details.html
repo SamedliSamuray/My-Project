@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block body %}
+  <div class="details_container">
+    <div class="shown_products">
+        Shop <i class="fa-solid fa-angle-right"></i> {{product.name}}
+    </div>
+
+    <div class="details_body">
+        <div class="pro_detail">
+            <div class="imgs_details">
+                <div class="img_detail"> <img src="{{product.image.url}}" alt=""></div>
+                <div class="imgs_choices">
+                    {% for product in products %}
+                    <div class="pro_choices">
+                         <a href="{% url 'products-details' product.id %}"><img src="{{product.image.url}}" alt=""></a>
+            </div>
+            {% endfor %}
+                
+                </div>
+            </div>
+
+            <div class="about_detail">
+                <p>{{product.brand}}</p>
+                <h3>{{product.name}}</h3>
+                <div>
+                    <span id="pro_rate" class="pro_rate">
+                        <i title="s" class="fa-regular fa-star" style="color: #d1d1d1;"></i>
+                        <i title="s" class="fa-regular fa-star" style="color: #d1d1d1;"></i>
+                        <i title="s" class="fa-regular fa-star" style="color: #d1d1d1;"></i>
+                        <i title="s" class="fa-regular fa-star" style="color: #d1d1d1;"></i>
+                        <i title="s" class="fa-regular fa-star" style="color: #d1d1d1;"></i>
+                    </span> <span style="color:grey">
+                    {{average_rating|floatformat:1}}({{product.comments.count}} Reviews)</span></div>
+                <p>${{product.price|floatformat:2}}</p>
+                
+                    <p>{{product.descriptions}}</p>
+                <ul>
+                    <li><h5>Color</h5><ul>
+                        <li  class="color_li"><a href="{% url 'products-details' product.id %}"><div class="color" style='background-color: {{product.color.color_code }}'></div></a></li>
+                        {% if products %}
+                        {% for product in products %}
+                        <li  class="color_li"><a href="{% url 'products-details' product.id %}"><div class="color" style='background-color: {{ product.color.color_code }} '></div></a></li>
+                        {% endfor %}
+                                        
+                        {% endif %}
+                    </ul></li>   
+                </ul>
+                <div class="pro_buy">
+                    <div class="pro_count">
+                    <button title="Minus" disabled=""  type="button" ><i  id='pro_minus' class="fa-solid fa-minus"></i></button>
+                    <p id='pro_count'>1</p>
+                    <button title="Plus" type="button"><i id='pro_plus' class="fa-solid fa-plus"></i></button>
+                </div>
+                    <button type="button" class="pro_btn">Add To Card</button>
+                    <div class="pro_heart"><i class="fa-regular fa-heart"></i></div>
+                </div>
+                <div class="pro_share"> <ul><h5>Share</h5>
+                    <li><a href=""><i class="fa-brands fa-instagram"></i></a>
+                    <a href=""><i class="fa-brands fa-x-twitter"></i></a>
+                    <a href=""><i class="fa-brands fa-facebook-f"></i></a>
+                    </li></ul>
+                </div>
+                
+                    
+                    {% if product.instock %}
+                    <div class="pro_stock">  In stock </div>
+                    {% else %}
+                        <div class="pro_Nstock"> Not stock </div>
+                    {% endif %}
+                        
+                
+            </div>
+
+        </div>
+        <div class="detail_info">
+            <ul>
+                <li><p id='det_des'>Descriptions</p></li>
+                <li><p id='det_add' >Additional Information</p></li>
+                <li><p id='det_rev' >Reviews</p></li>
+            </ul>
+            <div id='det_info_det' class="det_info_det">
+                {% include "pro_comment.html" %}
+            </div>
+        </div>
+    </div>
+
+    <div class="related_product">
+        <h2>Related Products</h2>
+        <div class="products_detail">
+            {% for rel in related %}
+            <a href="{% url 'products-details' rel.id %}">
+                <div class="product">
+                    <div class="pro_image">
+                        <img src="{{rel.image.url}}" alt="">
+                        <div class="img_icons">
+                            <i class="fa-regular fa-star"></i>
+                            <i class="fa-solid fa-right-left"></i>
+                            <i class="fa-regular fa-eye"></i>
+                        </div>
+                    </div>
+                    <div class="pro_about">
+                        <div class="pro_brand">{{rel.brand}}</div>
+                        <div class="pro_name">{{rel.name}}</div>
+                        <div class="pro_price">${{rel.price|floatformat:2}}</div>
+                    </div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+    
+  </div>
+{% endblock body %}

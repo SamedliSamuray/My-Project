@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+{% block title %}
+        
+{% endblock title %}
+
+{% block body %}
+<div class="container">
+
+    <div class="shown_products">
+        Shop <i class="fa-solid fa-angle-right"></i>
+    </div>
+<div class="products_body">
+    <div  class="products_filter">
+        <form action=""  id="filter_form" method="get"></form>
+        <ul id="products_filter">
+            
+            <li id="pro_li"><h3>Product Categories<i class="fa-solid fa-chevron-down"></i></h3>
+                <ul id="pro_ul" class="pro_ul">
+                    {% for pro in products_category %}
+                        <li><label for="{{pro}}"><input class="input_check" type="checkbox" value="{{pro}}" form="filter_form" name="category" id="{{pro}}">{{pro}}</label> </li>
+                    {% endfor %}
+                         </ul>
+            </li>
+            <hr>
+            <li class="price_li"><h3>Filter by Price<i class="fa-solid fa-chevron-down"></i></h3>
+                <ul>
+                    <li class="price-input"> Price:
+                        <div class="field">
+                          <span>$<input type="number" title="a" class="input-min" value="2500"></span>
+                          <div>-</div>
+                          <span>$<input type="number" title="a" class="input-max" value="7500"></span></div>  
+                      </li>
+                    </li>
+                    <li>
+                        <div class="slider">
+                            <div class="progress"></div>
+                          </div>
+                          <div class="range-input">
+                            <input title="a" type="range" class="range-min" min="0" max="10000" value="2500" step="100">
+                            <input title="a" type="range" class="range-max" min="0" max="10000" value="7500" step="100">
+                          </div>
+                        
+                    </li>
+                </ul>
+            </li>
+            <hr>
+            <li><h3>Colors<i class="fa-solid fa-chevron-down"></i></h3>
+                <ul >
+                    {% for col in colors %}
+                    <li  class="color_li"><input  id="{{col.clName}}" type="checkbox" class="filter_color" name="color" form="filter_form" value="{{col.clName}}" style='background-color: {{col.color_code}} '>
+                        <label for="{{col.clName}}">    {{col.clName}}  </label>    </li>
+                    {% endfor %}
+                         </ul>
+            </li>
+            <hr>
+            <li><h3>Brands<i class="fa-solid fa-chevron-down"></i></h2>
+                <ul>
+                    {% for brand in brands %}
+                        <li><label for="{{brand}}"><input type="checkbox"  class="input_check" form="filter_form" name="brand" value="{{brand}}" id="{{brand}}">{{brand}}</label></li>
+                    {% endfor %}
+                         </ul>
+            </li>
+            <hr>
+            
+        </ul>
+    </div>
+    
+    <div class="products">
+        <div class="products_head">
+            <div class="view_display">
+                <a title="big" href=""><i id="big-border" class="fa-solid fa-border-all"></i></a>
+                <a title="big" href=""><i id="small-border" class="fa-solid fa-list"></i></a>
+                Showing 1-10 of {{products|length}} result
+             </div>
+            <div class="products_latest" id="latest">Shot by latest <i class="fa-solid fa-chevron-down"></i>
+            <ul id="latest_ul" class="latest_ul" >
+                <li>a-z sort</li>
+                <li>z-a sort</li>
+                <li>sort by cheapness</li>
+                <li>sort by cost</li>
+            </ul></div>
+        </div>
+    <div  class="products_detail">
+        
+        {% for product in products %}
+        <div class="product">
+            
+                <div class="pro_image">
+                    <a  href="{% url 'products-details' product.id %}">
+                    <img src="{{product.image.url}}" alt=""  id="product_image_{{ product.id }}">
+                </a>
+                    <div class="img_icons">
+                    <i class="fa-regular fa-star"></i>
+                    <i class="fa-solid fa-right-left"></i>
+                    <i  class="fa-regular fa-eye" onclick="toggleFullscreen('product_image_{{ product.id }}')"></i>
+                    </div>
+            
+                    </div>
+            <div class="pro_about">
+                <div class="pro_brand">{{product.brand}}</div>
+                <div class="pro_name">{{product.name}}</div>
+                <div class="pro_price">${{product.price}} </div>
+               
+           </div>
+        </div>
+        {% endfor %}
+             
+        </div> 
+    </div>
+    </div>
+</div>
+<div class="products_sorting">
+    <i class="fa-solid fa-arrow-left"></i>
+    <ul>
+        <li>1</li>
+        <li>2</li>
+    </ul>
+    <i class="fa-solid fa-arrow-right"></i>
+</div>
+</div>
+
+{% endblock body %}
