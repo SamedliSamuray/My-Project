@@ -107,50 +107,19 @@ if(small){
 }
 
 
-// Api
-// let products = document.getElementById('products_detail')
-// if (products) {
-//     fetch('http://127.0.0.1:8000/product-api/api-list/')
-// .then((res) => res.json())
-// .then((data) => data.map((product) => createProduct(product)));
-// function createProduct(product) {
-//     let product_list =  `<div class="product">
-//             <a href="/products-details/${product.id}">
-//                 <div class="pro_image">
-//                     <img src="${product.image}" alt="">
-//                     <div class="img_icons">
-//                         <i class="fa-regular fa-star"></i>
-//                         <i class="fa-solid fa-right-left"></i>
-//                         <i id='icon_see' class="fa-regular fa-eye"></i>
-//                     </div>
-//             </a>
-//             </div>
-//             <div class="pro_about">
-//                 <div class="pro_brand">${product.brand}</div>
-//                 <div class="pro_name">${product.name}</div>
-//                 <div class="pro_price">$${product.price}</div>
-//                 <div class="pro_price">$${product.id}</div>
-//             </div>
-//         </div> `
-//     products.innerHTML += product_list;
-
-
-// }
-// }
 
 
 // pro detail count 
 let pro_count = document.getElementById('pro_count');
-let a=1;
-
 let pro_plus = document.getElementById('pro_plus');
 let pro_minus = document.getElementById('pro_minus');
 
 if(pro_plus){
     pro_plus.addEventListener('click',()=>{
-        ++a;
-        pro_count.textContent=a
-        if ( a>1 ){
+        count=parseInt(pro_count.getAttribute('value'))
+        count+=1
+        pro_count.setAttribute('value',count)
+        if ( count>1 ){
             pro_minus.parentElement.removeAttribute('disabled')
         }
     })
@@ -158,15 +127,17 @@ if(pro_plus){
 
 if(pro_minus){
     pro_minus.addEventListener('click',()=>{
-        --a;
-        if ( a==0) {
-            a=1;
+        count=parseInt(pro_count.getAttribute('value'))
+        count-=1
+        
+        if (  count==0) {
+            count=1;
             
         }
-        if ( a==1 ){
+        if ( count==1 ){
             pro_minus.parentElement.setAttribute('disabled','')
         }
-        pro_count.textContent=a
+        pro_count.setAttribute('value',count)
     })
 }
 
@@ -202,8 +173,9 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 // Full screen
-function toggleFullscreen(imageId) {
-    
+function toggleFullscreen(e,imageId) {
+    e.preventDefault(); 
+    e.stopPropagation();
     var img = document.getElementById(imageId);
     if (!document.fullscreenElement) {
         img.requestFullscreen().catch(err => {
@@ -216,11 +188,12 @@ function toggleFullscreen(imageId) {
 
 
 
+
 // Price Range
 const rangeInput = document.querySelectorAll(".range-input input"),
   priceInput = document.querySelectorAll(".price-input input"),
   range = document.querySelector(".slider .progress");
-let priceGap = 1000;
+let priceGap = 100;
 
 priceInput.forEach((input) => {
   input.addEventListener("input", (e) => {
@@ -260,15 +233,256 @@ rangeInput.forEach((input) => {
 });
 
 // pro_detail star
-function proStars(rating){
-    let pro_rate = document.getElementById('pro_rate')
-    let rate_icon =[]
-    rate_icon = Array.from(pro_rate.children)
-    for (let i = 0; i <= parseInt(rating); i++) {
-        rate_icon[i].classList.remove('fa-regular')
-        rate_icon[i].classList.add('fa-solid')
-        rate_icon[i].style.color = '#FFD43B';
+document.addEventListener('DOMContentLoaded',()=>{
+    const pro_rating = document.querySelector('#pro_rate')
+    const average = parseInt(document.querySelector('#average_rating').value)
+    const stars = pro_rating.querySelectorAll('.fa-star');
+
+    stars.forEach((star,index)=>{
+        if(index < average){
+            star.classList.remove('fa-regular')
+            star.classList.add('fa-solid')
+            star.style.color = '#FFD43B'
+        }
+    })
+})
+// html onclick  ->  onclick="proStars('{{average_rating}}')"  #Solid Star <i class="fa-solid fa-star" style="color: #FFD43B;"></i>
+document.addEventListener('DOMContentLoaded', () => {
+    const comments = document.querySelectorAll('.comment');
+
+    comments.forEach(comment => {
+        const rating = parseInt(comment.querySelector('.comment_rating').value);
+        const stars = comment.querySelectorAll('.comments_rating .fa-star');
+
+        stars.forEach((star, index) => {
+            if (index < rating) {
+                star.classList.remove('fa-regular');
+                star.classList.add('fa-solid');
+                star.style.color = '#FFD43B';
+            }});  });
+});
+
+
+let shop_btn = document.getElementById('shop_btn')
+let card_body = document.getElementById('card_body')
+let container = document.getElementById('container')
+let card_info = document.getElementById('card_info')
+
+function card_view(event){
+    event.preventDefault(); 
+    event.stopPropagation();
+    card_body.style.height = document.body.offsetHeight + 'px'
+    card_info.style.overflow = 'auto'
+    card_info.style.display = 'flex'
+    
+    setTimeout(function() {
+        card_body.style.opacity = '1'
+        card_info.style.right = '0px'
+        card_body.style.overflow = 'auto'
+    }, 10);
+}
+card_body.addEventListener('click',(event)=>{
+    event.preventDefault(); 
+    event.stopPropagation();
+    
+    
+    card_body.style.opacity = '0'
+    card_info.style.right = '-300px'
+    setTimeout(function() {
+        card_info.style.display = 'none'
+        card_body.style.height = '0%';
+        card_body.style.overflow = 'hidden'
+    }, 400);
+})
+card_info.addEventListener('click',(e)=>{
+    e.stopPropagation()
+})
+
+let pro_desc = document.getElementById('pro_desc');
+let pro_additional = document.getElementById('pro_additional')
+let comments = document.getElementById('comment_div')
+
+let det_des = document.getElementById('det_des')
+det_des.addEventListener('click',()=>{
+    pro_desc.style.display='block'
+    det_des.classList.add('active')
+    det_add.classList.remove('active')
+    det_rev.classList.remove('active')
+    pro_additional.style.display='none'
+    comments.style.display='none'
+})
+let det_add = document.getElementById('det_add')
+det_add.addEventListener('click',()=>{
+    pro_additional.style.display='flex'
+    det_add.classList.add('active')
+    det_des.classList.remove('active')
+    det_rev.classList.remove('active')
+    pro_desc.style.display='none'
+    comments.style.display='none'
+})
+let det_rev = document.getElementById('det_rev')
+det_rev.addEventListener('click',()=>{
+    comments.style.display='block'
+    det_rev.classList.add('active')
+    det_add.classList.remove('active')
+    det_des.classList.remove('active')
+    pro_additional.style.display='none'
+    pro_desc.style.display='none'
+})
+
+function changeMainImage(imageUrl) {
+    document.getElementById('detail_img').src = imageUrl;
+}
+
+let imgs_choices = document.getElementById('imgs_choices')
+let choices_right = document.getElementById('choices_right')
+let choices_left = document.getElementById('choices_left')
+
+imgs_choices.addEventListener("wheel",(e)=>{
+    e.preventDefault()
+    imgs_choices.scrollLeft += e.deltaY;
+})
+choices_left.addEventListener("click",()=>{
+    imgs_choices.scrollLeft -= 130;
+})
+choices_right.addEventListener("click",()=>{
+    imgs_choices.scrollLeft += 130;
+})
+
+
+
+// rel pro anime slider 
+
+document.addEventListener('DOMContentLoaded',()=>{
+    let rel_detail = document.getElementById('rel_detail')
+    setInterval(() => {
+        if (rel_detail.scrollLeft >= rel_detail.scrollWidth-rel_detail.clientWidth-40) {
+            rel_detail.scrollLeft = 0;
+        } else {
+            rel_detail.scrollLeft += 330;
+        }
+          
+    }, 5000);
+
+})
+
+// Product sorted latest
+function sortedByprice(){
+    const products= document.getElementById('products_detail')
+    const products_val=Array.from(products.children)
+    products_val.sort((a,b)=>{
+       return  parseFloat(a.getAttribute('data-price'))-parseFloat(b.getAttribute('data-price'))
+    }) 
+    products_val.forEach((product)=>{
+        products.append(product)
+    })
+}
+function sortedByCost(){
+    const products= document.getElementById('products_detail')
+    const products_val=Array.from(products.children)
+    products_val.sort((a,b)=>{
+       return  parseFloat(b.getAttribute('data-price'))-parseFloat(a.getAttribute('data-price'))
+    })
+    products_val.forEach((product)=>{
+        products.append(product)
+    })
+}
+function sortedByBest(){
+    const products= document.getElementById('products_detail')
+    const products_val=Array.from(products.children)
+    products_val.sort((a,b)=>{
+       return  parseFloat(b.getAttribute('data-rating'))-parseFloat(a.getAttribute('data-rating'))
+    })
+    products_val.forEach((product)=>{
+        products.append(product)
+    })
+}
+function sortedByCom(){
+    const products= document.getElementById('products_detail')
+    const products_val=Array.from(products.children)
+    products_val.sort((a,b)=>{
+       return  parseFloat(b.getAttribute('data-com'))-parseFloat(a.getAttribute('data-com'))
+    })
+    products_val.forEach((product)=>{
+        products.append(product)
+    })
+}
+
+// form
+
+
+
+function FilterChange(e) {
+    let filter_form = document.getElementById('products_filter');
+    const brands_filt = Array.from(filter_form.querySelectorAll('input[name="brand"]:checked')).map(input => input.value);
+    const category_filt = Array.from(filter_form.querySelectorAll('input[name="category"]:checked')).map(input => input.value);
+    const color_filt = Array.from(filter_form.querySelectorAll('input[name="color"]:checked')).map(input => input.value);
+    const price_max = parseFloat(Array.from(filter_form.querySelectorAll('input[name="range-max"]')).map(input => input.value)[0]);
+    const price_min = parseFloat(Array.from(filter_form.querySelectorAll('input[name="range-min"]')).map(input => input.value)[0]);
+    const products = document.getElementById('products_detail');
+    const products_val = Array.from(products.children);
+    const products_length =document.getElementById('products_length')
+    let visibleCount = 0;
+
+    if (brands_filt.length > 0 || category_filt.length > 0 || color_filt.length > 0 || !isNaN(price_max) || !isNaN(price_min)) {
+        products_val.forEach((a) => {
+            const product_brand = a.getAttribute('data-brand');
+            const product_category = a.getAttribute('data-category');
+            const product_color = a.getAttribute('data-color');
+            const product_price = parseFloat(a.getAttribute('data-price'));
+
+            const brandMatch = brands_filt.length === 0 || brands_filt.some(b => product_brand === b);
+            const categoryMatch = category_filt.length === 0 || category_filt.some(c => product_category === c);
+            const colorMatch = color_filt.length === 0 || color_filt.some(c => product_color === c);
+            const priceMatch = (isNaN(price_min) || product_price >= price_min) && (isNaN(price_max) || product_price <= price_max);
+
+            if (brandMatch && categoryMatch && colorMatch && priceMatch) {
+                a.style.display = '';
+                visibleCount++;
+                products_length.textContent=visibleCount
+            } else {
+                a.style.display = 'none';
+                products_length.textContent=visibleCount
+            }
+        });
+    } else {
+        products_val.forEach((a) => {
+            a.style.display = '';
+            visibleCount++;
+            products_length.textContent=visibleCount
+        });
+    }
+
+    const noItemsMessage = document.getElementById('no-items-message');
+    if (visibleCount === 0) {
+        if (!noItemsMessage) {
+            const message = document.createElement('p');
+            message.id = 'no-items-message';
+            message.style.color = 'grey';
+            message.style.textAlign = 'center';
+            message.style.width = '100%';
+            message.style.height = '100%';
+            message.style.marginTop = '50px';
+            message.textContent = 'The item you are looking for is not available';
+            products.appendChild(message);
+        }
+    } else {
+        if (noItemsMessage) {
+            noItemsMessage.remove();
+        }
     }
 }
-// html onclick  ->  onclick="proStars('{{average_rating}}')"  #Solid Star <i class="fa-solid fa-star" style="color: #FFD43B;"></i>
 
+document.addEventListener('DOMContentLoaded', (event) => {
+    const filter_form = document.getElementById('products_filter');
+
+    const rangeInputs = filter_form.querySelectorAll('input[type="range"]');
+    rangeInputs.forEach(input => {
+        input.addEventListener('change', FilterChange);
+    });
+
+    const checkboxes = filter_form.querySelectorAll('input[type="checkbox"]');
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', FilterChange);
+    });
+});

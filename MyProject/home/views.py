@@ -1,31 +1,43 @@
 from django.shortcuts import render,redirect , get_object_or_404
 from .models import *
-from django.db.models import Q , Avg
+from django.db.models import Q , Avg , Count
 from .forms import *
 # Create your views here.
 
 
-def home_view(request):
+def products_view(request):
     
-    products_category = Products_Categories.objects.all()
-    brands = Brand.objects.all()
-    colors = Color.objects.all()
-    products = Products.objects.all()
+    products_category = Products_Categories.objects.annotate( items_count = Count('products') )
+    brands = Brand.objects.annotate( items_count = Count('products') )
+    colors = Color.objects.annotate( items_count = Count('products') )
+    products = Products.objects.all().annotate(average_rating=Avg('comments__rating'))
     
-    categories = request.GET.getlist('category')
-    products = Products.objects.all()
-     
+    filter_category = request.GET.getlist('category')
+    filter_brand = request.GET.getlist('brand')
+    filter_color = request.GET.getlist('color')
+    filter_price_min = request.GET.get('range-min')
+    filter_price_max = request.GET.get('range-max')
+
+    # if filter_category or filter_brand or filter_color or filter_price_min or filter_price_max:
+    #     q = Q()
+    #     if filter_category:
+    #         q &= Q(category__in=filter_category)
+    #     if filter_brand:
+    #         q &= Q(brand__in=filter_brand)
+    #     if filter_color:
+    #         q &= Q(color__in=filter_color)
+    #     if filter_price_min and filter_price_max:
+    #         q &= Q(price__gte=filter_price_min) & Q(price__lte=filter_price_max)
+
+    #     products = products.filter(q)
     
-    if categories:
-        products = Products.objects.filter(brand=categories.brand)
-        
     context={'products_category':products_category,'brands':brands,"colors":colors,'products':products}
-    return render(request,'home.html',context)
+    return render(request,'products.html',context)
 
 def product_details(request, id):
     product = get_object_or_404(Products, id=id)
     products = Products.objects.filter(name=product.name, brand=product.brand).exclude(color=product.color)
-    related = Products.objects.filter(Q(brand=product.brand) | Q(materials=product.materials) | Q(category=product.category)).exclude(name=product.name)
+    related = Products.objects.filter(Q(brand=product.brand) | Q(materials=product.materials) | Q(category=product.category)).exclude(id=id)
     colors = Color.objects.all()
     comments = product.comments.all()
     average_rating = comments.aggregate(Avg('rating'))['rating__avg'] or 0
@@ -44,7 +56,10 @@ def product_details(request, id):
         new_comment.save()
 
         return redirect('products-details', id=product.id)
-
+    if request.method == 'GET':
+        name = request.GET.get('name')
+        name = request.GET.get('name')
+        name = request.GET.get('name')
     context = {
         'product': product,
         'colors': colors,
@@ -54,5 +69,8 @@ def product_details(request, id):
         'average_rating': average_rating,
     }
     return render(request, 'product_details.html', context)
+
+def checkout_view(request):
+    return render(request,'checkout.html')
 
 

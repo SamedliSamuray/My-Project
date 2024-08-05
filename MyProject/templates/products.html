@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+{% block title %}
+        
+{% endblock title %}
+
+{% block body %}
+<div id='container' class="container">
+
+    <div class="shown_products">
+        Shop <i class="fa-solid fa-angle-right"></i>
+    </div>
+<div class="products_body">
+    <div  class="products_filter">
+        <form action="" onchange="FilterChange(event)"  id="filter_form" method="get"></form>
+        <ul id="products_filter">
+            
+            <li id="pro_li"><h3>Product Categories<i class="fa-solid fa-chevron-down"></i></h3>
+                <ul id="pro_ul" class="pro_ul">
+                    {% for pro in products_category %}
+            <li class="pro_li">
+        <label for="{{pro}}">
+            <input onchange="FilterChange(event)" class="input_check" type="checkbox" value="{{pro}}" form="filter_form" name="category" id="{{pro.id}}">
+            {{pro}}</label>
+     <p>({{pro.items_count}})</p>
+
+            </li>
+                    {% endfor %}
+        </ul>
+            </li>
+            <hr>
+            <li class="price_li"><h3>Filter by Price<i class="fa-solid fa-chevron-down"></i></h3>
+                <ul>
+                    <li class="price-input"> Price:
+                        <div class="field">
+                          <span>$<input type="number" title="a" class="input-min" value="0"></span>
+                          <div>-</div>
+                          <span>$<input type="number"  title="a" class="input-max" value="7500"></span></div>  
+                      </li>
+                    </li>
+                    <li>
+                        <div class="slider">
+                            <div class="progress"></div>
+                          </div>
+                          <div class="range-input">
+                            <input title="a" onchange="FilterChange(event)" type="range" name="range-min" form="filter_form"  class="range-min" min="0" max="10000" value="0" step="10">
+                            <input title="a" onchange="FilterChange(event)" type="range" name="range-max" form="filter_form" class="range-max" min="0" max="10000" value="7500" step="10">
+                          </div>
+                        
+                    </li>
+                </ul>
+            </li>
+            <hr>
+            <li><h3>Colors<i class="fa-solid fa-chevron-down"></i></h3>
+                <ul >
+                    {% for col in colors %}
+                    <li  class="color_li"><input onchange="FilterChange(event)"  id="{{col.clName}}" type="checkbox" class="filter_color" name="color" form="filter_form" value="{{col.clName}}" style='background-color: {{col.color_code}} ' >
+                        <label for="{{col.clName}}">    {{col.clName|title}}  </label>
+                        <p>({{col.items_count}})</p>
+                    </li>
+                    {% endfor %}
+                         </ul>
+            </li>
+            <hr>
+            <li><h3>Brands<i class="fa-solid fa-chevron-down"></i></h2>
+                <ul>
+                    {% for brand in brands %}
+                        <li class="brand_li"><label for="{{brand}}"><input type="checkbox"  class="input_check" form="filter_form" name="brand" onchange="FilterChange(event)" value="{{brand}}" id="{{brand}}">{{brand}}</label>
+                            <p>({{brand.items_count}})</p>
+                        </li>
+                    {% endfor %}
+                         </ul>
+            </li>
+            <hr>
+            
+        </ul>
+    </div>
+    
+    <div class="products">
+        <div class="products_head">
+            <div class="view_display">
+                <a title="big" href=""><i id="big-border" class="fa-solid fa-border-all"></i></a>
+                <a title="big" href=""><i id="small-border" class="fa-solid fa-list"></i></a>
+                Showing 1-10 of <span id="products_length">{{products|length}}</span> result
+             </div>
+            <div class="products_latest" id="latest">Shot by latest <i class="fa-solid fa-chevron-down"></i>
+            <ul id="latest_ul" class="latest_ul" >
+                <li onclick="sortedByprice()">Price Low-High</li>
+                <li onclick="sortedByCost()">Price High-Low</li>
+                <li onclick="sortedByBest()">Bestseller</li>
+                <li onclick="sortedByCom()">Reviews Count</li>
+            </ul></div>
+        </div>
+    <div id="products_detail" class="products_detail">
+        {% if products %}
+        
+        {% for product in products %}
+        <div data-brand="{{product.brand}}" data-color="{{product.color.clName}}" data-category="{{product.category}}" data-com="{{product.comments.count}} " data-rating="{{product.average_rating|default_if_none:0}}" data-price="{{product.price}}" class="product">
+                <div class="pro_image">
+                    
+                <a   href="{% url 'products-details' product.id %}">    
+            <img  src="{{ product.get_main_image }}" alt=""  id="product_image_{{ product.id }}">   
+                </a>
+        <div class="img_icons">
+                  
+        <i class="fa-regular fa-star"></i>
+        <i class="fa-solid fa-right-left"></i>
+        <i  class="fa-regular fa-eye" onclick="toggleFullscreen(event,'product_image_{{ product.id }}')"></i>
+                    </div>
+            
+                    </div>
+            <div class="pro_about">
+                <div class="pro_brand">{{product.brand}}</div>
+                <div class="pro_name">{{product.name}}</div>
+                <div class="pro_price">${{product.price}} </div>
+               
+           </div>
+        </div>
+        {% endfor %}
+        {% else %}
+           <p style="color:grey;text-align:center;width:100%;height:100%;margin-top:50px;">The item you are looking for is not available</p> 
+        {% endif %}   
+        </div> 
+    </div>
+    </div>
+</div>
+<div class="products_sorting">
+    <i class="fa-solid fa-arrow-left"></i>
+    <ul>
+        <li>1</li>
+        <li>2</li>
+    </ul>
+    <i class="fa-solid fa-arrow-right"></i>
+</div>
+</div>
+
+{% endblock body %}

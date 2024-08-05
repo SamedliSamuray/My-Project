@@ -10,11 +10,16 @@ admin.site.register(Color, ColorAdmin)
 admin.site.register(Products_Categories)
 admin.site.register(Brand)
 admin.site.register(Comment)
+
 class CommentAdmin(admin.ModelAdmin):
     list_display = ('product', 'comment_name', 'comment_email', 'comment_content', 'created_at')
     search_fields = ('comment_name', 'comment_email', 'comment_content')
+class ProductImgAdmin(admin.TabularInline):
+    model=ProductImage
+    extra=1
+
 
 class ProductsAdmin(admin.ModelAdmin):
-    list_display = ('name','brand', 'price', 'color', 'category','image','weight','dimension')
-
+    list_display = ('name','brand', 'price', 'color', 'category','weight','dimension')
+    inlines = [ProductImgAdmin]
 admin.site.register(Products, ProductsAdmin)

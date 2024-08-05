@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block body %}
-  <div class="details_container">
+  <div id="container" class="container">
     <div class="shown_products">
         Shop <i class="fa-solid fa-angle-right"></i> {{product.name}}
     </div>
@@ -9,15 +9,21 @@
     <div class="details_body">
         <div class="pro_detail">
             <div class="imgs_details">
-                <div class="img_detail"> <img src="{{product.image.url}}" alt=""></div>
-                <div class="imgs_choices">
-                    {% for product in products %}
-                    <div class="pro_choices">
-                         <a href="{% url 'products-details' product.id %}"><img src="{{product.image.url}}" alt=""></a>
-            </div>
+                <div class="img_detail"> <img onclick="toggleFullscreen('detail_img')" id='detail_img' src="{{product.get_main_image}}" alt=""></div>
+                <div class="det_choices">
+                    <i id="choices_left" class="fa-solid fa-chevron-left"></i>
+                <div id="imgs_choices" class="imgs_choices">
+                    
+                    {% for image in product.images.all %}
+                    <div id='pro_choices' class="pro_choices">
+            <img src="{{ image.images.url }}" alt=""  onclick="changeMainImage('{{ image.images.url }}')">
+             </div>
             {% endfor %}
-                
+                   
+            
                 </div>
+                <i id="choices_right" class="fa-solid fa-chevron-right"></i>
+            </div>
             </div>
 
             <div class="about_detail">
@@ -31,6 +37,7 @@
                         <i title="s" class="fa-regular fa-star" style="color: #d1d1d1;"></i>
                         <i title="s" class="fa-regular fa-star" style="color: #d1d1d1;"></i>
                     </span> <span style="color:grey">
+                    <input id="average_rating" class="average_rating" type="hidden" value="{{average_rating}}">
                     {{average_rating|floatformat:1}}({{product.comments.count}} Reviews)</span></div>
                 <p>${{product.price|floatformat:2}}</p>
                 
@@ -49,10 +56,18 @@
                 <div class="pro_buy">
                     <div class="pro_count">
                     <button title="Minus" disabled=""  type="button" ><i  id='pro_minus' class="fa-solid fa-minus"></i></button>
-                    <p id='pro_count'>1</p>
+                    <input readonly type="number" form="checking_form" value="1" id='pro_count'>
                     <button title="Plus" type="button"><i id='pro_plus' class="fa-solid fa-plus"></i></button>
                 </div>
-                    <button type="button" class="pro_btn">Add To Card</button>
+                    <form action="" id="checking_form" method="get">
+                        <input type="hidden" value="{{product.name}}" form="checking_form" name="name">
+                        <input type="hidden" value="{{product.brand}}" form="checking_form" name="brand">
+                        <input type="hidden" value="{{product.price}}" form="checking_form" name="price">
+                        <input type="hidden" value="{{product.id}}" form="checking_form" name="id">
+                        <input type="hidden" value="{{product.get_main_image}}" form="checking_form" name="image">
+                        <input type="hidden" value="{{product.color}}" form="checking_form" name="color">
+                    </form>
+                    <button type="submit" form="checking_form" class="pro_btn">Add To Card</button>
                     <div class="pro_heart"><i class="fa-regular fa-heart"></i></div>
                 </div>
                 <div class="pro_share"> <ul><h5>Share</h5>
@@ -75,28 +90,30 @@
         </div>
         <div class="detail_info">
             <ul>
-                <li><p id='det_des'>Descriptions</p></li>
+                <li><p class='active' id='det_des'>Descriptions</p></li>
                 <li><p id='det_add' >Additional Information</p></li>
                 <li><p id='det_rev' >Reviews</p></li>
             </ul>
             <div id='det_info_det' class="det_info_det">
                 {% include "pro_comment.html" %}
+                {% include "pro_additional.html" %}
+                {% include "pro_description.html" %}
             </div>
         </div>
     </div>
 
     <div class="related_product">
         <h2>Related Products</h2>
-        <div class="products_detail">
+        <div id="rel_detail" class="rel_detail">
             {% for rel in related %}
             <a href="{% url 'products-details' rel.id %}">
-                <div class="product">
+                <div id="rel_pro" class="product">
                     <div class="pro_image">
-                        <img src="{{rel.image.url}}" alt="">
+                        <img src="{{rel.get_main_image}}" id="rel_image_{{ rel.id }}" alt="">
                         <div class="img_icons">
                             <i class="fa-regular fa-star"></i>
                             <i class="fa-solid fa-right-left"></i>
-                            <i class="fa-regular fa-eye"></i>
+                    <i class="fa-regular fa-eye" onclick="toggleFullscreen(event,'rel_image_{{ rel.id }}')"></i>
                         </div>
                     </div>
                     <div class="pro_about">
@@ -109,6 +126,30 @@
             {% endfor %}
         </div>
     </div>
-    
+    <div id="card_body" class="card_body">
+    <div id="card_info" class="card_info">
+        <div class="card_header">
+            <div class="card_count">You have <b><strong class="card_count_items">1</strong> items</b> in your card</div>
+            <div class="card_products">
+                <div class="card_product">
+                    <div class="card_pro_img"><img src="{{product.get_main_image}}" alt=""></div>
+                    <div class="card_pro_about">
+                        <div class="card_pro_name">{{product.name}}</div>
+                        <div class="card_pro_price"><b>${{product.price}}</b></div>
+                        <div class="card_pro_count">QTY:</div>
+                        <button title="Delete" type="button" class="card_pro_del"><i class="fa-regular fa-trash-can"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card_footer">
+            <h3 class="card_subtotal"><span>Subtotal</span>  <span></span></h3>
+            <button title="view" type="button" class="view_card">View Card</button>
+            <button title="checkout" type="button" class="card_checkout">Checkout</button>
+
+        </div>
+    </div>
   </div>
+  </div>
+
 {% endblock body %}

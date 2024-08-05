@@ -21,6 +21,7 @@ class Color(models.Model):
     
     def __str__(self):
         return self.clName
+
     
 class Products(models.Model):
     
@@ -29,7 +30,6 @@ class Products(models.Model):
     price = models.BigIntegerField()
     color = models.ForeignKey(Color, on_delete=models.CASCADE, related_name='products')
     category = models.ForeignKey(Products_Categories, on_delete=models.CASCADE, related_name='products')
-    image=models.ImageField(blank=True)
     descriptions=models.TextField( default=1  )
     weight = models.DecimalField( default=1.1 ,max_digits=5, decimal_places=2)
     width = models.DecimalField(default=1.1,max_digits=5, decimal_places=2) 
@@ -38,18 +38,31 @@ class Products(models.Model):
     instock = models.BooleanField(default=True)  
     materials = models.CharField(max_length=50, default='Wood')
     
+    
     def __str__(self):
         return f"{self.brand} - {self.category} - {self.color} - {self.price}"
     
     def dimension(self):
-        return f'{self.width} x {self.height} x {self.depth}'
+        return f'{self.width} cm x {self.height} cm x {self.depth} cm'
+    
+    def get_main_image(self):
+        first_image = self.images.first()
+        return first_image.images.url if first_image else None
+    
+    
+class ProductImage(models.Model):
+    product = models.ForeignKey(Products, related_name='images', on_delete=models.CASCADE)
+    images = models.ImageField(upload_to='product_images/')
+    
+    def __str__(self):
+        return f"Image for {self.product.name}"
     
 class Comment(models.Model):
     product = models.ForeignKey(Products,related_name='comments', on_delete=models.CASCADE)
     comment_name = models.CharField(max_length=50,verbose_name=_('Name:'))
     rating = models.IntegerField(
         verbose_name=_('Rating'),
-        default=1,
+        default=0,
         blank=True,
         choices=[(i, str(i)) for i in range(1, 6)], 
         validators=[MinValueValidator(1), MaxValueValidator(5)]

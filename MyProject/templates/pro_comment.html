@@ -1,29 +1,36 @@
-<div class="commments">
+<div style="display: none;" id="comment_div">
+<div id='comments' class="commments">
     <h3 class="customers_h3">Customers Reviews</h2>
+    
+    {% if comments %}
     {% for comment in comments %}
-                    <div class="comment">
-                        <div class="comment_header">
-                            <p class="comment_img"><img src="https://lh5.googleusercontent.com/proxy/9vqIPeIeHQHyGEo43DlSgD-DUtidieclv56O6UoAcYNGPXGNnZwFJL2V7oSodehCB1YT28jit7pMSVjNTnrBOnlBxW0CiRmOeH22FlPockzEbfdQPHLkDMPcgMwWdNfVHF1r2QpUk6W_aY_J87A9lFtYKMHf8_xhkMB7l_4=w1200-h630-p-k-no-nu" alt=""></p>
-                            <span class="comment_name">
-                                <h3>{{comment.comment_name}}</h3>
-                                
-                        <div  class="comments_rating">
-                            
-                            <i title="s" class="fa-regular fa-star" style="color: #d1d1d1;"></i>
-                            <i title="s" class="fa-regular fa-star" style="color: #d1d1d1;"></i>
-                            <i title="s" class="fa-regular fa-star" style="color: #d1d1d1;"></i>
-                            <i title="s" class="fa-regular fa-star" style="color: #d1d1d1;"></i>
-                            <i title="s" class="fa-regular fa-star" style="color: #d1d1d1;"></i>
-                        </div><input type="number" name="rate" title="rate" style="display: none;" value="{{comment.rating}}" class="rate_number">
-                            </span>
-                </div>
-                        <div class="comment_detail">
-                            <div>{{comment.comment_content}}</div>
-                        <div class="comment_created">Review by <b>Melta</b> Posted on <b>{{comment.created_at|date:"d F Y"}}</b></div>
-                        </div>
-                    </div>
-                    <hr>
+    <div class="comment">
+        <div class="comment_header">
+            <p class="comment_img"><img src="https://lh5.googleusercontent.com/proxy/9vqIPeIeHQHyGEo43DlSgD-DUtidieclv56O6UoAcYNGPXGNnZwFJL2V7oSodehCB1YT28jit7pMSVjNTnrBOnlBxW0CiRmOeH22FlPockzEbfdQPHLkDMPcgMwWdNfVHF1r2QpUk6W_aY_J87A9lFtYKMHf8_xhkMB7l_4=w1200-h630-p-k-no-nu" alt=""></p>
+            <span class="comment_name">
+                <h3>{{comment.comment_name}}</h3>
+        <input class="comment_rating" type="hidden" name="rating" value="{{comment.rating}}">       
+        <div   class="comments_rating">
+            
+            <i title="s" class="fa-regular fa-star" style="color: #d1d1d1;"></i>
+            <i title="s" class="fa-regular fa-star" style="color: #d1d1d1;"></i>
+            <i title="s" class="fa-regular fa-star" style="color: #d1d1d1;"></i>
+            <i title="s" class="fa-regular fa-star" style="color: #d1d1d1;"></i>
+            <i title="s" class="fa-regular fa-star" style="color: #d1d1d1;"></i>
+        </div><input type="number" name="rate" title="rate" style="display: none;" value="{{comment.rating}}" class="rate_number">
+            </span>
+</div>
+        <div class="comment_detail">
+            <div>{{comment.comment_content}}</div>
+        <div class="comment_created">Review by <b>Melta</b> Posted on <b>{{comment.created_at|date:"d F Y"}}</b></div>
+        </div>
+    </div>
+    <hr>
 {% endfor %}
+    {% else %}
+    <p style="color:grey;text-align:center;padding:20px 0px">These products have no reviews.</p>
+    {% endif %}
+        
 </div>
 <form action="" class="review_form"  method="post">
     <h2>Add your review</h2>
@@ -54,3 +61,4 @@
     <label for="comment_content">Review :</label><textarea style="height: 100px;" placeholder="Enter Your Review" name="comment_content" id="comment_content"></textarea>
     <button  type="submit">Submit</button>
 </form>
+</div>

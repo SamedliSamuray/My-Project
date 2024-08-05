@@ -21,9 +21,10 @@ from django.conf.urls.static import static
 from django.conf import settings
 
 urlpatterns = [
-    path('', home_view,name="home"),
+    path('products/', products_view,name="products"),
     path('products-details/<int:id>', product_details,name="products-details"),
     path('product-api/',include('home.api.urls')),
+    path('checkout/',checkout_view, name='checkout'),
     path("admin/", admin.site.urls),
 ]
 

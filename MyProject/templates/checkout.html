@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block body %}
+<div><h1>Checkout</h1>
+<div class="checkout">
+    <div class="checkout_left">
+      <div class="checkout_fields">
+        <div>Products</div>
+        <div class="fields_detail">
+          <span>Price</span>
+          <span>Quantity</span>
+          <span>Subtotal</span>
+          <span> </span>
+        </div>
+      </div>
+      <hr id="checkout_hr" />
+
+      <div class="table_row">
+        <div class="table_row_detail">
+          <img src="media/pro7.png" alt="" id="img_border" />
+          <div class="media_text">
+            <h4>Modern Sofa Chair</h4>
+            <span>Color: Grey</span>
+          </div>
+        </div>
+        <div class="fields_detail">
+          <span>$300</span>
+          <div class="pro_buy">
+          <div class="pro_count">
+            <button title="Minus" disabled=""  type="button" ><i  id='pro_minus' class="fa-solid fa-minus"></i></button>
+            <p id='pro_count'>1</p>
+            <button title="Plus" type="button"><i id='pro_plus' class="fa-solid fa-plus"></i></button>
+        </div></div>
+          <span>$300</span>
+          <i id="delete_card" class="fa-regular fa-trash-can"></i>
+        </div>
+      </div>
+      <hr id="checkout_hr" />
+
+      
+    </div>
+
+    <div class="checkout_right">
+      <div class="subtotal">
+        <h4>Subtotal</h4>
+        <h4>$440</h4>
+      </div>
+      <hr id="subtotal_hr" /> 
+      
+      <div class="">
+        <span style="text-align:left;">Enter Discount Code</span>
+        <div class="coupon">
+      <div class="coupon_input">
+        <input
+          type="text"
+          id="coupon-code"
+          placeholder="Enter discount code"
+        />
+        <button id="apply-coupon">Apply</button>
+    </div>
+      </div>
+
+      
+    </div>
+    <div class="delivery">
+      <div>Delivery charge</div>
+      <div>$5.00</div>
+    </div>
+
+      <hr id="subtotal_hr" />
+
+      <div class="total">
+        <h4>Grand Total</h4>
+        <h4>$445.00</h4>
+      </div>
+
+      <div class="">
+        <button id="proceed-to-checkout">Proceed to Checkout</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock body %}
