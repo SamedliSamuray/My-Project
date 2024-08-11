@@ -9,7 +9,13 @@ if (latest) {
         change_latest=!change_latest
     });
 }
-
+// messages deleted : 
+document.addEventListener('DOMContentLoaded',()=>{
+    let messages= document.querySelectorAll('.messages')
+    setTimeout(() => {
+        messages.forEach((message)=> message.remove())
+    }, 2000);
+})
 
 // Pro filter navbar
 let pro_filter=document.getElementById('products_filter')
@@ -37,7 +43,7 @@ if (pro_filter) {
     });
 }
 
-// Pro home view
+// Products home view
 let big = document.getElementById('big-border');
 let small = document.getElementById('small-border');
 
@@ -109,37 +115,36 @@ if(small){
 
 
 
-// pro detail count 
-let pro_count = document.getElementById('pro_count');
-let pro_plus = document.getElementById('pro_plus');
-let pro_minus = document.getElementById('pro_minus');
-
-if(pro_plus){
-    pro_plus.addEventListener('click',()=>{
-        count=parseInt(pro_count.getAttribute('value'))
-        count+=1
-        pro_count.setAttribute('value',count)
-        if ( count>1 ){
-            pro_minus.parentElement.removeAttribute('disabled')
+// pro detail count  
+ 
+     function pro_Plus(e,id){
+            let pro_count = document.getElementById(`pro_count_${id}`);
+            let pro_minus = document.getElementById(`pro_minus_${id}`)
+            count=parseInt(pro_count.getAttribute('value'))
+            count+=1
+            pro_count.setAttribute('value',count)
+            if ( count>1 ){
+                pro_minus.removeAttribute('disabled')
+            }
         }
-    })
-}
-
-if(pro_minus){
-    pro_minus.addEventListener('click',()=>{
-        count=parseInt(pro_count.getAttribute('value'))
-        count-=1
-        
-        if (  count==0) {
-            count=1;
+        function pro_Minus(e,id){
+            let pro_count = document.getElementById(`pro_count_${id}`);
+            let pro_minus = document.getElementById(`pro_minus_${id}`)
+            count=parseInt(pro_count.getAttribute('value'))
+            count-=1
             
+            if (  count==0) {
+                count=1;
+                
+            }
+            if ( count==1 ){
+                pro_minus.setAttribute('disabled','')
+            }
+            pro_count.setAttribute('value',count)
         }
-        if ( count==1 ){
-            pro_minus.parentElement.setAttribute('disabled','')
-        }
-        pro_count.setAttribute('value',count)
-    })
-}
+
+        
+
 
 
 
@@ -172,7 +177,7 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 });
 
-// Full screen
+// Image full screen eye-icon products
 function toggleFullscreen(e,imageId) {
     e.preventDefault(); 
     e.stopPropagation();
@@ -189,7 +194,7 @@ function toggleFullscreen(e,imageId) {
 
 
 
-// Price Range
+// Price Range products
 const rangeInput = document.querySelectorAll(".range-input input"),
   priceInput = document.querySelectorAll(".price-input input"),
   range = document.querySelector(".slider .progress");
@@ -232,7 +237,7 @@ rangeInput.forEach((input) => {
   });
 });
 
-// pro_detail star
+// pro_detail star-rating
 document.addEventListener('DOMContentLoaded',()=>{
     const pro_rating = document.querySelector('#pro_rate')
     const average = parseInt(document.querySelector('#average_rating').value)
@@ -246,9 +251,9 @@ document.addEventListener('DOMContentLoaded',()=>{
         }
     })
 })
-// html onclick  ->  onclick="proStars('{{average_rating}}')"  #Solid Star <i class="fa-solid fa-star" style="color: #FFD43B;"></i>
+
 document.addEventListener('DOMContentLoaded', () => {
-    const comments = document.querySelectorAll('.comment');
+    const comments = document.querySelectorAll('.pro_comment');
 
     comments.forEach(comment => {
         const rating = parseInt(comment.querySelector('.comment_rating').value);
@@ -263,6 +268,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
+//  product-card view
 let shop_btn = document.getElementById('shop_btn')
 let card_body = document.getElementById('card_body')
 let container = document.getElementById('container')
@@ -298,11 +304,15 @@ card_info.addEventListener('click',(e)=>{
     e.stopPropagation()
 })
 
+
+// product details - desctip , addit , review
 let pro_desc = document.getElementById('pro_desc');
 let pro_additional = document.getElementById('pro_additional')
 let comments = document.getElementById('comment_div')
 
+
 let det_des = document.getElementById('det_des')
+if(det_des){  
 det_des.addEventListener('click',()=>{
     pro_desc.style.display='block'
     det_des.classList.add('active')
@@ -311,33 +321,47 @@ det_des.addEventListener('click',()=>{
     pro_additional.style.display='none'
     comments.style.display='none'
 })
+}
 let det_add = document.getElementById('det_add')
-det_add.addEventListener('click',()=>{
-    pro_additional.style.display='flex'
-    det_add.classList.add('active')
-    det_des.classList.remove('active')
-    det_rev.classList.remove('active')
-    pro_desc.style.display='none'
-    comments.style.display='none'
+if(det_add){
+    
+    det_add.addEventListener('click',()=>{
+        pro_additional.style.display='flex'
+        det_add.classList.add('active')
+        det_des.classList.remove('active')
+        det_rev.classList.remove('active')
+        pro_desc.style.display='none'
+        comments.style.display='none'
+    
 })
+}
+
+
 let det_rev = document.getElementById('det_rev')
-det_rev.addEventListener('click',()=>{
-    comments.style.display='block'
-    det_rev.classList.add('active')
-    det_add.classList.remove('active')
-    det_des.classList.remove('active')
-    pro_additional.style.display='none'
-    pro_desc.style.display='none'
-})
+if(det_rev){
+    
+    det_rev.addEventListener('click',()=>{
+        comments.style.display='block'
+        det_rev.classList.add('active')
+        det_add.classList.remove('active')
+        det_des.classList.remove('active')
+        pro_additional.style.display='none'
+        pro_desc.style.display='none'
+    })
+    
+}
+
 
 function changeMainImage(imageUrl) {
     document.getElementById('detail_img').src = imageUrl;
 }
 
+// product images
 let imgs_choices = document.getElementById('imgs_choices')
 let choices_right = document.getElementById('choices_right')
 let choices_left = document.getElementById('choices_left')
 
+if(imgs_choices){
 imgs_choices.addEventListener("wheel",(e)=>{
     e.preventDefault()
     imgs_choices.scrollLeft += e.deltaY;
@@ -348,10 +372,10 @@ choices_left.addEventListener("click",()=>{
 choices_right.addEventListener("click",()=>{
     imgs_choices.scrollLeft += 130;
 })
+}
 
 
-
-// rel pro anime slider 
+// related product  slider 
 
 document.addEventListener('DOMContentLoaded',()=>{
     let rel_detail = document.getElementById('rel_detail')
@@ -408,10 +432,7 @@ function sortedByCom(){
     })
 }
 
-// form
-
-
-
+// Filter Form 
 function FilterChange(e) {
     let filter_form = document.getElementById('products_filter');
     const brands_filt = Array.from(filter_form.querySelectorAll('input[name="brand"]:checked')).map(input => input.value);
@@ -486,3 +507,19 @@ document.addEventListener('DOMContentLoaded', (event) => {
         checkbox.addEventListener('change', FilterChange);
     });
 });
+
+// card functions - count - subtotal
+document.addEventListener('DOMContentLoaded',()=>{
+    let card_products= document.getElementById('card_products')
+    let card_count_inp = document.getElementById('card_count_inp')
+    let card_subtotal = document.getElementById('card_subtotal')
+    let shopcount = document.getElementById('shopcount') 
+    let totalSub=0
+    count = Array.from(card_products.children).length
+    shopcount.textContent=count
+    Array.from(card_products.children).forEach(pro => {
+        totalSub+=Number(pro.getAttribute('data-price'))
+    });
+    card_subtotal.textContent=totalSub
+    card_count_inp.setAttribute('value',count)
+})

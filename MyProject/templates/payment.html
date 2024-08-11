@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+
+{% block body %}
+<div class="payments">
+    <h1>Payments Method</h1>
+      <div class="payments_body">
+              
+        
+            <div class="payments_about">
+
+              <div class="shipping_icon">
+                    <img src="/media/navbar-footer_img/shipping_icon.png" alt="png" />
+              </div>
+
+              <h3>Select Your payment method</h3>
+              
+              <div class="payment_select" >
+
+                  <div class="debit_form">
+                    <label id="debit_lab" for="debit">
+                      <input checked type="radio" name="payment_method" id="debit">
+                      <h3>Debit/Credit Card</h3>
+                    </label>
+                    <form action="{% url 'add-card' %}" class="form-container"  method="post">
+                      {% csrf_token %}
+                      <input type="hidden" value="DC" name="method">
+                      <label for="card_number">Card Number<input placeholder="1111 2222 3333 4444"  type="number"  name="transaction_id" id="card_number"></label>
+                      <label for="card_username">Your Name<input type="text"  placeholder="Add your Name"  name="name" id="card_username"></label>
+
+                      <div>
+                        <label for="card_date">Expiry Date<input type="date" name="payment_date" value="2024-08-06" id="card_date"></label>  
+                        <label for="card_cvv">CVV<input type="number" placeholder="000" maxlength="3"  name="cvv" id="card_cvv"></label>
+                      </div>
+        
+                      <button type="submit" style="height: 60px;width:300px"  class="pro_btn">Add To Card</button>
+        
+                    </form>
+                  </div>
+      
+
+    
+
+                  <div class="debit_form">
+                    <label  id="paypal_lab" for="paypal">
+                      <input type="radio" name="payment_method" id="paypal">
+                      <h3>Paypal</h3>
+                    </label>
+                    <form action="{% url 'add-card' %}" style="display: none;" class="form-container"   method="post">
+                      {% csrf_token %}
+                      <input type="hidden" value="PP" name="method">
+                      <label for="paypal_number">Card Number<input maxlength="16" placeholder="1111 2222 3333 4444" type="number"  name="transaction_id"  id="paypal_number"></label>
+                      <label for="paypal_username">Your Name<input type="text" placeholder="Add your Name"  name="name" id="paypal_username"></label>
+                      
+                      <div>
+                      <label for="paypal_date">Expiry Date<input type="date" name="payment_date" value="2024-08-06" id=""></label>  
+                      <label for="paypal_cvv">CVV<input type="number" placeholder="000" maxlength="3"  name="cvv" id="paypal_cvv"></label>
+                      </div>
+
+                      <button type="submit" style="height: 60px;width:300px"  class="pro_btn">Add To Card</button>
+
+                    </form>
+                  </div>
+
+
+      
+                  <div class="debit_form">
+                    <label  id="google_lab" for="googlepay">
+                      <input type="radio" name="payment_method" id="googlepay">
+                      <h3>Google Pay</h3>
+                    </label>
+                    <form style="display: none;" action="{% url 'add-card' %}" class="form-container"   method="post">
+                      {% csrf_token %}
+                      <input type="hidden" value="GP" name="method">
+                      <label for="google_number">Card Number<input placeholder="1111 2222 3333 4444" maxlength="16" type="number"  name="transaction_id"  id="google_number"></label>
+                      <label for="google_username">Your Name<input type="text" placeholder="Add your Name"  name="name" id="google_username"></label>
+                      <div>
+                      <label for="google_date">Expiry Date<input type="date" name="payment_date" value="2024-08-06" id="google_date"></label>  
+                      <label for="google_cvv">CVV<input type="number" maxlength="3" placeholder="000"  name="cvv" id="google_cvv"></label>
+                      </div>
+
+                      <button type="submit" style="height: 60px;width:300px"  class="pro_btn">Add To Card</button>
+
+                    </form>
+                  </div>
+
+      
+                  <div class="debit_form">
+                    <label id="cash_lab" for="cash"><input type="radio" name="payment_method" id="cash">
+                      <h3>Cash on Delivery</h3>
+                    </label>
+                    <form style="display: none;" action="{% url 'add-card' %}" class="form-container"   method="post">
+                      {% csrf_token %}
+                      <input type="hidden" value="COD" name="method">
+                      <button type="submit" style="height: 60px;width:300px"  class="pro_btn">Add To Payment</button>
+                    </form>
+                  </div>
+                  
+                  
+              <a href=""> <button type="button" style="height: 60px;width:300px;margin-top:10px"  class="pro_btn">Continue</button></a>  
+        
+            </div>
+
+            
+        </div>
+
+      <div class="checkout_right">
+        <div class="subtotal">
+          <h4>Subtotal</h4>
+          <h4>${{ user_order_summary.subtotal|floatformat:2}}</h4>
+        </div>
+        <hr id="subtotal_hr" /> 
+        
+        <div class="">
+          <span style="text-align:left;">Enter Discount Code</span>
+          <div class="coupon">
+    
+            <form class="coupon_input" method="post" action="{% url 'apply-discount' %}">
+              {% csrf_token %}
+              
+              {% if user_order_summary.discounts %}
+              <input required type="text" id="coupon-code" value="{{user_order_summary.discounts}}" name="discount_code" placeholder="Enter discount code"/>
+              {% else %}
+              <input required type="text" id="coupon-code" value="" name="discount_code" placeholder="Enter discount code"/>
+              {% endif %}
+
+                      <button type="submit" id="apply-coupon">Apply</button>
+                    </form>
+                <div>
+                  
+                  {% if messages %}
+                      
+                      {% for message in messages %}
+                      {% if  message.tags == 'warning' %}
+                      <span style="font-size: 10px;color:red">{{message}}</span>
+                      {% else %}
+                      <span style="font-size: 10px;color:green">{{message}}</span>
+                    {% endif %}
+                      {% endfor %}
+                        
+                    
+                  {% endif %}
+                    
+                </div>
+        </div>
+
+        
+      </div>
+
+      <div class="delivery">
+        <div>Delivery charge</div>
+        <div>
+          
+          ${{user_order_summary.total_delivery_cost|floatformat:2}}
+          
+        </div>
+      </div>
+
+      <div class="delivery">
+        {% if user_order_summary.discount_value > 0 %}
+        <div>Discount</div>
+        <div>-${{user_order_summary.discount_value}}</div>
+        {% endif %}
+      </div>
+
+        <hr id="subtotal_hr" />
+
+        <div class="total">
+          <h4>Grand Total</h4>
+          <h4 >${{user_order_summary.grand_total|floatformat:2}}</h4>
+        </div>
+
+      </div>
+        </div>
+
+        
+      </div>
+      
+
+      </div>
+</div>
+
+
+{% endblock body %}

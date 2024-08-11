@@ -20,8 +20,8 @@
             <li class="pro_li">
         <label for="{{pro}}">
             <input onchange="FilterChange(event)" class="input_check" type="checkbox" value="{{pro}}" form="filter_form" name="category" id="{{pro.id}}">
-            {{pro}}</label>
-     <p>({{pro.items_count}})</p>
+            <span >{{pro}}</span></label>
+        <p>({{pro.items_count}})</p>
 
             </li>
                     {% endfor %}
@@ -102,9 +102,9 @@
                 </a>
         <div class="img_icons">
                   
-        <i class="fa-regular fa-star"></i>
-        <i class="fa-solid fa-right-left"></i>
-        <i  class="fa-regular fa-eye" onclick="toggleFullscreen(event,'product_image_{{ product.id }}')"></i>
+      <i class="fa-regular fa-star"></i>
+      <i class="fa-solid fa-right-left"></i>
+      <i  class="fa-regular fa-eye" onclick="toggleFullscreen(event,'product_image_{{ product.id }}')"></i>
                     </div>
             
                     </div>

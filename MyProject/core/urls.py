@@ -21,10 +21,20 @@ from django.conf.urls.static import static
 from django.conf import settings
 
 urlpatterns = [
+    path('', home_view,name="home"),
     path('products/', products_view,name="products"),
     path('products-details/<int:id>', product_details,name="products-details"),
     path('product-api/',include('home.api.urls')),
     path('checkout/',checkout_view, name='checkout'),
+    path('shipping/',shipping_view, name='shipping'),
+    path('payments/',payments_view, name='payments'),
+    path('delete-order/<int:id>',delete_order, name='delete-order'),
+    path('update-order/<int:id>',update_order, name='update-order'),
+    path('apply-discount/',apply_discount, name='apply-discount'),
+    path('address-add/',address_add, name='address-add'),
+    path('delete-address/<int:id>',delete_address, name='delete-address'),
+    path('update-address/<int:id>',update_address, name='update-address'),
+    path('add-card/',add_card, name='add-card'),
     path("admin/", admin.site.urls),
 ]
 

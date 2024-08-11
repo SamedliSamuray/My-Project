@@ -55,17 +55,13 @@
                 </ul>
                 <div class="pro_buy">
                     <div class="pro_count">
-                    <button title="Minus" disabled=""  type="button" ><i  id='pro_minus' class="fa-solid fa-minus"></i></button>
-                    <input readonly type="number" form="checking_form" value="1" id='pro_count'>
-                    <button title="Plus" type="button"><i id='pro_plus' class="fa-solid fa-plus"></i></button>
+                        <button id='pro_minus_{{ord.product.id}}' onclick="pro_Minus(event,'{{ord.product.id}}')" title="Minus" disabled=""  type="button" ><i   class="fa-solid fa-minus"></i></button>
+                        <input readonly type="number" class="count_input" form="checking_form" value="1" name='quantity' id='pro_count_{{ord.product.id}}'>
+                         <button id='pro_plus_{{ord.product.id}}' onclick="pro_Plus(event,'{{ord.product.id}}')" title="Plus" type="button"><i id='' class="fa-solid fa-plus"></i></button>
                 </div>
-                    <form action="" id="checking_form" method="get">
-                        <input type="hidden" value="{{product.name}}" form="checking_form" name="name">
-                        <input type="hidden" value="{{product.brand}}" form="checking_form" name="brand">
-                        <input type="hidden" value="{{product.price}}" form="checking_form" name="price">
-                        <input type="hidden" value="{{product.id}}" form="checking_form" name="id">
-                        <input type="hidden" value="{{product.get_main_image}}" form="checking_form" name="image">
-                        <input type="hidden" value="{{product.color}}" form="checking_form" name="color">
+                    <form action="" id="checking_form" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" value="{{product.id}}" form="checking_form" name="product_id">
                     </form>
                     <button type="submit" form="checking_form" class="pro_btn">Add To Card</button>
                     <div class="pro_heart"><i class="fa-regular fa-heart"></i></div>
@@ -126,30 +122,22 @@
             {% endfor %}
         </div>
     </div>
-    <div id="card_body" class="card_body">
-    <div id="card_info" class="card_info">
-        <div class="card_header">
-            <div class="card_count">You have <b><strong class="card_count_items">1</strong> items</b> in your card</div>
-            <div class="card_products">
-                <div class="card_product">
-                    <div class="card_pro_img"><img src="{{product.get_main_image}}" alt=""></div>
-                    <div class="card_pro_about">
-                        <div class="card_pro_name">{{product.name}}</div>
-                        <div class="card_pro_price"><b>${{product.price}}</b></div>
-                        <div class="card_pro_count">QTY:</div>
-                        <button title="Delete" type="button" class="card_pro_del"><i class="fa-regular fa-trash-can"></i></button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="card_footer">
-            <h3 class="card_subtotal"><span>Subtotal</span>  <span></span></h3>
-            <button title="view" type="button" class="view_card">View Card</button>
-            <button title="checkout" type="button" class="card_checkout">Checkout</button>
-
-        </div>
+    
+  </div>
+  </div>
+  
+  {% if messages %}
+    {% for message in messages %}
+    {% if message.tags == 'success' %}
+    <div class="messages success">
+        {{message}}
     </div>
-  </div>
-  </div>
-
+    {% else %}
+    <div class="messages warning">
+        {{message}}
+    </div>
+    {% endif %}
+    {% endfor %}
+  {% endif %}
+    
 {% endblock body %}

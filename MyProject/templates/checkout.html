@@ -8,33 +8,49 @@
         <div>Products</div>
         <div class="fields_detail">
           <span>Price</span>
-          <span>Quantity</span>
+          <span style="padding-left: 25px;">Quantity</span>
           <span>Subtotal</span>
-          <span> </span>
+          <span></span>
         </div>
       </div>
       <hr id="checkout_hr" />
 
+      {% if order %}
+      {% for ord in order %}
       <div class="table_row">
         <div class="table_row_detail">
-          <img src="media/pro7.png" alt="" id="img_border" />
+          <a href="{% url 'products-details' ord.product.id %}"><img src="{{  ord.product.get_main_image }}" alt="" id="img_border" /></a>
           <div class="media_text">
-            <h4>Modern Sofa Chair</h4>
-            <span>Color: Grey</span>
+            <h4>{{ord.product.name}}</h4>
+            <span>Color: {{ord.product.color.clName|title}}</span>
           </div>
         </div>
         <div class="fields_detail">
-          <span>$300</span>
-          <div class="pro_buy">
+          <span>${{ord.product.price|floatformat:2}}</span>
+      <div class="pro_card_buy">
           <div class="pro_count">
-            <button title="Minus" disabled=""  type="button" ><i  id='pro_minus' class="fa-solid fa-minus"></i></button>
-            <p id='pro_count'>1</p>
-            <button title="Plus" type="button"><i id='pro_plus' class="fa-solid fa-plus"></i></button>
-        </div></div>
-          <span>$300</span>
-          <i id="delete_card" class="fa-regular fa-trash-can"></i>
+            <form action="{% url 'update-order' ord.id %}" method="post">
+              {% csrf_token %}
+              <input type="hidden" value="decrement" name="action">
+              <button id='' onclick="" title="Minus"   type="submit" ><i   class="fa-solid fa-minus"></i></button>
+            </form>
+            <input readonly type="number" class="count_input" form="checking_form" value="{{ord.quantity}}" name='quantity' id='pro_count_{{ord.product.id}}'>
+            <form action="{% url 'update-order' ord.id %}" method="post">
+              {% csrf_token %}
+              <input type="hidden" value="increment" name="action">
+              <button id='' onclick="" title="Plus" type="submit"><i id='' class="fa-solid fa-plus"></i></button>
+            </form>
+            
         </div>
       </div>
+          <span>${{ord.price|floatformat:2}}</span>
+          <a href="{% url 'delete-order' ord.id %}"><i id="delete_card" class="fa-regular fa-trash-can"></i></a>
+        </div>
+      </div>
+      {% endfor %}
+      {% else %}
+      <p style="color:grey;text-align:center;width:100%;height:100%;margin-top:50px;">You don't have any items added.</p> 
+      {% endif %}
       <hr id="checkout_hr" />
 
       
@@ -43,39 +59,70 @@
     <div class="checkout_right">
       <div class="subtotal">
         <h4>Subtotal</h4>
-        <h4>$440</h4>
+        <h4>${{ user_order_summary.subtotal|floatformat:2}}</h4>
       </div>
       <hr id="subtotal_hr" /> 
       
       <div class="">
         <span style="text-align:left;">Enter Discount Code</span>
         <div class="coupon">
-      <div class="coupon_input">
-        <input
-          type="text"
-          id="coupon-code"
-          placeholder="Enter discount code"
-        />
-        <button id="apply-coupon">Apply</button>
-    </div>
+  
+          <form class="coupon_input" method="post" action="{% url 'apply-discount' %}">
+            {% csrf_token %}
+            
+            {% if user_order_summary.discount_value %}
+            <input required type="text" id="coupon-code" value="{{user_order_summary.discounts}}" name="discount_code" placeholder="Enter discount code"/>
+            {% else %}
+            <input required type="text" id="coupon-code" value="" name="discount_code" placeholder="Enter discount code"/>
+            {% endif %}
+
+                    <button type="submit" id="apply-coupon">Apply</button>
+                  </form>
+              <div  class="">
+                
+                {% if messages %}
+                    
+                    {% for message in messages %}
+                    {% if  message.tags == 'warning' %}
+                    <span style="font-size: 10px;color:red">{{message}}</span>
+                    {% else %}
+                    <span style="font-size: 10px;color:green">{{message}}</span>
+                  {% endif %}
+                    {% endfor %}
+                      
+                  
+                {% endif %}
+                  
+              </div>
       </div>
 
       
     </div>
-    <div class="delivery">
-      <div>Delivery charge</div>
-      <div>$5.00</div>
-    </div>
+    
 
+    <div class="delivery">
+      <div>Delivery charge<span>(1kg-$1)</span></div>
+      <div>
+        
+        ${{user_order_summary.total_delivery_cost|floatformat:2}}
+        
+      </div>
+    </div>
+    <div class="delivery">
+      {% if user_order_summary.discount_value %}
+      <div>Discount</div>
+      <div>-${{user_order_summary.discount_value|floatformat:2}} </div>
+      {% endif %}
+    </div>
       <hr id="subtotal_hr" />
 
       <div class="total">
         <h4>Grand Total</h4>
-        <h4>$445.00</h4>
+        <h4 >${{user_order_summary.grand_total|floatformat:2}}</h4>
       </div>
 
       <div class="">
-        <button id="proceed-to-checkout">Proceed to Checkout</button>
+        <a href="{% url 'shipping' %}"><button id="proceed-to-checkout">Proceed to Checkout</button></a>
       </div>
     </div>
   </div>

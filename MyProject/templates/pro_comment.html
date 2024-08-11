@@ -4,7 +4,7 @@
     
     {% if comments %}
     {% for comment in comments %}
-    <div class="comment">
+    <div class="pro_comment">
         <div class="comment_header">
             <p class="comment_img"><img src="https://lh5.googleusercontent.com/proxy/9vqIPeIeHQHyGEo43DlSgD-DUtidieclv56O6UoAcYNGPXGNnZwFJL2V7oSodehCB1YT28jit7pMSVjNTnrBOnlBxW0CiRmOeH22FlPockzEbfdQPHLkDMPcgMwWdNfVHF1r2QpUk6W_aY_J87A9lFtYKMHf8_xhkMB7l_4=w1200-h630-p-k-no-nu" alt=""></p>
             <span class="comment_name">
@@ -56,9 +56,16 @@
                 </label>
         </div>
     </div>
+    {% if request.user.is_authenticated  %}
+    <input placeholder="Enter Your Name" type="hidden" value={{request.user.username}}  name="comment_name" id="comment_name">
+    {% else %}
     <label for="comment_name">Name :</label> <input placeholder="Enter Your Name" type="text"  name="comment_name" id="comment_name">
     <label for="comment_email">Email address :</label><input placeholder="Enter Your Email" type="email" name="comment_email" id="comment_email">
+    {% endif %}
+    
     <label for="comment_content">Review :</label><textarea style="height: 100px;" placeholder="Enter Your Review" name="comment_content" id="comment_content"></textarea>
     <button  type="submit">Submit</button>
 </form>
+
+
 </div>
