@@ -1,0 +1,209 @@
+{% extends "base.html" %}
+{% block body %}
+    <div class="container">
+      <div class="navbar">
+        <div class="nav">
+          <div class="logo_text">
+            <img
+              src="/media/homepage-images/homepage_logo.svg"
+              alt="header-logo"
+              class="header_logo"
+            />
+          </div>
+
+          <ul class="header_menu">
+            <li><a href="">Home</a></li>
+            <li>
+              <a href="">Shop <img src="/media/homepage-images/down.svg" alt="down" /></a>
+              <ul class="dropdown">
+                <li><a href="">1</a></li>
+                <li><a href="">2</a></li>
+                <li><a href="">3</a></li>
+              </ul>
+            </li>
+            <li><a href="">About Us</a></li>
+            <li><a href="">Blog</a></li>
+          </ul>
+        </div>
+        <div class="nav_login">
+          <ul class="header_icon">
+            <li>
+              <button class="icon-button">
+                <img src="/media/homepage-images/search_icon.svg" alt="" />
+              </button>
+            </li>
+            <li>
+              <button class="icon-button">
+                <img src="/media/homepage-images/fav_icon.svg" alt="" />
+              </button>
+            </li>
+            <li>
+              <button class="icon-button">
+                <img src="/media/homepage-images/shopbuy_icon.svg" alt="" />
+              </button>
+            </li>
+          </ul>
+          <button class="login-button"><span>Login</span></button>
+        </div>
+      </div>
+
+      <div class="container">
+        <div class="profile_head">
+          <div class="profile_head_text">
+            <h1>My Profile</h1>
+          </div>
+          <div class="profile_search">
+            
+<div class="filter_btn">
+  <button>Filter</button>
+</div>
+
+          </div>
+        </div>
+      </div>
+
+      <div class="profile_content">
+        <div class="profile_left">
+          <div class="profile_detail">
+            <div class="prof_img">
+              <img src="/media/homepage-images/profimg.png" alt="" />
+            </div>
+            <div prof_name_detail>
+              <div class="prof_message">
+                <span>hello</span>
+              </div>
+              <div class="prof_name">
+                <h3>{{ request.user.first_name }} {{ request.user.last_name }}</h3>
+              </div>
+            </div>
+          </div>
+
+          <div class="profile_list">
+            <ul>
+              <li>
+                <a href="">
+                <i class="fa-regular fa-user"></i>
+                <span>Personal Information</span>
+              </a>
+              </li>
+
+              <li id="my_orders_blue">
+                <a href="">
+                <img src="/media/homepage-images/package.svg" alt="" />
+                <span>My Orders</span>
+              </a>
+              </li>
+              <li>
+                <a href="">
+                <i class="fa-regular fa-heart"></i>
+                <span>My Wishlists</span>
+              </a>
+              </li>
+              <li>
+                <a href="">
+                <i class="fa-solid fa-location-dot"></i>
+                <span>Manage Addresses</span>
+              </a>
+              </li>
+              <li>
+                <a href="">
+                <i class="fa-regular fa-credit-card"></i>
+                <span>Saved Cards</span>
+              </a>
+              </li>
+              <li>
+                <a href="">
+                <i class="fa-regular fa-bell"></i>
+                <span>Notifications</span>
+              </a>
+              </li>
+              <li>
+                <a href="">
+                <i class="fa-solid fa-gear"></i>
+                <span>Settings</span>
+              </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="profile_right">
+          <div class="my_orders_pro">
+
+            <div class="my_order_product">
+              <div class="detail_left">
+                <div class="my_order_pro_img">
+                  <img src="/media/homepage-images/pro7.png" alt="" />
+                </div>
+                <div class="my_order_pro_detail">
+                  <h5>Modern Side Table</h5>
+                  <span>$140.00</span>
+                  <span>QTY: 1</span>
+                </div>
+              </div>
+
+              <div class="detail_right">
+                <div class="price_detail">
+                  <h4>300$</h4>
+                </div>
+
+                <div class="order_btn">
+                  <div class="view_order_btn">
+                    <button id="view_order_btn">View Order</button>
+                  </div>
+                  <div class="review_btn">
+                    <button id="review_btn">Write A Review</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="info_text">
+              <span id="delivered_effect">Delivered</span>
+              <span>Your product has been delivered</span>
+            </div>
+
+            <div class="my_order_product">
+              <div class="detail_left">
+                <div class="my_order_pro_img">
+                  <img src="/media/homepage-images/pro7.png" alt="" />
+                </div>
+                <div class="my_order_pro_detail">
+                  <h5>Modern Side Table</h5>
+                  <span>$140.00</span>
+                  <span>QTY: 1</span>
+                </div>
+              </div>
+
+              <div class="detail_right">
+                <div class="price_detail">
+                  <h4>140$</h4>
+                </div>
+
+                <div class="order_btn">
+                  <div class="view_order_btn">
+                    <button id="view_order_btn">View Order</button>
+                  </div>
+                  <div class="cancel_order_btn">
+                    <button id="cancel_order_btn">Cancel Order</button>
+                  </div>
+                </div>
+              </div>
+
+
+              
+
+            </div>
+            <div class="info_text">
+              <span id="process">In Process</span>
+              <span>Your product has been Inprocess</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      {% endblock body %}
+
+      
+

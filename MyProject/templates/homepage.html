@@ -1,0 +1,559 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="{%static 'style.css'%}">
+    <link rel="stylesheet" href="{% static 'product.css'%}">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+      integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+<title>Meta</title>
+</head>
+
+  <body>
+  
+    <div class="header">
+      <div class="container">
+        <div class="navbar">
+            <div class="nav">
+              <div class="logo_text">
+                  
+                <a href="{% url 'home' %}">
+                  <img
+                src="/media/navbar-footer_img/homepage_logo.svg"
+                  alt="header-logo"
+                  class="header_logo"
+                />
+                </a>
+              </div>
+      
+              <ul class="header_menu">
+                <li><a href="{% url 'home' %}">Home</a></li>
+                <li>
+                  <a href="{% url 'products' %}">Shop <img src="/media/navbar-footer_img/down.svg" alt="down" /></a>
+                  <ul class="dropdown">
+                    <li><a href="{% url 'products' %}">Products</a></li>
+                    <li><a href="{% url 'checkout' %}">Checkout </a></li>
+                    <li><a href="{% url 'checkout' %}">Default </a></li>
+                  </ul>
+                </li>
+                <li><a href="">About Us</a></li>
+                <li><a href="">Blog</a></li>
+              </ul>
+            </div>
+            <div class="nav_login">
+              <ul class="header_icon">
+                <li style='position:relative;display:flex;align-items:center'>
+  
+                  <div class="searched_div">
+  
+                  <form action="{% url 'products' %}" onchange="FilterChange(event)"  id="filter_form" method="get">{% csrf_token %}</form>
+  
+                  <input 
+                  {% if search %}
+                    value={{search}}
+                  {% endif %}
+                     class="search_input" form='filter_form' type="text" name="search" placeholder="What are you looking for?" id="search">
+  
+                  <form class="search_img_label" action="{% url 'products' %}" enctype="multipart/form-data" method="post">
+                    {% csrf_token %}
+  
+                    <label  for="search_img">
+                      <input type="file" onchange="this.form.submit()" id="search_img" class="search_img" accept="image/*"  src="" name="upload_img" alt="">
+  
+                      <i class="fa-solid fa-camera" ></i>
+  
+                  </label>
+                  </form>
+  
+                  </div>
+  
+                    <img class="filter_icons_header" onclick='searchClick(event)' style='margin-left:10px;width:25px;height:25px'  src="/media/navbar-footer_img/search_icon.svg" alt="" />
+                </li>
+                
+                <li>
+                    <img class="filter_icons_header" src="/media/navbar-footer_img/fav_icon.svg" alt="" />
+                </li>
+
+                <li>
+                  <button id="shop_btn" onclick="card_view()" class="icon_button">
+                    <img class="filter_icons_header" src="/media/navbar-footer_img/shopbuy_icon.svg" alt="" />
+                    <span id="shopcount">1</span>
+                  </button>
+                </li>
+              </ul>
+              
+              {% if request.user.is_authenticated %}
+              <div class="user_navbar">
+                <a href="{% url 'my-order' %}">
+                  <div class="user_img">
+                    <img src="https://static.vecteezy.com/system/resources/previews/005/129/844/non_2x/profile-user-icon-isolated-on-white-background-eps10-free-vector.jpg" alt="">
+                  </div>
+                  <h6>{{request.user.first_name|title}} {{request.user.last_name|title}}</h6>
+                </a>
+              </div>
+                {% else %}
+                <button class="login-button"><span>Login</span></button>
+              {% endif %}
+                
+            </div>
+          </div>
+      </div>
+
+      <div class="pay">
+        <div class="container">
+          <div class="text">
+            <h1>Make your place <br />a better living</h1>
+            <p>
+              It is a long established fact that a reader will be distracted by
+              <br />
+              the readable content of a page when looking at its layout.
+              <br />The point of using Lorem Ipsum.
+            </p>
+            <div class="btn">
+              <a href='{% url "products" %}' > 
+              <button  class="btn_shop">
+                Shop now <i class="fa-solid fa-right-long"></i>
+              </button>
+            </a>
+            </div>
+            <span class="sticky">
+              <img src="/media/homepage-images/Frame 1000001113.svg" alt="" />
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="right">
+        <div class="position_right">
+          <div class="right_img">
+            <img src="/media/homepage-images/homepage img1.png" alt="Example Image" />
+          </div>
+          <span class="header_position">
+            <img src="/media/homepage-images/Frame 1000001109.svg" alt="" />
+            <img
+              src="/media/homepage-images/Frame 1000001110.svg"
+              alt=""
+              class="header_position_2"
+            />
+            <img
+              src="/media/homepage-images/Frame 1000001111.svg"
+              alt=" "
+              class="header_position_2"
+            />
+          </span>
+        </div>
+      </div>
+    </div> 
+
+
+
+
+
+
+
+
+    <div class="container">
+      <div class="choose">
+        <div class="trending_text">
+          <h1>Why Choose Us</h1>
+          <span
+            >It is a long established fact that a reader will be distracted by
+            the readable content of a page when looking at its layout.</span
+          >
+        </div>
+        <div class="choose_content">
+          <div class="choose_content_left">
+            <div class="choose_content_left1">
+              <img src="/media/homepage-images/homepage img2.png" alt="png" />
+            </div>
+
+            <div class="choose_content_left2">
+              <img src="/media/homepage-images/homepage img3.png" alt="" />
+              <img src="/media/homepage-images/homepage img4.png" alt="" />
+            </div>
+          </div>
+
+          <div class="choose_content_right">
+            <div class="choose_icon">
+              <div class="choose_icon_img">
+                <img src="/media/homepage-images/box.svg" alt="" />
+              </div>
+              <div class="choose_text">
+                <h3>Free Shipping</h3>
+                <span
+                  >It is a long established fact that <br />
+                  a reader will be distracted by <br />
+                  the readable content.</span
+                >
+              </div>
+            </div>
+
+            <div class="choose_icon">
+              <div class="choose_icon_img">
+                <img src="/media/homepage-images/dollar.svg" alt="" />
+              </div>
+              <div class="choose_text">
+                <h3>Money Guarantee</h3>
+                <span
+                  >It is a long established fact that <br />
+                  a reader will be distracted by <br />
+                  the readable content..</span
+                >
+              </div>
+            </div>
+
+            <div class="choose_icon">
+              <div class="choose_icon_img">
+                <img src="/media/homepage-images/headphones.svg" alt="" />
+              </div>
+              <div class="choose_text">
+                <h3>24/7 Customer Support</h3>
+                <span
+                  >It is a long established fact that <br />
+                  a reader will be distracted by <br />
+                  the readable content.</span
+                >
+              </div>
+            </div>
+
+            <div class="choose_icon">
+              <div class="choose_icon_img">
+                <img src="/media/homepage-images/card.svg" alt="" />
+              </div>
+              <div class="choose_text">
+                <h3>Flexible Payment</h3>
+                <span
+                  >It is a long established fact that <br />
+                  a reader will be distracted by <br />
+                  the readable content.</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="trending">
+        <div class="trending_text">
+          <h1>Trending Products</h1>
+          <span
+            >It is a long established fact that a reader will be distracted by
+            the readable content.</span
+          >
+        </div>
+
+        <div class="trending_products">
+          
+        {% for product in products %}
+        <div class="trending_product">
+                <div class="trending_img">
+                        <!-- Elave olundu a -->
+                        <a href="{% url 'products-details' product.id %}">    
+                            <img  src="{{ product.get_main_image }}" alt=""  id="">
+                        </a>
+                        <!-- Elave olundu  img_icons-->
+                        <div class="img_icons">
+                            <i class="fa-regular fa-star product_icon_home" ></i>
+                            <i class="fa-solid fa-right-left product_icon_home"></i>
+                            <i class="fa-regular fa-eye product_icon_home" ></i>
+                        </div>   
+                    
+                </div>
+                <!-- trending_about -- Elave olundu -->
+                <div class="trending_about">
+                    <span>{{product.brand}}</span>
+                <h4>{{product.name}}</h4>
+                <span>${{product.price}}</span>
+                </div>
+          </div>
+        
+        {% endfor %}
+
+        </div>
+      </div>
+
+      <div class="furniture">
+        <div class="furniture_content">
+          <div class="furniture_text">
+            <h1>
+              We Are the Biggest <br />
+              Furniture Brands
+            </h1>
+            <span
+              >It is a long established fact that a reader will be distracted by
+              the readable content of a page when looking at its layout. The
+              point of using Lorem Ipsum.</span
+            >
+          </div>
+
+          <div class="furniture_number">
+            <div class="furniture_number_col">
+              <h2>4.5K</h2>
+              <span>Products Available</span>
+            </div>
+
+            <div class="furniture_number_col">
+              <h2>25</h2>
+              <span>Years Established</span>
+            </div>
+
+            <div class="furniture_number_col1">
+              <h2>120</h2>
+              <span>Store Across the World</span>
+            </div>
+          </div>
+
+          <div class="btn">
+            <button class="furniture_btn">
+              <span>Learn More</span><i class="fa-solid fa-right-long"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="furniture_img">
+          <div class="furniture_img_col">
+            <img src="/media/homepage-images/learnmore1.png" alt="furnite" />
+          </div>
+          <div class="furniture_img_col">
+            <img src="/media/homepage-images/learnmore2.png" alt="furnite" />
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="comment">
+      <div class="container">
+        <div class="comment_text">
+          <h1>What Our Customer Say’s About Us</h1>
+          <span
+            >It is a long established fact that a reader will be distracted by
+            the readable content of a page when looking at its layout.</span
+          >
+        </div>
+
+        <div class="comment_personal">
+          <div class="personal_detail">
+            <div class="star">
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+            </div>
+            <span
+              >“You made it so simple. My new site is so much faster and easier
+              to work with than my old site. I just choose the page.”d</span
+            >
+            <div class="personal">
+              <img src="/media/homepage-images/Oval2.svg" alt="" />
+              <div class="personal_name">
+                <h4>Leslie Alexander</h4>
+                <span>Founder</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="personal_detail">
+            <div class="star">
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star" id="white_star"></i>
+            </div>
+            <span
+              >“Simply the best. Better than all the rest. I’d recommend this
+              product to beginners and advanced users.”</span
+            >
+            <div class="personal">
+              <img src="/media/homepage-images/Oval3.svg" alt="" />
+              <div class="personal_name">
+                <h4>Jacob Jones</h4>
+                <span>Co-Founder</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="personal_detail">
+            <div class="star">
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star" id="white_star"></i>
+            </div>
+            <span
+              >“I cannot believe that I have got a brand new landing page after
+              getting Omega. It was super easy to edit and faster and
+              easier.”</span
+            >
+            <div class="personal">
+              <img src="/media/homepage-images/Oval.svg" alt="" />
+              <div class="personal_name">
+                <h4>Jenny Wilson</h4>
+                <span>Chief Marketing Officer</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="insta">
+        <h1>Our Instagram Stories</h1>
+
+        <div class="insta_images">
+          <div class="insta_img"><img src="/media/homepage-images/insta1.png" alt="" /></div>
+          <div class="insta_img"><img src="/media/homepage-images/insta4.png" alt="" /></div>
+          <div class="insta_img"><img src="/media/homepage-images/insta3.png" alt="" /></div>
+          <div class="insta_img"><img src="/media/homepage-images/insta4.png" alt="" /></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+        <div>
+            <div class="footer">
+              <ul>
+                <a href="{% url 'home' %}">
+                  <img
+                  src="/media/navbar-footer_img/homepage_logo.svg"
+                  alt="footer-logo"
+                  class="footer_logo"
+                />
+                </a>
+                <li class="media_icon">
+                  <img src="/media/navbar-footer_img/calling.svg" alt="">
+                  <span>(602) 462-0127</span>
+                </li>
+                <li class="media_icon">
+                  <img src="/media/navbar-footer_img/gmail.svg" alt="">
+                  <span>melta@example.com</span>
+                </li>
+                <li class="media_icon">
+                  <img src="/media/navbar-footer_img/location.svg" alt="">
+                  <span>1901 Thornridge Cir. Shiloh</span>
+                </li>
+              </ul>
+            
+              <ul>
+                <li><span class="bold">Information</span></li>
+                <li><a href="">My Account</a></li>
+                <li><a href="">Login</a></li>
+                <li><a href="{% url 'checkout' %}">My Cart</a></li>
+                <li><a href="">My Wishlist</a></li>
+                <li><a href="{% url 'shipping' %}">Checkout</a></li>
+              </ul>
+            
+              <ul>
+                <li><span class="bold">Service</span></li>
+                <li><a href="">About Us</a></li>
+                <li><a href="">Careers</a></li>
+                <li><a href="">Delivery Information</a></li>
+                <li><a href="">Privacy Policy</a></li>
+                <li><a href="">Terms and Conditions</a></li>
+              </ul>
+            
+              <ul>
+                <li><span class="bold">Subscribe</span></li>
+                <li>
+                  Enter your email below to be the first <br> to know about new
+                  collections.
+                </li>
+                <li class="gmail">
+                  <img src="/media/navbar-footer_img/gmail.svg" alt="gmail icon">
+                  <span style="margin-right: 145px;">Your Email</span>
+                  <img src="/media/navbar-footer_img/right.svg" alt="right icon"></li>
+              </ul>
+            </div>
+            <br><br>
+            <div class="footer_end">
+              <ul class="pay_card">
+                  <li><img src="/media/navbar-footer_img/Visa.svg" alt="Visa"></li>
+                  <li><img src="/media/navbar-footer_img/Mastercard.svg" alt="Mastercard"></li>
+                  <li><img src="/media/navbar-footer_img/GooglePay.svg" alt="GooglePay"></li>
+                  <li><img src="/media/navbar-footer_img/Amex.svg" alt="Amex"></li>
+                  <li><img src="/media/navbar-footer_img/PayPal.svg" alt="PayPal"></li>
+              </ul>
+             
+              <span>©2023 Melta All Rights are reserved️ </span>
+              <ul class="social">
+                  <li><img src="/media/navbar-footer_img/fb.svg" alt="facebook icon"></li>
+                  <li><img src="/media/navbar-footer_img/instagram.svg" alt="instagram icon"></li>
+                  <li><img src="/media/navbar-footer_img/twitter.svg" alt="twitter icon"></li>
+              </ul>
+            
+          </div>
+    
+        </div>
+    </div>
+    
+    <!--Mini Card Body -->
+    <div id="card_body" class="card_body">
+    
+        <div id="card_info" class="card_info">
+    
+                <div class="card_header">
+                  
+                    <div class="card_count">
+                      You have <b><input type='number' readonly value='' id='card_count_inp' class="card_count_items"> items</b> in your card
+                    </div>
+                    
+                    <div id='card_products' class="card_products">
+                      {% for ord in  order%}
+                      <div data-price={{ord.price}} class="card_product">
+                          <div class="card_pro_img">
+                            <a href="{% url 'products-details' ord.product.id %}"><img src="{{ord.product.get_main_image}}" alt=""></a>
+                          </div>
+    
+                          <div class="card_pro_about">
+    
+                              <div class="card_pro_name">{{ord.product.name}}</div>
+                              <div class="card_pro_price"><b>$ {{ord.price}}</b></div>
+                              <div class="card_pro_count">QTY:{{ord.quantity}}</div>
+                              <a href="{% url 'delete-order' ord.id %}">
+                                <button title="Delete"  type="button" class="card_pro_del"><i class="fa-regular fa-trash-can"></i></button>
+                              </a>
+                          </div>
+                      </div>
+                      
+                      {% endfor %}
+    
+                    </div>
+                    
+                </div>
+                
+                <div class="card_footer">
+                    <h3 class="card_subtotal">
+                      <span>Subtotal:</span>  <span>$<span id='card_subtotal'></span></span>
+                    </h3>
+                    <div>
+                      <a href="{% url 'checkout' %}">
+                        <button title="view" type="button" class="view_card">View Card</button>
+                      </a>
+                    </div>
+                    <div>
+                      <a href="{% url 'shipping' %}">
+                        <button title="checkout" type="button" class="card_checkout">Checkout</button>
+                      </a>
+                    </div>
+        
+                </div>
+    
+        </div>
+    </div>
+    
+    {% comment %}up icon   {% endcomment %}
+  <button id="up_icon" type="button" ><i id="up_i"  class="fa-solid fa-hand-point-up"></i></button>  
+<script src="{% static 'product.js'%}"></script>
+<script src="{% static 'home.js'%}"></script>
+
+</body>
+</html>

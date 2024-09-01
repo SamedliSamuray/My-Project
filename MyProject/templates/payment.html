@@ -11,92 +11,203 @@
               <div class="shipping_icon">
                     <img src="/media/navbar-footer_img/shipping_icon.png" alt="png" />
               </div>
-
+              
+              {% if user_order_summary.payments %}
+              <h3 >Selected Payments Method:</h3>
+              {% else %}
               <h3>Select Your payment method</h3>
+              {% endif %}
+                
+              
               
               <div class="payment_select" >
 
-                  <div class="debit_form">
-                    <label id="debit_lab" for="debit">
-                      <input checked type="radio" name="payment_method" id="debit">
-                      <h3>Debit/Credit Card</h3>
-                    </label>
-                    <form action="{% url 'add-card' %}" class="form-container"  method="post">
-                      {% csrf_token %}
-                      <input type="hidden" value="DC" name="method">
-                      <label for="card_number">Card Number<input placeholder="1111 2222 3333 4444"  type="number"  name="transaction_id" id="card_number"></label>
-                      <label for="card_username">Your Name<input type="text"  placeholder="Add your Name"  name="name" id="card_username"></label>
+            
+            {% if user_order_summary.payments and not upd_card %}
+            
+            
+            <div class="payment_info">
+                        
+              <h4 >Debit Card (.... .... .... ..{{user_order_summary.payments.transaction_id|slice:'-2:'}})</h4>
+              
+              <a href="{% url 'update-card' user_order_summary.payments.id %}">
+                <button class="payment_card_edit">
+                  <i class="fa-regular fa-pen-to-square"></i>
+                </button>
+              </a>
+            </div> 
+              
+            {% else %}
+            <div class="debit_form">
+              <label id="debit_lab" for="debit">
+                <input checked type="radio" name="payment_method" id="debit">
+                <h3>Debit/Credit Card</h3>
+              </label>
+              
+              {% if upd_card %}
+                {% if upd_card.payment_method == "DC" %}
+                  
+                
+                <form action="{% url 'add-card' %}" class="form-container"  method="post">
+                {% csrf_token %}
+                <input type="hidden" value="{{upd_card.payment_method}}" name="method">
+                <label for="card_number">Card Number<input required value="{{upd_card.transaction_id}}" placeholder="1111 2222 3333 4444" maxlength="19" minlength="19" oninput="formatCardNumber(this)"  type="text"  name="transaction_id" id="card_number"></label>
+                <label for="card_username">Your Name<input required type="text" value="{{upd_card.name}}" placeholder="Add your Name"  name="name" id="card_username"></label>
 
-                      <div>
-                        <label for="card_date">Expiry Date<input type="date" name="payment_date" value="2024-08-06" id="card_date"></label>  
-                        <label for="card_cvv">CVV<input type="number" placeholder="000" maxlength="3"  name="cvv" id="card_cvv"></label>
-                      </div>
-        
-                      <button type="submit" style="height: 60px;width:300px"  class="pro_btn">Add To Card</button>
-        
-                    </form>
+                <div>
+                  <label for="card_date">Expiry Date<input required type="date" name="payment_date" value="{{upd_card.payment_date}}" id="card_date"></label>  
+                  <label for="card_cvv">CVV<input required type="text" value="{{upd_card.cvv}}" placeholder="000" maxlength="3" minlength="3" oninput="validateCVV(this)" name="cvv" id="card_cvv"></label>
+                </div>
+  
+                <button type="submit" style="height: 60px;width:300px"  class="pro_btn">Add To Card</button>
+  
+              </form>
+              {% endif %}
+              {% else %}
+              <form action="{% url 'add-card' %}" class="form-container"  method="post">
+                {% csrf_token %}
+                <input type="hidden" value="DC" name="method">
+                <label for="card_number">Card Number<input maxlength="19" minlength="19" oninput="formatCardNumber(this)" required placeholder="1111 2222 3333 4444"  type="text"  name="transaction_id" id="card_number"></label>
+                <label for="card_username">Your Name<input required type="text"  placeholder="Add your Name"  name="name" id="card_username"></label>
+
+                <div>
+                  <label for="card_date">Expiry Date<input required type="date" name="payment_date" value="2024-08-06" id="card_date"></label>  
+                  <label for="card_cvv">CVV<input required type="text" placeholder="000" maxlength="3" minlength="3" oninput="validateCVV(this)"  name="cvv" id="card_cvv"></label>
+                </div>
+  
+                <button type="submit" style="height: 60px;width:300px"  class="pro_btn">Add To Card</button>
+  
+              </form>
+              {% endif %}
+                
+              
+            </div>
+
+
+
+
+            <div class="debit_form">
+              <label  id="paypal_lab" for="paypal">
+                <input {% if upd_card.payment_method == 'GP' %} checked {% endif %} type="radio" name="payment_method" id="paypal">
+                <h3>Paypal</h3>
+              </label>
+              
+              {% if upd_card %}
+                
+                {% if upd_card.payment_method == 'PP' %}
+                <form action="{% url 'add-card' %}"  class="form-container"   method="post">
+                  {% csrf_token %}
+                  <input required type="hidden" value="{{upd_card.payment_method}}" name="method">
+                  <label  for="paypal_number">Card Number<input value="{{upd_card.transaction_id}}" required maxlength="19" minlength="19" oninput="formatCardNumber(this)" placeholder="1111 2222 3333 4444" type="text"  name="transaction_id"  id="paypal_number"></label>
+                  <label for="paypal_username">Your Name<input value="{{upd_card.name}}" required type="text" placeholder="Add your Name"  name="name" id="paypal_username"></label>
+                  
+                  <div>
+                  <label for="paypal_date">Expiry Date<input required type="date" value="{{ upd_card.payment_date|date:'Y-m-d' }}" name="payment_date"  id=""></label>  
+                  <label for="paypal_cvv">CVV<input value="{{upd_card.cvv}}" required type="text" placeholder="000" maxlength="3" minlength="3" oninput="validateCVV(this)"  name="cvv" id="paypal_cvv"></label>
                   </div>
-      
+  
+                  <button type="submit" style="height: 60px;width:300px"  class="pro_btn">Add To Card</button>
+  
+                </form>
+                {% endif %}
+                  
+              {% else %}
+              <form action="{% url 'add-card' %}" style="display: none;" class="form-container"   method="post">
+                {% csrf_token %}
+                <input required type="hidden" value="PP" name="method">
+                <label  for="paypal_number">Card Number<input required maxlength="19" minlength="19" oninput="formatCardNumber(this)"placeholder="1111 2222 3333 4444" type="text"  name="transaction_id"  id="paypal_number"></label>
+                <label for="paypal_username">Your Name<input required type="text" placeholder="Add your Name"  name="name" id="paypal_username"></label>
+                
+                <div>
+                <label for="paypal_date">Expiry Date<input required type="date" name="payment_date" value="2024-08-06" id=""></label>  
+                <label for="paypal_cvv">CVV<input required type="text" placeholder="000" maxlength="3" minlength="3" oninput="validateCVV(this)"  name="cvv" id="paypal_cvv"></label>
+                </div>
 
-    
+                <button type="submit" style="height: 60px;width:300px"  class="pro_btn">Add To Card</button>
 
-                  <div class="debit_form">
-                    <label  id="paypal_lab" for="paypal">
-                      <input type="radio" name="payment_method" id="paypal">
-                      <h3>Paypal</h3>
-                    </label>
-                    <form action="{% url 'add-card' %}" style="display: none;" class="form-container"   method="post">
-                      {% csrf_token %}
-                      <input type="hidden" value="PP" name="method">
-                      <label for="paypal_number">Card Number<input maxlength="16" placeholder="1111 2222 3333 4444" type="number"  name="transaction_id"  id="paypal_number"></label>
-                      <label for="paypal_username">Your Name<input type="text" placeholder="Add your Name"  name="name" id="paypal_username"></label>
-                      
-                      <div>
-                      <label for="paypal_date">Expiry Date<input type="date" name="payment_date" value="2024-08-06" id=""></label>  
-                      <label for="paypal_cvv">CVV<input type="number" placeholder="000" maxlength="3"  name="cvv" id="paypal_cvv"></label>
-                      </div>
+              </form>
+              {% endif %}
+                
+            </div>
 
-                      <button type="submit" style="height: 60px;width:300px"  class="pro_btn">Add To Card</button>
 
-                    </form>
+
+            <div class="debit_form">
+              <label  id="google_lab" for="googlepay">
+                <input type="radio" {% if upd_card.payment_method == 'GP' %} checked   {% endif %} name="payment_method" id="googlepay">
+                <h3>Google Pay</h3>
+              </label>
+              
+              {% if upd_card %}
+                
+                {% if upd_card.payment_method == 'GP' %}
+                <form  action="{% url 'add-card' %}" class="form-container"   method="post">
+                  {% csrf_token %}
+                  <input type="hidden" required value="{{upd_card.payment_method}}" name="method">
+                  <label for="google_number">Card Number<input value="{{upd_card.transaction_id}}" required placeholder="1111 2222 3333 4444" maxlength="19" minlength="19" oninput="formatCardNumber(this)" type="text"  name="transaction_id"  id="google_number"></label>
+                  <label for="google_username">Your Name<input type="text" value="{{upd_card.name}}" required placeholder="Add your Name"  name="name" id="google_username"></label>
+                  <div>
+                  <label for="google_date">Expiry Date<input value="{{upd_card.payment_date}}" required type="date" name="payment_date" value="2024-08-06" id="google_date"></label>  
+                  <label for="google_cvv">CVV<input required value="{{upd_card.cvv}}" type="text" maxlength="3" minlength="3" oninput="validateCVV(this)" placeholder="000"  name="cvv" id="google_cvv"></label>
                   </div>
+  
+                  <button type="submit" style="height: 60px;width:300px"  class="pro_btn">Add To Card</button>
+  
+                </form>
+                {% endif %}
+                  
+              {% else %}
+              <form style="display: none;" action="{% url 'add-card' %}" class="form-container"   method="post">
+                {% csrf_token %}
+                <input type="hidden" required value="GP" name="method">
+                <label for="google_number">Card Number<input required placeholder="1111 2222 3333 4444" maxlength="19" minlength="19" oninput="formatCardNumber(this)" type="text"  name="transaction_id"  id="google_number"></label>
+                <label for="google_username">Your Name<input type="text" required placeholder="Add your Name"  name="name" id="google_username"></label>
+                <div>
+                <label for="google_date">Expiry Date<input required type="date" name="payment_date" value="2024-08-06" id="google_date"></label>  
+                <label for="google_cvv">CVV<input required type="text" maxlength="3" minlength="3" oninput="validateCVV(this)" placeholder="000"  name="cvv" id="google_cvv"></label>
+                </div>
+
+                <button type="submit" style="height: 60px;width:300px"  class="pro_btn">Add To Card</button>
+
+              </form>
+              {% endif %}
+                
+
+            </div>
 
 
-      
-                  <div class="debit_form">
-                    <label  id="google_lab" for="googlepay">
-                      <input type="radio" name="payment_method" id="googlepay">
-                      <h3>Google Pay</h3>
-                    </label>
-                    <form style="display: none;" action="{% url 'add-card' %}" class="form-container"   method="post">
-                      {% csrf_token %}
-                      <input type="hidden" value="GP" name="method">
-                      <label for="google_number">Card Number<input placeholder="1111 2222 3333 4444" maxlength="16" type="number"  name="transaction_id"  id="google_number"></label>
-                      <label for="google_username">Your Name<input type="text" placeholder="Add your Name"  name="name" id="google_username"></label>
-                      <div>
-                      <label for="google_date">Expiry Date<input type="date" name="payment_date" value="2024-08-06" id="google_date"></label>  
-                      <label for="google_cvv">CVV<input type="number" maxlength="3" placeholder="000"  name="cvv" id="google_cvv"></label>
-                      </div>
-
-                      <button type="submit" style="height: 60px;width:300px"  class="pro_btn">Add To Card</button>
-
-                    </form>
-                  </div>
-
-      
-                  <div class="debit_form">
-                    <label id="cash_lab" for="cash"><input type="radio" name="payment_method" id="cash">
-                      <h3>Cash on Delivery</h3>
-                    </label>
-                    <form style="display: none;" action="{% url 'add-card' %}" class="form-container"   method="post">
-                      {% csrf_token %}
-                      <input type="hidden" value="COD" name="method">
-                      <button type="submit" style="height: 60px;width:300px"  class="pro_btn">Add To Payment</button>
-                    </form>
-                  </div>
+            <div class="debit_form">
+              <label id="cash_lab"
+               for="cash"><input type="radio"{% if upd_card.payment_method == 'COD' %} checked {% endif %} name="payment_method" id="cash">
+                <h3>Cash on Delivery</h3>
+              </label>
+              
+              {% if upd_card %}
+                
+                {% if upd_card.payment_method == 'COD' %}
+                <form style="display: none;" action="{% url 'add-card' %}" class="form-container"   method="post">
+                  {% csrf_token %}
+                  <input type="hidden" value="{{upd_card.payment_method}}" name="method">
+                  <button type="submit" style="height: 60px;width:300px"  class="pro_btn">Add To Payment</button>
+                </form>
+                {% endif %}
+                  
+              {% else %}
+              <form style="display: none;" action="{% url 'add-card' %}" class="form-container"   method="post">
+                {% csrf_token %}
+                <input type="hidden" value="COD" name="method">
+                <button type="submit" style="height: 60px;width:300px"  class="pro_btn">Add To Payment</button>
+              </form>
+              {% endif %}
+                
+            </div>
+            {% endif %}
+              
                   
                   
-              <a href=""> <button type="button" style="height: 60px;width:300px;margin-top:10px"  class="pro_btn">Continue</button></a>  
+              <a href="{% url 'order-summary' %}">
+                 <button type="button" style="height: 60px;width:300px;margin-top:10px"  class="pro_btn">Continue</button>
+              </a>  
         
             </div>
 
@@ -114,18 +225,28 @@
           <span style="text-align:left;">Enter Discount Code</span>
           <div class="coupon">
     
-            <form class="coupon_input" method="post" action="{% url 'apply-discount' %}">
-              {% csrf_token %}
-              
-              {% if user_order_summary.discounts %}
-              <input required type="text" id="coupon-code" value="{{user_order_summary.discounts}}" name="discount_code" placeholder="Enter discount code"/>
-              {% else %}
-              <input required type="text" id="coupon-code" value="" name="discount_code" placeholder="Enter discount code"/>
-              {% endif %}
+            {% if user_order_summary.discounts%}
 
-                      <button type="submit" id="apply-coupon">Apply</button>
-                    </form>
-                <div>
+            <div class="add_coupon_input">
+              <div class="add_coupon_code">{{user_order_summary.discounts}}</div>
+  
+                <a href="{% url 'delete-discount'%}"><i class="fa-solid fa-x" style="color: #a3a3a3;">
+                  </i>
+                </a>
+  
+              </div>
+            {% else %}
+              <form class="coupon_input" method="post" action="{% url 'apply-discount' %}">
+                {% csrf_token %}
+  
+                <input required type="text" id="coupon-code" value="" name="discount_code" placeholder="Enter discount code"/>
+                
+                <button type="submit" id="apply-coupon">Apply</button>
+              </form>
+            {% endif %}
+  
+          <div>
+          <div>
                   
                   {% if messages %}
                       

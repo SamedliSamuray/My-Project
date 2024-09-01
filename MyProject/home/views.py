@@ -5,46 +5,90 @@ from django.db.models import Q , Avg , Count
 from .forms import *
 from django.contrib import messages 
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
+from PIL import Image, ImageChops, ImageStat
 # Create your views here.
 
 def home_view(request):
     order = Order.objects.filter(customers=request.user, status=False)
-    return render(request,'base.html',{'order':order})
+    products = Products.objects.all().annotate(average_rating=Avg('comments__rating'))
+    products =  products.annotate(review_count=Count('comments')).order_by('-average_rating')[:8]
+    products_category = Products_Categories.objects.annotate( items_count = Count('products') )
+    context = {'order':order,"products":products,'products_category':products_category}
+    return render(request,'homepage.html',context)
 
 def products_view(request):
     order = Order.objects.filter(customers=request.user, status=False)
-    products_category = Products_Categories.objects.annotate( items_count = Count('products') )
-    brands = Brand.objects.annotate( items_count = Count('products') )
-    colors = Color.objects.annotate( items_count = Count('products') )
+    products_category = Products_Categories.objects.annotate( items_count = Count('products') ).order_by('name')
+    brands = Brand.objects.annotate( items_count = Count('products') ).order_by('brand')
+    colors = Color.objects.annotate( items_count = Count('products') ).order_by('clName')
+    materials = ProductMaterials.objects.annotate( items_count = Count('products') ).order_by('material')
     products = Products.objects.all().annotate(average_rating=Avg('comments__rating'))
+    products_count= len(Products.objects.all())
     
-    # filter_category = request.GET.getlist('category')
-    # filter_brand = request.GET.getlist('brand')
-    # filter_color = request.GET.getlist('color')
-    # filter_price_min = request.GET.get('range-min')
-    # filter_price_max = request.GET.get('range-max')
-
-    # django products filters
-    # if filter_category or filter_brand or filter_color or filter_price_min or filter_price_max:
-    #     q = Q()
-    #     if filter_category:
-    #         q &= Q(category__in=filter_category)
-    #     if filter_brand:
-    #         q &= Q(brand__in=filter_brand)
-    #     if filter_color:
-    #         q &= Q(color__in=filter_color)
-    #     if filter_price_min and filter_price_max:
-    #         q &= Q(price__gte=filter_price_min) & Q(price__lte=filter_price_max)
-
-    #     products = products.filter(q)
     
-    context={'order':order,'products_category':products_category,'brands':brands,"colors":colors,'products':products}
+    filter_category = request.GET.getlist('category',[])
+    filter_brand = request.GET.getlist('brand',[])
+    filter_color = request.GET.getlist('color',[])
+    filter_price_min = request.GET.get('range-min',0)
+    filter_price_max = request.GET.get('range-max',7500)
+    search = request.GET.get('search','')
+    filter_sorter = request.GET.get('sorter','')
+    filter_materials = request.GET.getlist('materials',[])    
+    filter_upload_img = None
+    
+    if request.method == 'POST':
+        if 'upload_img' in request.FILES:
+            filter_upload_img = request.FILES['upload_img']
+            if filter_upload_img:
+                products = find_similar_products(filter_upload_img, products)
+        
+    
+    if filter_category or filter_brand or filter_color or filter_price_min or filter_price_max or search or filter_sorter or filter_materials:
+        if filter_category:
+            products = products.filter(category__in=filter_category)
+        if filter_brand:
+            products = products.filter(brand__in=filter_brand)
+        if filter_color:
+            products = products.filter(color__in=filter_color)
+        if filter_price_min and filter_price_max:
+            products = products.filter(price__gte=filter_price_min, price__lte=filter_price_max)
+        if filter_materials:
+            products = products.filter(material__in=filter_materials)
+        if search:
+            products = products.filter(
+            Q(brand__brand__icontains=search) | Q(color__clName__icontains=search) | Q(category__name__icontains=search) | Q(name__icontains=search)) 
+        if filter_sorter:
+            if filter_sorter == 'Price Low-High':
+                products = products.order_by('price')
+            elif filter_sorter == 'Price High-Low':
+                products = products.order_by('-price')
+            elif filter_sorter == 'Bestseller':
+                products =  products.annotate(review_count=Count('comments')).order_by('-average_rating')
+            elif filter_sorter == 'Reviews Count':
+                products = products.annotate(review_count=Count('comments')).order_by('-review_count')
+        
+
+    params = request.GET.copy()
+    if 'page' in params:
+        params.pop('page')
+     
+    paginator = Paginator(products, 12)
+
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+    
+    
+    context={'products_count':products_count,'order':order,'products_category':products_category,'brands':brands,"colors":colors,'materials':materials,'products':page_obj,'filter_price_min':filter_price_min,'filter_price_max':filter_price_max,'filter_category':filter_category,'filter_brand':filter_brand,'filter_color':filter_color,'filter_materials':filter_materials,'search':search,'filter_sorter':filter_sorter,'filter_upload_img':filter_upload_img,'params':params}
+    
     return render(request,'products.html',context)
 
+    
 def product_details(request, id):
     product = get_object_or_404(Products, id=id)
     products = Products.objects.filter(name=product.name, brand=product.brand).exclude(color=product.color)
-    related = Products.objects.filter(Q(brand=product.brand) | Q(materials=product.materials) | Q(category=product.category)).exclude(id=id)
+    product_materials = set(product.material.values_list('id', flat=True))
+    related = Products.objects.filter(Q(brand=product.brand) | Q(material__in=product_materials) | Q(category=product.category)).exclude(id=id).distinct()
     colors = Color.objects.all()
     orders = Order.objects.filter(customers=request.user, status=False)
     comments = product.comments.all()
@@ -109,13 +153,12 @@ def product_details(request, id):
 @login_required
 def delete_order(request,id):
     order = get_object_or_404(Order,id=id)
-    order.delete()
+    order.delete() 
     user_order_summary = UserOrderSummary.objects.get(user=request.user)
     user_order_summary.get_orders_by_customer(request.user)
-    if user_order_summary.subtotal==0:
-        user_order_summary.discount_value=0
-    user_order_summary.grand_total = user_order_summary.grand_total-user_order_summary.discount_value
-    user_order_summary.save()
+    if user_order_summary.discounts:
+       user_order_summary.get_orders_discount(user_order_summary.discounts)
+    
     
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
@@ -132,7 +175,8 @@ def update_order(request,id):
         order.save()
         user_order_summary = UserOrderSummary.objects.get(user=request.user)
         user_order_summary.get_orders_by_customer(request.user)
-        user_order_summary.grand_total = user_order_summary.grand_total-user_order_summary.discount_value
+        if user_order_summary.discounts:
+           user_order_summary.get_orders_discount(user_order_summary.discounts)
         user_order_summary.save()
         
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))    
@@ -144,7 +188,9 @@ def checkout_view(request):
     order = Order.objects.filter(customers=request.user, status=False)
     user_order_summary = UserOrderSummary.objects.get(user=request.user)
     user_order_summary.get_orders_by_customer(request.user)
-            
+    if user_order_summary.discounts:
+        user_order_summary.get_orders_discount(user_order_summary.discounts)
+      
     context={
         'user_order_summary':user_order_summary,
         'order':order,
@@ -163,33 +209,26 @@ def shipping_view(request):
         return redirect('payments')
     context={'address':address,'user_order_summary':user_order_summary,'order':order}
     return render(request,'shipping.html',context)
+
 def apply_discount(request):
     order = Order.objects.filter(customers=request.user, status=False)
     user_order_summary = UserOrderSummary.objects.get(user=request.user)
+    user_order_summary.get_orders_by_customer(request.user)
     discount_code = request.POST.get('discount_code')
     messages
     user_order_summary.discount_value=0.00
-    user_order_summary.get_orders_by_customer(customers=request.user)
     discount_value = 0
     discount=discount_code
     if discount_code and user_order_summary.subtotal>0: 
         try:
             discount= Discounts.objects.get(code=discount_code,is_active=True)
-            if discount.discount_type == "percentage":
-               discount_value= min((user_order_summary.grand_total*discount.discount_amount)/100,discount.max_discount_amount)
-               
-            
-            elif discount.discount_type == 'fixed':
-               discount_value= discount.discount_amount
-            user_order_summary.grand_total=user_order_summary.grand_total-discount_value
-            user_order_summary.discount_value=discount_value
-            user_order_summary.discounts=discount
-            user_order_summary.save()
+            user_order_summary.get_orders_discount(discount_code)
+            discount_value = user_order_summary.discount_value
             for ord in order:
                 ord.discounts=discount
                 ord.save()
             
-            messages.success(request, f'{discount_code} code successfully redeemed, discount ${discount_value}.')
+            messages.success(request, f'{discount_code} code successfully redeemed, discount ${user_order_summary.discount_value}.')
         except Discounts.DoesNotExist:
             messages.warning(request,f'"{discount_code}" code is invalid')
     elif not discount_code and user_order_summary.subtotal>0:
@@ -198,14 +237,16 @@ def apply_discount(request):
     else:
         messages.warning(request, 'There are currently no items in your cart..')
         
-    # context = {
-    #     'discount':discount,
-    #     "user_order_summary":user_order_summary,
-    #     'order':order,
-    #     'discount_value':discount_value,
-    # }
+    
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-    # return render(request, 'checkout.html', context)
+def delete_discount(request):
+    
+    user_order_summary = UserOrderSummary.objects.get(user=request.user)
+    user_order_summary.discounts = None
+    user_order_summary.discount_value = 0
+    user_order_summary.get_orders_by_customer(request.user)
+    user_order_summary.save()
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 def address_add(request):
     if request.method == 'POST':
         name = request.POST.get('name')
@@ -277,10 +318,93 @@ def add_card(request):
                 transaction_id=transaction_id,
                 payment_date=payment_date,
                 cvv=cvv,amount=amount)
+            messages.success(request,'Payment information has been added successfully . . .')
             
         else:
             paymants_card = Payments.objects.create(user=request.user,name=name,payment_method=payment_method,amount=amount)
         paymants_card.save()
         user_order_summary.payments = paymants_card
         user_order_summary.save()
-    return render(request,'payment.html')
+    return redirect('payments')
+
+def update_card(request ,id):
+    user_order_summary = UserOrderSummary.objects.get(user=request.user)
+    
+    card = Payments.objects.filter(user=request.user)
+    upd_card = get_object_or_404(Payments, id=id)
+    if request.method == 'POST':
+        payment_method = request.POST.get('method')
+        name = request.POST.get('name')
+        
+        if payment_method != 'COD':
+            transaction_id = request.POST.get('transaction_id')
+            cvv = request.POST.get('cvv')
+            payment_date=request.POST.get('payment_date')
+        
+        upd_card.payment_method = payment_method
+        upd_card.name = name
+        upd_card.amount = user_order_summary.grand_total
+        if payment_method != 'COD':
+            upd_card.transaction_id = transaction_id
+            upd_card.cvv = cvv
+            upd_card.payment_date = payment_date
+        upd_card.save()
+            
+        messages.success(request,'Payment information has been added successfully . . .')
+        return redirect('payments')
+    
+    context={'user_order_summary':user_order_summary,'card': card,'upd_card':upd_card,'user_order_summary':user_order_summary}
+    return render(request, 'payment.html',context)
+
+def order_summary_view(request):
+    order = Order.objects.filter(customers = request.user)
+    usersummary = UserOrderSummary.objects.get(user = request.user)
+    context ={'order':order,'usersummary':usersummary}
+    if not usersummary.payments.transaction_id :
+        messages.warning(request,'Please add your payment information . . .')
+        return redirect('payments')
+    return render(request,'orderSummary.html',context)
+
+def my_order_view(request):
+    order = Order.objects.filter(customers = request.user)
+    usersummary = UserOrderSummary.objects.get(user = request.user)
+    context ={'order':order,'usersummary':usersummary}
+    return render(request,'myOrders.html',context)
+
+
+
+def calculate_rms_difference(image1, image2):
+    
+    diff = ImageChops.difference(image1, image2)
+    stat = ImageStat.Stat(diff)
+    return sum(stat.mean)
+
+def find_similar_products(filter_upload_img, products):
+    filter_upload_img = Image.open(filter_upload_img).convert('RGB')
+    similarities = []
+
+    for product in products:
+        min_rms = float('inf')
+        
+        for image_ins in product.images.all():
+            product_img = Image.open(image_ins.images.path).convert('RGB')
+            rms = calculate_rms_difference(filter_upload_img, product_img)
+            min_rms = min(min_rms, rms)
+        
+        
+        if min_rms < 50:
+            similarities.append((min_rms, product))
+    
+    
+    similarities.sort(key=lambda x: x[0])
+    
+    
+    return [product for rms, product in similarities]
+
+
+
+
+
+
+
+

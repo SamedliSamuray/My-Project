@@ -31,10 +31,14 @@ urlpatterns = [
     path('delete-order/<int:id>',delete_order, name='delete-order'),
     path('update-order/<int:id>',update_order, name='update-order'),
     path('apply-discount/',apply_discount, name='apply-discount'),
+    path('delete-discount/',delete_discount, name='delete-discount'),
     path('address-add/',address_add, name='address-add'),
     path('delete-address/<int:id>',delete_address, name='delete-address'),
     path('update-address/<int:id>',update_address, name='update-address'),
     path('add-card/',add_card, name='add-card'),
+    path('update-card/<int:id>',update_card, name='update-card'),
+    path('order-summary/',order_summary_view, name='order-summary'),
+    path('my-order/',my_order_view, name='my-order'),
     path("admin/", admin.site.urls),
 ]
 

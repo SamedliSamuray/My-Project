@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+{% block body %}
+
+
+    <div class="order_summery">
+      <div class="container">
+        <div class="order">
+          <div>
+          <div class="order_head_text">
+            <h1>Review Your Order</h1>
+          </div>
+
+          <div class="order_body">
+            <div class="order_left">
+              <div class="order_img">
+                <img src="/media/homepage-images/order.png" alt="" />
+              </div>
+
+              <div class="order_content">
+                <div class="order_head">
+                  <h3>Estimated delivery: 23 July 2024</h3>
+                </div>
+                <div class="order_list">
+                  {% if order %}
+                    
+                    {% for ord in order %}
+                    <div class="order_product">
+                      <div class="order_pro_img">
+                        <a href="{% url 'products-details' ord.product.id %}"><img src="{{  ord.product.get_main_image }}" alt="" /></a>
+                      </div>
+                      <div class="order_pro_detail">
+                        <h5>{{ord.product.name}}</h5>
+                        <span>${{ord.price}}</span>
+                        <span>QTY:{{ord.quantity}}</span>
+                      </div>
+                    </div>
+                    {% endfor %}
+                      
+                  {% endif %}
+
+                </div>
+
+                <div class="shipping_address_content">
+                  <div class="shipping_add_text">
+                    <h3>Shipping Address</h3>
+                  </div>
+                </div>
+
+                
+                {% if usersummary %}
+                <div class="adress_edit">
+                  <div class="adress_edit_name">
+                    <h4>{{usersummary.address.name}}</h4>
+                    <span class="address_details">
+                      <span>{{usersummary.address.flat}}</span><span>{{usersummary.address.Area}}</span><span>{{usersummary.address.city}}</span><span>{{usersummary.address.country}}</span><span>{{usersummary.address.pin}}</span>
+                    </span>
+                  </div>
+                  <div>
+
+                 
+                    <button class="adress_edit_btn">
+                      <a href="{% url 'update-address' usersummary.address.id %}">
+                        <i class="fa-regular fa-pen-to-square"></i>
+                      </a>
+                      
+                    </button>
+                    
+                  </div>
+                {% endif %}
+                  <div class="payment_meth">
+                    <div class="payment_meth_text">
+                      <h4>Payment Method</h4>
+                    </div>
+
+                    <div class="payment_info">
+                        
+                      {% if usersummary %}
+                      <h4>Debit Card (.... .... .... ..{{usersummary.payments.transaction_id|slice:'-2:'}})</h4>
+                      
+                      <a href="{% url 'update-card' usersummary.payments.id %}">
+                        <button class="debit_card_edit">
+                          <i class="fa-regular fa-pen-to-square"></i>
+                        </button>
+                      </a>
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="checkout_right">
+              <div class="subtotal">
+                <h4>Subtotal</h4>
+                <h4>${{ usersummary.subtotal|floatformat:2}}</h4>
+              </div>
+
+              <div>
+              <span>Enter Discount Code</span>
+
+              <div class="coupon">
+                {% if usersummary.discounts %}
+
+                <div class="add_coupon_input">
+                  <div class="add_coupon_code">{{usersummary.discounts}}</div>
+      
+                    <a href="{% url 'delete-discount'%}"><i class="fa-solid fa-x" style="color: #a3a3a3;">
+                      </i>
+                    </a>
+      
+                  </div>
+                {% else %}
+                  <form class="coupon_input" method="post" action="{% url 'apply-discount' %}">
+                    {% csrf_token %}
+      
+                    <input required type="text" id="coupon-code" value="" name="discount_code" placeholder="Enter discount code"/>
+                    
+                    <button type="submit" id="apply-coupon">Apply</button>
+                  </form>
+                {% endif %}
+      
+              <div>
+              </div>
+
+              <div>
+                  
+                {% if messages %}
+                    
+                    {% for message in messages %}
+                    {% if  message.tags == 'warning' %}
+                    <span style="font-size: 10px;color:red">{{message}}</span>
+                    {% else %}
+                    <span style="font-size: 10px;color:green">{{message}}</span>
+                  {% endif %}
+                    {% endfor %}
+                      
+                  
+                {% endif %}
+                  
+              </div>
+
+            </div>
+              <div class="delivery">
+                <div>Delivery charge</div>
+                <div>${{usersummary.total_delivery_cost|floatformat:2}}</div>
+              </div>
+
+              {% if usersummary.discount_value > 0 %}
+              <div class="delivery">
+                
+                <div>Discount</div>
+                <div>-${{usersummary.discount_value}}</div>
+                
+              </div>
+              {% endif %}
+
+              <div class="total">
+                <h4>Grand Total</h4>
+                <h4>${{usersummary.grand_total|floatformat:2}}</h4>
+              </div>
+
+              <div class="checkout">
+                <button id="place_order_btn">Place order</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endblock body %}
+
+
+    <!-- <div id="orderModal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h1>Order Confirmation</h1>
+        <p>Your order is confirmed. Thanks for shopping!</p>
+        <p>Your order hasn’t shipped yet, but we will send you an email when it’s done.</p>
+      </div>
+    </div> -->
+
+
+
+    

@@ -18,39 +18,46 @@ document.addEventListener('DOMContentLoaded',()=>{
 })
 
 // Pro filter navbar
-let pro_filter=document.getElementById('products_filter')
+document.addEventListener('DOMContentLoaded', () => {
+    const pro_filter = document.getElementById('products_filter');
+    
+    if (pro_filter) {
 
-if (pro_filter) {
-    Array.from(pro_filter.children).forEach(child => {
-        let header = child.querySelector('h3');
-        let innerUl = child.querySelector('ul');
-    
-        if (header && innerUl) {
-            header.addEventListener('click', (e) => {
-                e.stopPropagation();
-                if (innerUl.style.height && innerUl.style.height !== '0px') {
-                    innerUl.style.height = '0px';
-                } else {
-                    innerUl.style.height = innerUl.scrollHeight + 'px';
-                }
-            });
-    
-           
-            innerUl.addEventListener('click', (e) => {
-                e.stopPropagation();
-            });
-        }
-    });
-}
+        Array.from(pro_filter.children).forEach(child => {
+            let header = child.querySelector('h3');
+            let innerUl = child.querySelector('ul');
+            if (header && innerUl) {
+
+                const filterId = header.textContent.trim();
+                const isOpen = localStorage.getItem(filterId) === 'true';
+                innerUl.style.height = isOpen ? innerUl.scrollHeight + 'px' : '0px';
+                
+                header.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (innerUl.style.height && innerUl.style.height !== '0px') {
+                        innerUl.style.height = '0px';
+                        localStorage.setItem(filterId, 'false'); // Locala atiriq render olduqda baglanmasin
+                    } else {
+                        innerUl.style.height = innerUl.scrollHeight + 'px';
+                        localStorage.setItem(filterId, 'true');
+                    }
+                });
+                
+                innerUl.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                });
+            }
+        });
+    }
+});
+
 
 // Products home view
 let big = document.getElementById('big-border');
 let small = document.getElementById('small-border');
 
-if(big){
-    big.addEventListener('click',(event)=>{
-        event.preventDefault(); 
-        event.stopPropagation();
+function applyBigBorderView(){
+        
         let products= document.getElementsByClassName('products_small')
         Array.from(products).forEach(pro=>{
             pro.classList.remove('products_small')
@@ -77,12 +84,11 @@ if(big){
             pro.classList.remove('pro_about_small')
             pro.classList.add('pro_about')
         })
-    })
-}
-if(small){
-    small.addEventListener('click',(event)=>{
-        event.preventDefault(); 
-        event.stopPropagation();
+    }
+
+
+function applySmallBorderView(){
+
         let products= document.getElementsByClassName('products_detail')
         Array.from(products).forEach(pro=>{
             pro.classList.remove('products_detail')
@@ -109,9 +115,35 @@ if(small){
             pro.classList.remove('pro_about')
             pro.classList.add('pro_about_small')
         })
-    })
+    }
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    const viewPreference = localStorage.getItem('viewPreference');
+    if (viewPreference === 'big') {
+        applyBigBorderView();
+    } else if (viewPreference === 'small') {
+        applySmallBorderView();
+    }
+});
+
+if(big){
+    big.addEventListener('click', (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        applyBigBorderView();
+        localStorage.setItem('viewPreference', 'big');
+    });
 }
 
+if(small){
+    small.addEventListener('click', (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        applySmallBorderView();
+        localStorage.setItem('viewPreference', 'small'); 
+    });
+}
 
 
 
@@ -195,47 +227,60 @@ function toggleFullscreen(e,imageId) {
 
 
 // Price Range products
-const rangeInput = document.querySelectorAll(".range-input input"),
-  priceInput = document.querySelectorAll(".price-input input"),
-  range = document.querySelector(".slider .progress");
-let priceGap = 100;
-
-priceInput.forEach((input) => {
-  input.addEventListener("input", (e) => {
-    let minPrice = parseInt(priceInput[0].value),
-      maxPrice = parseInt(priceInput[1].value);
-
-    if (maxPrice - minPrice >= priceGap && maxPrice <= rangeInput[1].max) {
-      if (e.target.className === "input-min") {
-        rangeInput[0].value = minPrice;
-        range.style.left = (minPrice / rangeInput[0].max) * 100 + "%";
-      } else {
-        rangeInput[1].value = maxPrice;
-        range.style.right = 100 - (maxPrice / rangeInput[1].max) * 100 + "%";
-      }
-    }
+document.addEventListener("DOMContentLoaded", () => {
+    const rangeInput = document.querySelectorAll(".range-input input"),
+      priceInput = document.querySelectorAll(".price-input input"),
+      range = document.querySelector(".slider .progress");
+    let priceGap = 100;
+  
+    
+    let minVal = parseInt(rangeInput[0].value);
+    let maxVal = parseInt(rangeInput[1].value);
+  
+    priceInput[0].value = minVal;
+    priceInput[1].value = maxVal;
+    range.style.left = (minVal / rangeInput[0].max) * 100 + "%";
+    range.style.right = 100 - (maxVal / rangeInput[1].max) * 100 + "%";
+  
+   
+    priceInput.forEach((input) => {
+      input.addEventListener("input", (e) => {
+        let minPrice = parseInt(priceInput[0].value),
+          maxPrice = parseInt(priceInput[1].value);
+  
+        if (maxPrice - minPrice >= priceGap && maxPrice <= rangeInput[1].max) {
+          if (e.target.className === "input-min") {
+            rangeInput[0].value = minPrice;
+            range.style.left = (minPrice / rangeInput[0].max) * 100 + "%";
+          } else {
+            rangeInput[1].value = maxPrice;
+            range.style.right = 100 - (maxPrice / rangeInput[1].max) * 100 + "%";
+          }
+        }
+      });
+    });
+  
+    rangeInput.forEach((input) => {
+      input.addEventListener("input", (e) => {
+        let minVal = parseInt(rangeInput[0].value),
+          maxVal = parseInt(rangeInput[1].value);
+  
+        if (maxVal - minVal < priceGap) {
+          if (e.target.className === "range-min") {
+            rangeInput[0].value = maxVal - priceGap;
+          } else {
+            rangeInput[1].value = minVal + priceGap;
+          }
+        } else {
+          priceInput[0].value = minVal;
+          priceInput[1].value = maxVal;
+          range.style.left = (minVal / rangeInput[0].max) * 100 + "%";
+          range.style.right = 100 - (maxVal / rangeInput[1].max) * 100 + "%";
+        }
+      });
+    });
   });
-});
-
-rangeInput.forEach((input) => {
-  input.addEventListener("input", (e) => {
-    let minVal = parseInt(rangeInput[0].value),
-      maxVal = parseInt(rangeInput[1].value);
-
-    if (maxVal - minVal < priceGap) {
-      if (e.target.className === "range-min") {
-        rangeInput[0].value = maxVal - priceGap;
-      } else {
-        rangeInput[1].value = minVal + priceGap;
-      }
-    } else {
-      priceInput[0].value = minVal;
-      priceInput[1].value = maxVal;
-      range.style.left = (minVal / rangeInput[0].max) * 100 + "%";
-      range.style.right = 100 - (maxVal / rangeInput[1].max) * 100 + "%";
-    }
-  });
-});
+  
 
 // pro_detail star-rating
 document.addEventListener('DOMContentLoaded',()=>{
@@ -274,9 +319,7 @@ let card_body = document.getElementById('card_body')
 let container = document.getElementById('container')
 let card_info = document.getElementById('card_info')
 
-function card_view(event){
-    event.preventDefault(); 
-    event.stopPropagation();
+function card_view(){
     card_body.style.height = document.body.offsetHeight + 'px'
     card_info.style.overflow = 'auto'
     card_info.style.display = 'flex'
@@ -288,10 +331,9 @@ function card_view(event){
     }, 10);
 }
 card_body.addEventListener('click',(event)=>{
+
     event.preventDefault(); 
     event.stopPropagation();
-    
-    
     card_body.style.opacity = '0'
     card_info.style.right = '-300px'
     setTimeout(function() {
@@ -305,51 +347,73 @@ card_info.addEventListener('click',(e)=>{
 })
 
 
+
 // product details - desctip , addit , review
-let pro_desc = document.getElementById('pro_desc');
-let pro_additional = document.getElementById('pro_additional')
-let comments = document.getElementById('comment_div')
+document.addEventListener('DOMContentLoaded', () => {
+    const pro_desc = document.getElementById('pro_desc');
+    const pro_additional = document.getElementById('pro_additional');
+    const comments = document.getElementById('comment_div');
 
+    const det_des = document.getElementById('det_des');
+    const det_add = document.getElementById('det_add');
+    const det_rev = document.getElementById('det_rev');
 
-let det_des = document.getElementById('det_des')
-if(det_des){  
-det_des.addEventListener('click',()=>{
-    pro_desc.style.display='block'
-    det_des.classList.add('active')
-    det_add.classList.remove('active')
-    det_rev.classList.remove('active')
-    pro_additional.style.display='none'
-    comments.style.display='none'
-})
-}
-let det_add = document.getElementById('det_add')
-if(det_add){
-    
-    det_add.addEventListener('click',()=>{
-        pro_additional.style.display='flex'
-        det_add.classList.add('active')
-        det_des.classList.remove('active')
-        det_rev.classList.remove('active')
-        pro_desc.style.display='none'
-        comments.style.display='none'
-    
-})
-}
+    function updateDisplay(activeId) {
 
+        pro_desc.style.display = 'none';
+        pro_additional.style.display = 'none';
+        comments.style.display = 'none';
 
-let det_rev = document.getElementById('det_rev')
-if(det_rev){
+        switch (activeId) {
+            case 'det_des':
+                pro_desc.style.display = 'block';
+                break;
+            case 'det_add':
+                pro_additional.style.display = 'flex';
+                break;
+            case 'det_rev':
+                comments.style.display = 'block';
+                break;
+        }
+
+        det_des.classList.toggle('active', activeId === 'det_des');
+        det_add.classList.toggle('active', activeId === 'det_add');
+        det_rev.classList.toggle('active', activeId === 'det_rev');
+    }
+
+    function setActiveSectionFromStorage() {
+        const activeSection = localStorage.getItem('activeSection');
+        updateDisplay(activeSection || 'det_des'); 
+    }
+
+    function saveActiveSectionToStorage(activeId) {
+        localStorage.setItem('activeSection', activeId);
+    }
+
+    if (det_des) {
+        det_des.addEventListener('click', () => {
+            updateDisplay('det_des');
+            saveActiveSectionToStorage('det_des');
+        });
+    }
+
+    if (det_add) {
+        det_add.addEventListener('click', () => {
+            updateDisplay('det_add');
+            saveActiveSectionToStorage('det_add');
+        });
+    }
+
+    if (det_rev) {
+        det_rev.addEventListener('click', () => {
+            updateDisplay('det_rev');
+            saveActiveSectionToStorage('det_rev');
+        });
+    }
     
-    det_rev.addEventListener('click',()=>{
-        comments.style.display='block'
-        det_rev.classList.add('active')
-        det_add.classList.remove('active')
-        det_des.classList.remove('active')
-        pro_additional.style.display='none'
-        pro_desc.style.display='none'
-    })
-    
-}
+    setActiveSectionFromStorage();
+});
+
 
 
 function changeMainImage(imageUrl) {
@@ -379,135 +443,23 @@ choices_right.addEventListener("click",()=>{
 
 document.addEventListener('DOMContentLoaded',()=>{
     let rel_detail = document.getElementById('rel_detail')
+    let computedStyle = window.getComputedStyle(rel_detail);
+    let gap = computedStyle.gap;
+    let width = computedStyle.width;
     setInterval(() => {
         if (rel_detail.scrollLeft >= rel_detail.scrollWidth-rel_detail.clientWidth-40) {
             rel_detail.scrollLeft = 0;
         } else {
-            rel_detail.scrollLeft += 330;
+            rel_detail.scrollLeft += (( parseInt(width) / 4) );
         }
           
     }, 5000);
 
 })
 
-// Product sorted latest
-function sortedByprice(){
-    const products= document.getElementById('products_detail')
-    const products_val=Array.from(products.children)
-    products_val.sort((a,b)=>{
-       return  parseFloat(a.getAttribute('data-price'))-parseFloat(b.getAttribute('data-price'))
-    }) 
-    products_val.forEach((product)=>{
-        products.append(product)
-    })
+function FilterChange(e){
+    document.getElementById('filter_form').submit()
 }
-function sortedByCost(){
-    const products= document.getElementById('products_detail')
-    const products_val=Array.from(products.children)
-    products_val.sort((a,b)=>{
-       return  parseFloat(b.getAttribute('data-price'))-parseFloat(a.getAttribute('data-price'))
-    })
-    products_val.forEach((product)=>{
-        products.append(product)
-    })
-}
-function sortedByBest(){
-    const products= document.getElementById('products_detail')
-    const products_val=Array.from(products.children)
-    products_val.sort((a,b)=>{
-       return  parseFloat(b.getAttribute('data-rating'))-parseFloat(a.getAttribute('data-rating'))
-    })
-    products_val.forEach((product)=>{
-        products.append(product)
-    })
-}
-function sortedByCom(){
-    const products= document.getElementById('products_detail')
-    const products_val=Array.from(products.children)
-    products_val.sort((a,b)=>{
-       return  parseFloat(b.getAttribute('data-com'))-parseFloat(a.getAttribute('data-com'))
-    })
-    products_val.forEach((product)=>{
-        products.append(product)
-    })
-}
-
-// Filter Form 
-function FilterChange(e) {
-    let filter_form = document.getElementById('products_filter');
-    const brands_filt = Array.from(filter_form.querySelectorAll('input[name="brand"]:checked')).map(input => input.value);
-    const category_filt = Array.from(filter_form.querySelectorAll('input[name="category"]:checked')).map(input => input.value);
-    const color_filt = Array.from(filter_form.querySelectorAll('input[name="color"]:checked')).map(input => input.value);
-    const price_max = parseFloat(Array.from(filter_form.querySelectorAll('input[name="range-max"]')).map(input => input.value)[0]);
-    const price_min = parseFloat(Array.from(filter_form.querySelectorAll('input[name="range-min"]')).map(input => input.value)[0]);
-    const products = document.getElementById('products_detail');
-    const products_val = Array.from(products.children);
-    const products_length =document.getElementById('products_length')
-    let visibleCount = 0;
-
-    if (brands_filt.length > 0 || category_filt.length > 0 || color_filt.length > 0 || !isNaN(price_max) || !isNaN(price_min)) {
-        products_val.forEach((a) => {
-            const product_brand = a.getAttribute('data-brand');
-            const product_category = a.getAttribute('data-category');
-            const product_color = a.getAttribute('data-color');
-            const product_price = parseFloat(a.getAttribute('data-price'));
-
-            const brandMatch = brands_filt.length === 0 || brands_filt.some(b => product_brand === b);
-            const categoryMatch = category_filt.length === 0 || category_filt.some(c => product_category === c);
-            const colorMatch = color_filt.length === 0 || color_filt.some(c => product_color === c);
-            const priceMatch = (isNaN(price_min) || product_price >= price_min) && (isNaN(price_max) || product_price <= price_max);
-
-            if (brandMatch && categoryMatch && colorMatch && priceMatch) {
-                a.style.display = '';
-                visibleCount++;
-                products_length.textContent=visibleCount
-            } else {
-                a.style.display = 'none';
-                products_length.textContent=visibleCount
-            }
-        });
-    } else {
-        products_val.forEach((a) => {
-            a.style.display = '';
-            visibleCount++;
-            products_length.textContent=visibleCount
-        });
-    }
-
-    const noItemsMessage = document.getElementById('no-items-message');
-    if (visibleCount === 0) {
-        if (!noItemsMessage) {
-            const message = document.createElement('p');
-            message.id = 'no-items-message';
-            message.style.color = 'grey';
-            message.style.textAlign = 'center';
-            message.style.width = '100%';
-            message.style.height = '100%';
-            message.style.marginTop = '50px';
-            message.textContent = 'The item you are looking for is not available';
-            products.appendChild(message);
-        }
-    } else {
-        if (noItemsMessage) {
-            noItemsMessage.remove();
-        }
-    }
-}
-
-document.addEventListener('DOMContentLoaded', (event) => {
-    const filter_form = document.getElementById('products_filter');
-
-    const rangeInputs = filter_form.querySelectorAll('input[type="range"]');
-    rangeInputs.forEach(input => {
-        input.addEventListener('change', FilterChange);
-    });
-
-    const checkboxes = filter_form.querySelectorAll('input[type="checkbox"]');
-    checkboxes.forEach(checkbox => {
-        checkbox.addEventListener('change', FilterChange);
-    });
-});
-
 // card functions - count - subtotal
 document.addEventListener('DOMContentLoaded',()=>{
     let card_products= document.getElementById('card_products')
@@ -523,3 +475,41 @@ document.addEventListener('DOMContentLoaded',()=>{
     card_subtotal.textContent=totalSub
     card_count_inp.setAttribute('value',count)
 })
+
+let display=true
+function searchClick(e){
+    display?e.target.previousElementSibling.style='display:inline':e.target.previousElementSibling.style='display:none'
+    display?e.target.setAttribute('src','https://staging.svgrepo.com/show/365893/x-thin.svg'):e.target.setAttribute('src','/media/navbar-footer_img/search_icon.svg')
+    display = !display
+    
+}
+
+function search_reset(){
+    document.getElementById('search').value=''
+    
+}
+
+
+// Products slider button
+let slider_interval;
+
+function pro_img_slider(e){
+    let pro_img = e.target.closest('.pro_image').querySelector('.pro_img_slider');
+    let img= pro_img.querySelector('img')
+    let width = parseInt(window.getComputedStyle(img).width);
+
+    clearInterval(slider_interval)
+    slider_interval = setInterval(() => {
+            if (pro_img.scrollLeft >= pro_img.scrollWidth-pro_img.clientWidth) {
+                pro_img.scrollLeft = 0;
+            } else {
+                pro_img.scrollLeft += width+2;
+            }
+    }, 1000);
+}
+
+function pro_img_slider_stop(e) {
+    clearInterval(slider_interval);
+    let pro_img = e.target.closest('.pro_image').querySelector('.pro_img_slider');
+    pro_img.scrollLeft = 0;
+}

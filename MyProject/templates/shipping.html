@@ -65,18 +65,27 @@
         <span style="text-align:left;">Enter Discount Code</span>
         <div class="coupon">
   
-          <form class="coupon_input" method="post" action="{% url 'apply-discount' %}">
-            {% csrf_token %}
-            
-            {% if user_order_summary.discounts %}
-            <input required type="text" id="coupon-code" value="{{user_order_summary.discounts}}" name="discount_code" placeholder="Enter discount code"/>
-            {% else %}
-            <input required type="text" id="coupon-code" value="" name="discount_code" placeholder="Enter discount code"/>
-            {% endif %}
+          {% if user_order_summary.discounts%}
 
-                    <button type="submit" id="apply-coupon">Apply</button>
-                  </form>
-              <div>
+          <div class="add_coupon_input">
+            <div class="add_coupon_code">{{user_order_summary.discounts}}</div>
+
+              <a href="{% url 'delete-discount'%}"><i class="fa-solid fa-x" style="color: #a3a3a3;">
+                </i>
+              </a>
+
+            </div>
+          {% else %}
+            <form class="coupon_input" method="post" action="{% url 'apply-discount' %}">
+              {% csrf_token %}
+
+              <input required type="text" id="coupon-code" value="" name="discount_code" placeholder="Enter discount code"/>
+              
+              <button type="submit" id="apply-coupon">Apply</button>
+            </form>
+          {% endif %}
+
+        <div>
                 
                 {% if messages %}
                     
@@ -92,7 +101,8 @@
                 {% endif %}
                   
               </div>
-      </div>
+      
+            </div>
 
       
     </div>
@@ -104,13 +114,14 @@
         
       </div>
     </div>
+    {% if user_order_summary.discount_value > 0 %}
     <div class="delivery">
-      {% if user_order_summary.discount_value > 0 %}
+      
       <div>Discount</div>
       <div>-${{user_order_summary.discount_value}}</div>
-      {% endif %}
+      
     </div>
-      <hr id="subtotal_hr" />
+    {% endif %}
 
       <div class="total">
         <h4>Grand Total</h4>

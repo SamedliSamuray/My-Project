@@ -4,133 +4,331 @@
 {% endblock title %}
 
 {% block body %}
-<div id='container' class="container">
 
     <div class="shown_products">
-        Shop <i class="fa-solid fa-angle-right"></i>
-    </div>
-<div class="products_body">
-    <div  class="products_filter">
-        <form action="" onchange="FilterChange(event)"  id="filter_form" method="get"></form>
-        <ul id="products_filter">
-            
-            <li id="pro_li"><h3>Product Categories<i class="fa-solid fa-chevron-down"></i></h3>
-                <ul id="pro_ul" class="pro_ul">
-                    {% for pro in products_category %}
-            <li class="pro_li">
-        <label for="{{pro}}">
-            <input onchange="FilterChange(event)" class="input_check" type="checkbox" value="{{pro}}" form="filter_form" name="category" id="{{pro.id}}">
-            <span >{{pro}}</span></label>
-        <p>({{pro.items_count}})</p>
 
+        <span class='shown_shop'>Shop <i class="fa-solid fa-angle-right"></i></span> 
+        <span class="searched_values">
+            
+            {% if search %}
+            <span class="filtered_value">Searched Word : "{{search}}" <i style="padding-left: 5px;" onclick="search_reset();FilterChange(event)" class="fa-solid fa-xmark"></i></span>
+            {% endif %}
+                
+            {% if filter_category %}
+            
+            {% for pro in products_category %}
+            {% for filt in filter_category %}
+            {% if pro.id|stringformat:"s" == filt %}
+            <span class="filtered_value"> {{ pro.name }} <label for="category{{pro.id}}"><i style="padding-left: 5px;"  class="fa-solid fa-xmark"></i> </label></span>    
+            {% endif %}
+            {% endfor %}
+            {% endfor %}
+            {% endif %}
+
+            {% if filter_color %}
+            
+            {% for col in colors %}
+
+            {% if col.id|stringformat:"s" in filter_color %}
+            <span class="filtered_value"> {{ col.clName }}<label for="color{{col.id}}"><i style="padding-left: 5px;" class="fa-solid fa-xmark"></i> </label></span>       
+            {% endif %}
+
+            {% endfor %}
+            {% endif %}
+            
+            {% if filter_brand %}
+            {% for pro in brands %}
+            {% for filt in filter_brand %}
+            {% if pro.id|stringformat:"s" == filt %}
+            <span class="filtered_value"> {{ pro.brand }}<label for="brand{{pro.id}}"><i style="padding-left: 5px;" class="fa-solid fa-xmark"></i> </label></span>    
+            {% endif %}
+            {% endfor %}
+            {% endfor %}
+            {% endif %}
+
+            {% if filter_materials %}
+            {% for pro in materials%}
+            {% for filt in filter_materials %}
+            {% if pro.id|stringformat:"s" == filt %}
+            <span class="filtered_value"> {{ pro|title }}<label for="materials{{pro.id}}"><i style="padding-left: 5px;" class="fa-solid fa-xmark"></i> </label></span>    
+            {% endif %}
+            {% endfor %}
+            {% endfor %}
+            {% endif %}
+            
+        </span>
+
+    </div>
+    
+    <!-- Filters Pro - Products all -->
+<div class="products_body">
+    <!-- Filters All -->
+    <div  class="products_filter">
+        <form action="" onchange="FilterChange(event)"  id="filter_form" method="get">{% csrf_token %}</form>
+        <!-- Filter All Ul -->
+        <ul id="products_filter">
+            <!-- Category filter -->
+            <li id="pro_li"> 
+                <h3>Product Categories<i class="fa-solid fa-chevron-down"></i></h3>
+                <ul id="pro_ul" class="pro_ul">
+                        {% for pro in products_category %}
+                    <li class="pro_li">
+
+                        <label for="category{{pro.id}}">
+                            <input onchange="FilterChange(event)"
+                            {% if pro.id|stringformat:"s" in filter_category %} checked{% endif %}
+                            class="input_check" type="checkbox" value="{{pro.id}}" form="filter_form" name="category" id="category{{pro.id}}">
+
+                            <span >{{pro}}</span>
+                        </label>
+                        <p>({{pro.items_count}})</p>
+
+                    </li>
+                        {% endfor %}
+                </ul>
             </li>
-                    {% endfor %}
-        </ul>
-            </li>
+            
             <hr>
+            <!-- Filter Price -->
             <li class="price_li"><h3>Filter by Price<i class="fa-solid fa-chevron-down"></i></h3>
                 <ul>
-                    <li class="price-input"> Price:
+                    <!-- Price Values -->
+                    <li class="price-input"> <span>Price:</span>
                         <div class="field">
-                          <span>$<input type="number" title="a" class="input-min" value="0"></span>
-                          <div>-</div>
-                          <span>$<input type="number"  title="a" class="input-max" value="7500"></span></div>  
-                      </li>
+                          <span><span>$</span><input type="number" title="a" class="input-min" value="{{filter_price_min}}"></span>
+                          <b>-</b>
+                          <span><span>$</span><input type="number"  title="a" class="input-max" value="{{filter_price_max}}"></span></div>  
                     </li>
+            
                     <li>
+                        <!-- price range-input -->
                         <div class="slider">
                             <div class="progress"></div>
-                          </div>
+                        </div>
                           <div class="range-input">
-                            <input title="a" onchange="FilterChange(event)" type="range" name="range-min" form="filter_form"  class="range-min" min="0" max="10000" value="0" step="10">
-                            <input title="a" onchange="FilterChange(event)" type="range" name="range-max" form="filter_form" class="range-max" min="0" max="10000" value="7500" step="10">
+                            <input title="a" onchange="FilterChange(event)" type="range" 
+                            name="range-min" form="filter_form"  class="range-min" min="0" max="10000"
+                                 value="{{filter_price_min}}" step="10">
+                            <input title="a" onchange="FilterChange(event)" type="range" name="range-max" form="filter_form" class="range-max" min="0" max="10000" value="{{filter_price_max}}" step="10">
                           </div>
                         
                     </li>
                 </ul>
             </li>
+
             <hr>
-            <li><h3>Colors<i class="fa-solid fa-chevron-down"></i></h3>
+            <!-- Colors Filters -->
+
+            <li>
+                <h3>Colors<i class="fa-solid fa-chevron-down"></i></h3>
                 <ul >
                     {% for col in colors %}
-                    <li  class="color_li"><input onchange="FilterChange(event)"  id="{{col.clName}}" type="checkbox" class="filter_color" name="color" form="filter_form" value="{{col.clName}}" style='background-color: {{col.color_code}} ' >
-                        <label for="{{col.clName}}">    {{col.clName|title}}  </label>
+                    <li  class="color_li">
+                        <input onchange="FilterChange(event)"
+                        {% if col.id|stringformat:"s" in filter_color %} checked{% endif %}
+                        id="color{{col.id}}" type="checkbox" class="filter_color" name="color" form="filter_form" value="{{col.id}}" style='background-color: {{col.color_code}} '>
+                        
+                        <label for="color{{col.id}}">    {{col.clName|title}}  </label>
                         <p>({{col.items_count}})</p>
                     </li>
                     {% endfor %}
-                         </ul>
+                    </ul>
             </li>
             <hr>
-            <li><h3>Brands<i class="fa-solid fa-chevron-down"></i></h2>
+            <!-- Brands Filters -->
+             
+            <li>
+                <h3>Brands<i class="fa-solid fa-chevron-down"></i></h3>
                 <ul>
                     {% for brand in brands %}
-                        <li class="brand_li"><label for="{{brand}}"><input type="checkbox"  class="input_check" form="filter_form" name="brand" onchange="FilterChange(event)" value="{{brand}}" id="{{brand}}">{{brand}}</label>
-                            <p>({{brand.items_count}})</p>
+                        <li class="brand_li">
+                            
+                        <label for="brand{{brand.id}}">
+                                    <input type="checkbox"
+                                    {% if brand.id|stringformat:"s" in filter_brand %} checked{% endif %}
+                                    class="input_check" form="filter_form" name="brand" onchange="FilterChange(event)" value="{{brand.id}}" id="brand{{brand.id}}">
+                                    {{brand}}
+                        </label>     
+                        
+                        <p>({{brand.items_count}})</p>
+                        
                         </li>
                     {% endfor %}
-                         </ul>
+                </ul>
             </li>
             <hr>
             
+            <!-- Materials Filters -->
+            <li id="pro_li"> 
+                <h3>Materials<i class="fa-solid fa-chevron-down"></i></h3>
+                <ul id="pro_ul" class="pro_ul">
+                        {% for mat in materials %}
+                    <li class="pro_li">
+
+                        <label for="materials{{mat.id}}">
+                            <input onchange="FilterChange(event)"
+                            {% if mat.id|stringformat:"s" in filter_materials %} checked{% endif %}
+                            class="input_check" type="checkbox" value="{{mat.id}}" form="filter_form" name="materials" id="materials{{mat.id}}">
+
+                            <span >{{mat|title}}</span>
+                        </label>
+                        <p>({{mat.items_count}})</p>
+
+                    </li>
+                        {% endfor %}
+                </ul>
+            </li>
+            
+            <hr>
         </ul>
+
     </div>
     
     <div class="products">
+        <!-- products header - sorter -->
         <div class="products_head">
+            <!-- Products view option -->
             <div class="view_display">
-                <a title="big" href=""><i id="big-border" class="fa-solid fa-border-all"></i></a>
-                <a title="big" href=""><i id="small-border" class="fa-solid fa-list"></i></a>
-                Showing 1-10 of <span id="products_length">{{products|length}}</span> result
+                <a title="big" href=""><i onclick="applyBigBorderView()" id="big-border" class="fa-solid fa-border-all"></i></a>
+                <a title="big" href=""><i onclick="applySmallBorderView()" id="small-border" class="fa-solid fa-list"></i></a>
+                Showing 1-12 of <span id="products_length">{{products_count}}</span> result
              </div>
-            <div class="products_latest" id="latest">Shot by latest <i class="fa-solid fa-chevron-down"></i>
-            <ul id="latest_ul" class="latest_ul" >
-                <li onclick="sortedByprice()">Price Low-High</li>
-                <li onclick="sortedByCost()">Price High-Low</li>
-                <li onclick="sortedByBest()">Bestseller</li>
-                <li onclick="sortedByCom()">Reviews Count</li>
-            </ul></div>
-        </div>
-    <div id="products_detail" class="products_detail">
-        {% if products %}
-        
-        {% for product in products %}
-        <div data-brand="{{product.brand}}" data-color="{{product.color.clName}}" data-category="{{product.category}}" data-com="{{product.comments.count}} " data-rating="{{product.average_rating|default_if_none:0}}" data-price="{{product.price}}" class="product">
-                <div class="pro_image">
+             <!-- products sorted type -->
+            <div class="products_latest" id="latest">
+                Sort by 
+                <b>
                     
-                <a   href="{% url 'products-details' product.id %}">    
-            <img  src="{{ product.get_main_image }}" alt=""  id="product_image_{{ product.id }}">   
-                </a>
-        <div class="img_icons">
-                  
-      <i class="fa-regular fa-star"></i>
-      <i class="fa-solid fa-right-left"></i>
-      <i  class="fa-regular fa-eye" onclick="toggleFullscreen(event,'product_image_{{ product.id }}')"></i>
-                    </div>
-            
-                    </div>
-            <div class="pro_about">
-                <div class="pro_brand">{{product.brand}}</div>
-                <div class="pro_name">{{product.name}}</div>
-                <div class="pro_price">${{product.price}} </div>
-               
-           </div>
+                    {% if filter_sorter %}
+                        {{filter_sorter}}
+                    {% else %}
+                    latest
+                    {% endif %}
+                        
+                </b>
+                <i class="fa-solid fa-chevron-down"></i>
+                <ul id="latest_ul" class="latest_ul" >
+                    <li>
+                        <label onclick="FilterChange(event)" for="low-latest">
+                            <input onclick="FilterChange(event)" type="radio" id="low-latest" value="Price Low-High" form="filter_form" name="sorter">
+                            Price Low-High
+                        </label>
+                    </li>
+                    <li >
+                        <label for="high-latest">
+                            <input onclick="FilterChange(event)" type="radio" id="high-latest" value="Price High-Low" form="filter_form" name="sorter">
+                            Price High-Low
+                        </label>
+                    </li>
+                    <li >
+                        <label for="Bestseller">
+                            <input onclick="FilterChange(event)" type="radio" id="Bestseller" value="Bestseller" form="filter_form" name="sorter">
+                            Bestseller
+                        </label>
+                    </li>
+                    <li >
+                        <label for="Reviews-Count">
+                            <input onclick="FilterChange(event)" type="radio" id="Reviews-Count" value="Reviews Count" form="filter_form" name="sorter">
+                            Reviews Count
+                        </label>
+                    </li>
+                    
+                </ul>
+            </div>
         </div>
-        {% endfor %}
-        {% else %}
-           <p style="color:grey;text-align:center;width:100%;height:100%;margin-top:50px;">The item you are looking for is not available</p> 
-        {% endif %}   
-        </div> 
+        
+        <!-- All Products  -->
+        <div id="products_detail" class="products_detail">
+
+            {% if products %}
+            {% for product in products %}
+            <!-- Products -->
+            <div class="product" >
+                    <!-- Images Structure -->
+                    <div class="pro_image">
+    
+                        <div>
+                            <a href="{% url 'products-details' product.id %}">    
+                                <div class="pro_img_slider">
+                                    
+                                    {% for img in product.images.all  %}
+                                    <img  src="{{ img.images.url }}" alt=""  id="product_image_{{ product.id }}"> 
+                                    {% endfor %}
+                                        
+                                </div>
+                            </a>
+                        </div>
+
+                        <div class="img_icons">            
+                            <i class="fa-regular fa-star product_icon_home"></i>
+                            <i onmouseenter="pro_img_slider(event)" onmouseleave="pro_img_slider_stop(event)" class="fa-solid fa-right-left product_icon_home"></i>
+                            <i  class="fa-regular fa-eye product_icon_home" onclick="toggleFullscreen(event,'product_image_{{ product.id }}')"></i>
+                        </div>
+                
+                    </div>
+
+                    <!-- Product About-details -->
+                <div class="pro_about">
+                    <div class="pro_brand">{{product.brand}}</div>
+                    <div class="pro_name">{{product.name}}</div>
+                    <div class="pro_price">${{product.price}} </div> 
+            </div>
+            
+            </div>
+
+            {% endfor %}
+
+            <!-- Products not found -->
+            {% else %}
+            
+            <p style="color:grey;text-align:center;width:100%;height:100%;margin-top:50px;">The item you are looking for is not available</p> 
+            {% endif %}   
+        </div>
+     
     </div>
-    </div>
-</div>
-<div class="products_sorting">
-    <i class="fa-solid fa-arrow-left"></i>
-    <ul>
-        <li>1</li>
-        <li>2</li>
-    </ul>
-    <i class="fa-solid fa-arrow-right"></i>
-</div>
+
 </div>
 
+<!-- Products Paginator - sehifeleme -->
+<div class="products_sorting">
+    <div>
+            
+            {% if products.has_previous %}
+            <a href="?page={{ products.previous_page_number }}&{{ params.urlencode }}"><i class="fa-solid fa-arrow-left"></i></a>
+            {% else %}
+            <i  style="color: rgb(195, 195, 195);cursor:auto" class="fa-solid fa-arrow-left"></i>
+            {% endif %}
+    </div>
+    
+    <div>
+        <ul>
+            {% for num in products.paginator.page_range %}
+            
+                    {% if products.number == num %}
+                        <li class="click_page">{{ num }}</li>
+                    {% else %}
+                        <li style='text-align:center;' ><a style='width:100%;' href="?page={{ num }}&{{ params.urlencode }}">{{ num }}</a></li>
+                    {% endif %}
+
+            {% endfor %}
+        </ul>
+    </div>
+    
+    <div>
+        
+
+            {% if products.has_next %}
+                <a href="?page={{ products.next_page_number }}&{{ params.urlencode }}"><i class="fa-solid fa-arrow-right"></i></a>
+            {% else %}
+                <i  style="color: rgb(195, 195, 195);cursor:auto" class="fa-solid fa-arrow-right"></i>
+            {% endif %}
+
+    </div>
+    
+</div>
+
+
+
 {% endblock body %}
+
+
+

@@ -53,3 +53,39 @@ fetch("https://countriesnow.space/api/v0.1/countries/population/cities", request
         });
     })
     .catch(error => console.log('error', error));
+
+// payments card number cvv code
+function formatCardNumber(input) {
+        let value = input.value.replace(/\D/g, '').replace(/ /g, '');
+        value = value.replace(/(.{4})/g, '$1 ').trim();
+        input.value = value;
+}
+function validateCVV(input) {
+    let value = input.value.replace(/\D/g, '');
+    value = value.slice(0, 4);
+    input.value = value;
+}
+
+// up icon - yuxarıya qalxma buton funksiya
+
+let mybutton = document.getElementById("up_icon");
+let myicon = document.getElementById("up_i");
+window.onscroll = function() {scrollFunction()};
+
+function scrollFunction() {
+  if (document.body.scrollTop > 120 || document.documentElement.scrollTop > 120 ||  document.documentElement.scrollTop) {
+    mybutton.style.display = "block";
+    
+  } 
+  else {
+    mybutton.style.display = "none";
+  }
+}
+
+scrollFunction()
+mybutton.addEventListener('click',()=>{
+  document.body.scrollTop = 0; 
+  document.documentElement.scrollTop = 0;
+})
+
+    

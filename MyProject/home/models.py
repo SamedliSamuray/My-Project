@@ -3,6 +3,8 @@ from django.db.models import Sum
 from django.utils.translation import gettext_lazy as _
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.auth.models import User
+import math
+from decimal import Decimal, ROUND_UP
 # Create your models here.
 
 
@@ -24,7 +26,10 @@ class Color(models.Model):
     
     def __str__(self):
         return self.clName
-
+class ProductMaterials(models.Model):
+    material = models.CharField(blank=True,null=True,max_length=20)
+    def __str__(self) :
+        return self.material
     
 class Products(models.Model):
     
@@ -39,7 +44,7 @@ class Products(models.Model):
     height = models.DecimalField(default=1.1,max_digits=5, decimal_places=2) 
     depth = models.DecimalField(default=1.1,max_digits=5, decimal_places=2)
     instock = models.BooleanField(default=True)  
-    materials = models.CharField(max_length=50, default='Wood')
+    material = models.ManyToManyField(ProductMaterials,related_name='products', blank=True)
     
     
     def __str__(self):
@@ -68,6 +73,7 @@ class ProductImage(models.Model):
     
     def __str__(self):
         return f"Image for {self.product.name}"
+
 class UserAddress(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE,related_name='address') 
     name = models.CharField(max_length=50)  
@@ -148,10 +154,27 @@ class UserOrderSummary(models.Model):
         orders = Order.objects.filter(customers=customers, status=False).order_by('-date')
         subtotalPrice = orders.aggregate(total_subtotal=Sum('price'))['total_subtotal'] or 0
         total_weight = sum(order.product.weight * order.quantity for order in orders)
-        self.total_delivery_cost = total_weight
-        self.subtotal = subtotalPrice
+        self.total_delivery_cost = Decimal(math.ceil(total_weight)).quantize(Decimal('1.00'), rounding=ROUND_UP)
+        self.subtotal = Decimal(subtotalPrice).quantize(Decimal('1.00'), rounding=ROUND_UP)
         self.grand_total = subtotalPrice + self.total_delivery_cost
         
+        self.save()
+        
+    def get_orders_discount(self,discount_code):
+        discount= Discounts.objects.get(code=discount_code,is_active=True)
+        if discount.discount_type == "percentage":
+            discount_value= min((self.grand_total*discount.discount_amount)/100,discount.max_discount_amount)
+                      
+        elif discount.discount_type == 'fixed':
+            discount_value= discount.discount_amount
+            
+        self.discounts = discount
+        if self.subtotal > 0 and self.discounts:
+            self.discount_value = Decimal(discount_value ).quantize(Decimal('1.00'),rounding=ROUND_UP)
+            self.grand_total = self.grand_total - self.discount_value
+        else:
+            self.discount_value = 0
+            self.discounts = None
         self.save()
 
 

@@ -23,11 +23,17 @@ admin.site.register(UserAddress,UserAddressAdmin)
 class DiscountAdmin(admin.ModelAdmin):
     list_display=('code','is_active')
 admin.site.register(Discounts,DiscountAdmin)
+class ProductMaterialsAdmin(admin.ModelAdmin):
+    list_display = ('material',)
+    search_fields = ('material',)
+
+admin.site.register(ProductMaterials, ProductMaterialsAdmin)
+
 class ProductsAdmin(admin.ModelAdmin):
     list_display = ('name','brand', 'price', 'color', 'category','weight','dimension')
     inlines = [ProductImgAdmin]
+    filter_horizontal = ('material',)
 admin.site.register(Products, ProductsAdmin)
-
 class OrderAdmin(admin.ModelAdmin):
     list_display=('product','customers')
 admin.site.register(Order,OrderAdmin)
