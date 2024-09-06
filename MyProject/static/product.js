@@ -447,20 +447,22 @@ choices_right.addEventListener("click",()=>{
 
 
 // related product  slider 
-
+let rel_detail = document.getElementById('rel_detail')
 document.addEventListener('DOMContentLoaded',()=>{
-    // if (rel_detail) {
+    if (rel_detail) {
         sliderStart()
-    // }
+    }
 })
     
 let rel_slider;
-let rel_detail = document.getElementById('rel_detail')
-// if (rel_detail) {
+if (rel_detail) {
     let computedStyle = window.getComputedStyle(rel_detail);
     let gap = computedStyle.gap;
     let width = computedStyle.width;
-// }
+}
+
+
+
 
 function sliderStart(){
         rel_slider =  setInterval(() => {
