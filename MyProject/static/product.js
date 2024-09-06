@@ -212,7 +212,7 @@ document.addEventListener("DOMContentLoaded", function() {
 // Image full screen eye-icon products
 function toggleFullscreen(e,imageId) {
     e.preventDefault(); 
-    e.stopPropagation();
+    e.stopPropagation();    
     var img = document.getElementById(imageId);
     if (!document.fullscreenElement) {
         img.requestFullscreen().catch(err => {
@@ -234,67 +234,72 @@ document.addEventListener("DOMContentLoaded", () => {
     let priceGap = 100;
   
     
-    let minVal = parseInt(rangeInput[0].value);
-    let maxVal = parseInt(rangeInput[1].value);
+
   
-    priceInput[0].value = minVal;
-    priceInput[1].value = maxVal;
-    range.style.left = (minVal / rangeInput[0].max) * 100 + "%";
-    range.style.right = 100 - (maxVal / rangeInput[1].max) * 100 + "%";
-  
-   
+    if (range) {
+        let minVal = parseInt(rangeInput[0].value);
+        let maxVal = parseInt(rangeInput[1].value);
+      
+        priceInput[0].value = minVal;
+        priceInput[1].value = maxVal;
+        range.style.left = (minVal / rangeInput[0].max) * 100 + "%";
+        range.style.right = 100 - (maxVal / rangeInput[1].max) * 100 + "%";
+           
     priceInput.forEach((input) => {
-      input.addEventListener("input", (e) => {
-        let minPrice = parseInt(priceInput[0].value),
-          maxPrice = parseInt(priceInput[1].value);
-  
-        if (maxPrice - minPrice >= priceGap && maxPrice <= rangeInput[1].max) {
-          if (e.target.className === "input-min") {
-            rangeInput[0].value = minPrice;
-            range.style.left = (minPrice / rangeInput[0].max) * 100 + "%";
-          } else {
-            rangeInput[1].value = maxPrice;
-            range.style.right = 100 - (maxPrice / rangeInput[1].max) * 100 + "%";
+        input.addEventListener("input", (e) => {
+          let minPrice = parseInt(priceInput[0].value),
+            maxPrice = parseInt(priceInput[1].value);
+    
+          if (maxPrice - minPrice >= priceGap && maxPrice <= rangeInput[1].max) {
+            if (e.target.className === "input-min") {
+              rangeInput[0].value = minPrice;
+              range.style.left = (minPrice / rangeInput[0].max) * 100 + "%";
+            } else {
+              rangeInput[1].value = maxPrice;
+              range.style.right = 100 - (maxPrice / rangeInput[1].max) * 100 + "%";
+            }
           }
-        }
+        });
       });
-    });
-  
-    rangeInput.forEach((input) => {
-      input.addEventListener("input", (e) => {
-        let minVal = parseInt(rangeInput[0].value),
-          maxVal = parseInt(rangeInput[1].value);
-  
-        if (maxVal - minVal < priceGap) {
-          if (e.target.className === "range-min") {
-            rangeInput[0].value = maxVal - priceGap;
+    
+      rangeInput.forEach((input) => {
+        input.addEventListener("input", (e) => {
+          let minVal = parseInt(rangeInput[0].value),
+            maxVal = parseInt(rangeInput[1].value);
+    
+          if (maxVal - minVal < priceGap) {
+            if (e.target.className === "range-min") {
+              rangeInput[0].value = maxVal - priceGap;
+            } else {
+              rangeInput[1].value = minVal + priceGap;
+            }
           } else {
-            rangeInput[1].value = minVal + priceGap;
+            priceInput[0].value = minVal;
+            priceInput[1].value = maxVal;
+            range.style.left = (minVal / rangeInput[0].max) * 100 + "%";
+            range.style.right = 100 - (maxVal / rangeInput[1].max) * 100 + "%";
           }
-        } else {
-          priceInput[0].value = minVal;
-          priceInput[1].value = maxVal;
-          range.style.left = (minVal / rangeInput[0].max) * 100 + "%";
-          range.style.right = 100 - (maxVal / rangeInput[1].max) * 100 + "%";
-        }
+        });
       });
-    });
+    }
   });
   
 
 // pro_detail star-rating
 document.addEventListener('DOMContentLoaded',()=>{
     const pro_rating = document.querySelector('#pro_rate')
-    const average = parseInt(document.querySelector('#average_rating').value)
-    const stars = pro_rating.querySelectorAll('.fa-star');
-
-    stars.forEach((star,index)=>{
-        if(index < average){
-            star.classList.remove('fa-regular')
-            star.classList.add('fa-solid')
-            star.style.color = '#FFD43B'
-        }
-    })
+    if (pro_rating) {
+        const average = parseInt(document.querySelector('#average_rating').value)
+        const stars = pro_rating.querySelectorAll('.fa-star');
+    
+        stars.forEach((star,index)=>{
+            if(index < average){
+                star.classList.remove('fa-regular')
+                star.classList.add('fa-solid')
+                star.style.color = '#FFD43B'
+            }
+        })
+    }
 })
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -360,9 +365,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function updateDisplay(activeId) {
 
-        pro_desc.style.display = 'none';
-        pro_additional.style.display = 'none';
-        comments.style.display = 'none';
+        if (pro_desc) {
+            pro_desc.style.display = 'none';
+            pro_additional.style.display = 'none';
+            comments.style.display = 'none';
+        }
 
         switch (activeId) {
             case 'det_des':
@@ -411,7 +418,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    setActiveSectionFromStorage();
+    pro_desc?setActiveSectionFromStorage():null
 });
 
 
@@ -442,39 +449,40 @@ choices_right.addEventListener("click",()=>{
 // related product  slider 
 
 document.addEventListener('DOMContentLoaded',()=>{
-    let rel_detail = document.getElementById('rel_detail')
+    // if (rel_detail) {
+        sliderStart()
+    // }
+})
+    
+let rel_slider;
+let rel_detail = document.getElementById('rel_detail')
+// if (rel_detail) {
     let computedStyle = window.getComputedStyle(rel_detail);
     let gap = computedStyle.gap;
     let width = computedStyle.width;
-    setInterval(() => {
-        if (rel_detail.scrollLeft >= rel_detail.scrollWidth-rel_detail.clientWidth-40) {
-            rel_detail.scrollLeft = 0;
-        } else {
-            rel_detail.scrollLeft += (( parseInt(width) / 4) );
-        }
-          
-    }, 5000);
+// }
 
-})
+function sliderStart(){
+        rel_slider =  setInterval(() => {
+            if (rel_detail.scrollLeft >= rel_detail.scrollWidth-rel_detail.clientWidth-40) {
+                rel_detail.scrollLeft = 0;
+            } else {
+                rel_detail.scrollLeft += (( parseInt(width) / 4) );
+            }     
+        }, 5000);
+}
+
+function sliderStop(){
+        clearInterval(rel_slider)
+}
+
+
+
+
 
 function FilterChange(e){
     document.getElementById('filter_form').submit()
 }
-// card functions - count - subtotal
-document.addEventListener('DOMContentLoaded',()=>{
-    let card_products= document.getElementById('card_products')
-    let card_count_inp = document.getElementById('card_count_inp')
-    let card_subtotal = document.getElementById('card_subtotal')
-    let shopcount = document.getElementById('shopcount') 
-    let totalSub=0
-    count = Array.from(card_products.children).length
-    shopcount.textContent=count
-    Array.from(card_products.children).forEach(pro => {
-        totalSub+=Number(pro.getAttribute('data-price'))
-    });
-    card_subtotal.textContent=totalSub
-    card_count_inp.setAttribute('value',count)
-})
 
 let display=true
 function searchClick(e){
@@ -494,22 +502,51 @@ function search_reset(){
 let slider_interval;
 
 function pro_img_slider(e){
-    let pro_img = e.target.closest('.pro_image').querySelector('.pro_img_slider');
-    let img= pro_img.querySelector('img')
-    let width = parseInt(window.getComputedStyle(img).width);
-
-    clearInterval(slider_interval)
-    slider_interval = setInterval(() => {
-            if (pro_img.scrollLeft >= pro_img.scrollWidth-pro_img.clientWidth) {
-                pro_img.scrollLeft = 0;
-            } else {
-                pro_img.scrollLeft += width+2;
-            }
-    }, 1000);
+    let closestElement = e.target.closest('.pro_image') ||
+                         e.target.closest('.rel_image') ||
+                         e.target.closest('.trending_img');
+    let pro_img = closestElement ? closestElement.querySelector('.pro_img_slider') : null;
+    if (pro_img) {
+        let img= pro_img.querySelector('img')
+        let width = parseInt(window.getComputedStyle(img).width);
+    
+        clearInterval(slider_interval)
+        slider_interval = setInterval(() => {
+                if (pro_img.scrollLeft >= pro_img.scrollWidth-pro_img.clientWidth) {
+                    pro_img.scrollLeft = 0;
+                } else {
+                    pro_img.scrollLeft += width+2;
+                }
+        }, 1000);
+    }
 }
 
 function pro_img_slider_stop(e) {
     clearInterval(slider_interval);
-    let pro_img = e.target.closest('.pro_image').querySelector('.pro_img_slider');
+    let closestElement = e.target.closest('.pro_image') ||
+                         e.target.closest('.rel_image') ||
+                         e.target.closest('.trending_img');
+    let pro_img = closestElement ? closestElement.querySelector('.pro_img_slider') : null;
     pro_img.scrollLeft = 0;
 }
+
+
+
+
+// Dark Mode on Site
+// function dark_mode(){
+//     const elements = document.querySelectorAll('*');
+
+
+// elements.forEach((element) => {
+//     const style = window.getComputedStyle(element);
+//     const backgroundColor = style.backgroundColor;
+
+//     if (backgroundColor === '#088395') {  
+//         element.style.backgroundColor = 'white';
+//     } 
+//     else if (backgroundColor === 'rgb(255, 255, 255)') { 
+//         element.style.backgroundColor = '#088395';
+//     }
+// });
+// }

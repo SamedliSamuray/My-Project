@@ -47,19 +47,19 @@
                 </div>
 
                 
-                {% if usersummary %}
+                {% if user_order_summary %}
                 <div class="adress_edit">
                   <div class="adress_edit_name">
-                    <h4>{{usersummary.address.name}}</h4>
+                    <h4>{{user_order_summary.address.name}}</h4>
                     <span class="address_details">
-                      <span>{{usersummary.address.flat}}</span><span>{{usersummary.address.Area}}</span><span>{{usersummary.address.city}}</span><span>{{usersummary.address.country}}</span><span>{{usersummary.address.pin}}</span>
+                      <span>{{user_order_summary.address.flat}}</span><span>{{user_order_summary.address.Area}}</span><span>{{user_order_summary.address.city}}</span><span>{{user_order_summary.address.country}}</span><span>{{user_order_summary.address.pin}}</span>
                     </span>
                   </div>
                   <div>
 
                  
                     <button class="adress_edit_btn">
-                      <a href="{% url 'update-address' usersummary.address.id %}">
+                      <a href="{% url 'update-address' user_order_summary.address.id %}">
                         <i class="fa-regular fa-pen-to-square"></i>
                       </a>
                       
@@ -74,10 +74,10 @@
 
                     <div class="payment_info">
                         
-                      {% if usersummary %}
-                      <h4>Debit Card (.... .... .... ..{{usersummary.payments.transaction_id|slice:'-2:'}})</h4>
+                      {% if user_order_summary %}
+                      <h4>Debit Card (.... .... .... ..{{user_order_summary.payments.transaction_id|slice:'-2:'}})</h4>
                       
-                      <a href="{% url 'update-card' usersummary.payments.id %}">
+                      <a href="{% url 'update-card' user_order_summary.payments.id %}">
                         <button class="debit_card_edit">
                           <i class="fa-regular fa-pen-to-square"></i>
                         </button>
@@ -92,17 +92,17 @@
             <div class="checkout_right">
               <div class="subtotal">
                 <h4>Subtotal</h4>
-                <h4>${{ usersummary.subtotal|floatformat:2}}</h4>
+                <h4>${{ user_order_summary.subtotal|floatformat:2}}</h4>
               </div>
 
               <div>
               <span>Enter Discount Code</span>
 
               <div class="coupon">
-                {% if usersummary.discounts %}
+                {% if user_order_summary.discounts %}
 
                 <div class="add_coupon_input">
-                  <div class="add_coupon_code">{{usersummary.discounts}}</div>
+                  <div class="add_coupon_code">{{user_order_summary.discounts}}</div>
       
                     <a href="{% url 'delete-discount'%}"><i class="fa-solid fa-x" style="color: #a3a3a3;">
                       </i>
@@ -142,21 +142,21 @@
             </div>
               <div class="delivery">
                 <div>Delivery charge</div>
-                <div>${{usersummary.total_delivery_cost|floatformat:2}}</div>
+                <div>${{user_order_summary.total_delivery_cost|floatformat:2}}</div>
               </div>
 
-              {% if usersummary.discount_value > 0 %}
+              {% if user_order_summary.discount_value > 0 %}
               <div class="delivery">
                 
                 <div>Discount</div>
-                <div>-${{usersummary.discount_value}}</div>
+                <div>-${{user_order_summary.discount_value}}</div>
                 
               </div>
               {% endif %}
 
               <div class="total">
                 <h4>Grand Total</h4>
-                <h4>${{usersummary.grand_total|floatformat:2}}</h4>
+                <h4>${{user_order_summary.grand_total|floatformat:2}}</h4>
               </div>
 
               <div class="checkout">

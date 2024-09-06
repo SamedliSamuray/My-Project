@@ -9,7 +9,11 @@
 
         <span class='shown_shop'>Shop <i class="fa-solid fa-angle-right"></i></span> 
         <span class="searched_values">
-            
+            {% if filter_upload_img %}
+            <div class="pro_image">                          
+                            <img  src="{{ filter_upload_img.images.url }}" alt=""  id=""> 
+            </div>
+            {% endif %}
             {% if search %}
             <span class="filtered_value">Searched Word : "{{search}}" <i style="padding-left: 5px;" onclick="search_reset();FilterChange(event)" class="fa-solid fa-xmark"></i></span>
             {% endif %}

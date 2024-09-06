@@ -59,6 +59,7 @@ body {
 }
 .logo_text img{
   transition: 0.5s ease;
+  filter: drop-shadow(0px 0px 5px 5px white);
 }
 .logo_text img:hover{
   filter: drop-shadow(0px 0px 20px #088395);
@@ -556,6 +557,8 @@ footer {
   flex-direction: column;
   gap: 10px;
 }
+
+
 /* Evvelki Css kodlari
 .trending_img {
   object-fit: cover;
@@ -705,7 +708,7 @@ footer {
 .comment_personal {
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
+  /* flex-wrap: wrap; */
   gap: 30px;
 }
 
@@ -1248,9 +1251,9 @@ input[name='payment_method']:checked+form{
 
 /* order summery */
 
-.order_summery {
-  padding_top: 50px;
-}
+/* .order_summery {
+  padding-top: 50px;
+} */
 
 .order_body {
   display: flex;

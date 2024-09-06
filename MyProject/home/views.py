@@ -10,15 +10,19 @@ from PIL import Image, ImageChops, ImageStat
 # Create your views here.
 
 def home_view(request):
+    user_order_summary = UserOrderSummary.objects.get(user=request.user)
     order = Order.objects.filter(customers=request.user, status=False)
+    order_count = order.count()
     products = Products.objects.all().annotate(average_rating=Avg('comments__rating'))
     products =  products.annotate(review_count=Count('comments')).order_by('-average_rating')[:8]
     products_category = Products_Categories.objects.annotate( items_count = Count('products') )
-    context = {'order':order,"products":products,'products_category':products_category}
+    context = {'user_order_summary':user_order_summary,'order':order,'order_count':order_count,"products":products,'products_category':products_category}
     return render(request,'homepage.html',context)
 
 def products_view(request):
+    user_order_summary = UserOrderSummary.objects.get(user=request.user)
     order = Order.objects.filter(customers=request.user, status=False)
+    order_count = order.count()
     products_category = Products_Categories.objects.annotate( items_count = Count('products') ).order_by('name')
     brands = Brand.objects.annotate( items_count = Count('products') ).order_by('brand')
     colors = Color.objects.annotate( items_count = Count('products') ).order_by('clName')
@@ -79,7 +83,7 @@ def products_view(request):
     page_obj = paginator.get_page(page_number)
     
     
-    context={'products_count':products_count,'order':order,'products_category':products_category,'brands':brands,"colors":colors,'materials':materials,'products':page_obj,'filter_price_min':filter_price_min,'filter_price_max':filter_price_max,'filter_category':filter_category,'filter_brand':filter_brand,'filter_color':filter_color,'filter_materials':filter_materials,'search':search,'filter_sorter':filter_sorter,'filter_upload_img':filter_upload_img,'params':params}
+    context={'user_order_summary':user_order_summary,'products_count':products_count,'order':order,'order_count':order_count,'products_category':products_category,'brands':brands,"colors":colors,'materials':materials,'products':page_obj,'filter_price_min':filter_price_min,'filter_price_max':filter_price_max,'filter_category':filter_category,'filter_brand':filter_brand,'filter_color':filter_color,'filter_materials':filter_materials,'search':search,'filter_sorter':filter_sorter,'filter_upload_img':filter_upload_img,'params':params}
     
     return render(request,'products.html',context)
 
@@ -90,7 +94,9 @@ def product_details(request, id):
     product_materials = set(product.material.values_list('id', flat=True))
     related = Products.objects.filter(Q(brand=product.brand) | Q(material__in=product_materials) | Q(category=product.category)).exclude(id=id).distinct()
     colors = Color.objects.all()
+    user_order_summary = UserOrderSummary.objects.get(user=request.user)
     orders = Order.objects.filter(customers=request.user, status=False)
+    order_count = orders.count()
     comments = product.comments.all()
     average_rating = comments.aggregate(Avg('rating'))['rating__avg'] or 0
     
@@ -141,6 +147,8 @@ def product_details(request, id):
 
     context = {
         'order':orders,
+        'user_order_summary':user_order_summary,
+        'order_count':order_count,
         'product': product,
         'colors': colors,
         'products': products,
@@ -186,6 +194,7 @@ def update_order(request,id):
 def checkout_view(request):
    
     order = Order.objects.filter(customers=request.user, status=False)
+    order_count = order.count()
     user_order_summary = UserOrderSummary.objects.get(user=request.user)
     user_order_summary.get_orders_by_customer(request.user)
     if user_order_summary.discounts:
@@ -194,11 +203,13 @@ def checkout_view(request):
     context={
         'user_order_summary':user_order_summary,
         'order':order,
+        'order_count':order_count,
     }
     return render(request,'checkout.html',context)
 
 def shipping_view(request):
     order = Order.objects.filter(customers=request.user, status=False)
+    order_count = order.count()
     user_order_summary = UserOrderSummary.objects.get(user=request.user)
     address = UserAddress.objects.filter(user=request.user)
     if request.method == 'POST':
@@ -207,7 +218,7 @@ def shipping_view(request):
         user_order_summary.address = default_address
         user_order_summary.save()
         return redirect('payments')
-    context={'address':address,'user_order_summary':user_order_summary,'order':order}
+    context={'address':address,'user_order_summary':user_order_summary,'order':order,'order_count':order_count}
     return render(request,'shipping.html',context)
 
 def apply_discount(request):
@@ -239,6 +250,7 @@ def apply_discount(request):
         
     
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
 def delete_discount(request):
     
     user_order_summary = UserOrderSummary.objects.get(user=request.user)
@@ -247,6 +259,7 @@ def delete_discount(request):
     user_order_summary.get_orders_by_customer(request.user)
     user_order_summary.save()
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
 def address_add(request):
     if request.method == 'POST':
         name = request.POST.get('name')
@@ -261,13 +274,16 @@ def address_add(request):
         address = UserAddress.objects.create(user=request.user,name=name,phone=phone,flat=flat,country=state,city=city,Area=area,pin=pin_code,default_address=default_address)
         address.save()
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
 def delete_address(request,id):
     address = UserAddress.objects.get(id=id)
     address.delete()
 
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
 def update_address(request,id):
     order = Order.objects.filter(customers=request.user, status=False)
+    order_count = order.count()
     user_order_summary = UserOrderSummary.objects.get(user=request.user)
     address = UserAddress.objects.filter(user=request.user)
     update_address = get_object_or_404(UserAddress, id=id)
@@ -291,14 +307,15 @@ def update_address(request,id):
         update_address.default_address = default_address
         update_address.save()
         return redirect('shipping')
-    context={'address':address,'user_order_summary':user_order_summary,'update_address': update_address,'order':order}
+    context={'address':address,'user_order_summary':user_order_summary,'update_address': update_address,'order':order,'order_count':order_count}
     return render(request, 'shipping.html',context)
     
 def payments_view(request):
     order = Order.objects.filter(customers=request.user, status=False)
+    order_count = order.count()
     user_order_summary = UserOrderSummary.objects.get(user=request.user)
     address = UserAddress.objects.filter(user=request.user)
-    context={'address':address,'user_order_summary':user_order_summary,'update_address': update_address,'order':order}
+    context={'address':address,'user_order_summary':user_order_summary,'update_address': update_address,'order':order,'order_count':order_count}
     return render(request, 'payment.html',context)
 
 def add_card(request):
@@ -358,17 +375,19 @@ def update_card(request ,id):
 
 def order_summary_view(request):
     order = Order.objects.filter(customers = request.user)
-    usersummary = UserOrderSummary.objects.get(user = request.user)
-    context ={'order':order,'usersummary':usersummary}
-    if not usersummary.payments.transaction_id :
+    order_count = order.count()
+    user_order_summary = UserOrderSummary.objects.get(user = request.user)
+    context ={'order':order,'user_order_summary':user_order_summary,'order_count':order_count}
+    if not user_order_summary.payments.transaction_id :
         messages.warning(request,'Please add your payment information . . .')
         return redirect('payments')
     return render(request,'orderSummary.html',context)
 
 def my_order_view(request):
     order = Order.objects.filter(customers = request.user)
-    usersummary = UserOrderSummary.objects.get(user = request.user)
-    context ={'order':order,'usersummary':usersummary}
+    order_count = order.count()
+    user_order_summary = UserOrderSummary.objects.get(user = request.user)
+    context ={'order':order,'user_order_summary':user_order_summary,'order_count':order_count}
     return render(request,'myOrders.html',context)
 
 

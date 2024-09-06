@@ -165,17 +165,21 @@
     <h2>Related Products</h2>
 
     <!-- Rel product -->
-    <div id="rel_detail" class="rel_detail">
+    <div id="rel_detail"  class="rel_detail">
             {% for rel in related %}
             <div class='rel_slider'>
                 <a href="{% url 'products-details' rel.id %}">
-                    <div  class="rel_pro">
+                    <div onmouseenter='sliderStop()' onmouseleave='sliderStart()'  class="rel_pro">
                         <!-- Rel Products Image -->
                         <div class="rel_image">
-                            <img src="{{rel.get_main_image}}" id="rel_image_{{ rel.id }}" alt="">
+                            <div class="pro_img_slider">                                  
+                                {% for img in rel.images.all  %}
+                                <img  src="{{ img.images.url }}" alt=""  id="product_image_{{ product.id }}"> 
+                                {% endfor %}                                   
+                            </div>
                             <div class="rel_img_icons">
                                 <i class="fa-regular fa-star"></i>
-                                <i class="fa-solid fa-right-left"></i>
+                                <i onmouseenter="pro_img_slider(event)" onmouseleave="pro_img_slider_stop(event)" class="fa-solid fa-right-left product_icon_home"></i>
                                 <i class="fa-regular fa-eye" onclick="toggleFullscreen(event,'rel_image_{{ rel.id }}')"></i>
                             </div>
                         </div>

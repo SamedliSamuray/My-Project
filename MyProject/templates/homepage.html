@@ -13,6 +13,7 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
+    <link rel="icon" href="/media/navbar-footer_img/melta-logo.png" type="png/x-icon">
 <title>Meta</title>
 </head>
 
@@ -84,7 +85,7 @@
                 <li>
                   <button id="shop_btn" onclick="card_view()" class="icon_button">
                     <img class="filter_icons_header" src="/media/navbar-footer_img/shopbuy_icon.svg" alt="" />
-                    <span id="shopcount">1</span>
+                    <span id="shopcount">{{order_count}}</span>
                   </button>
                 </li>
               </ul>
@@ -256,13 +257,19 @@
                 <div class="trending_img">
                         <!-- Elave olundu a -->
                         <a href="{% url 'products-details' product.id %}">    
-                            <img  src="{{ product.get_main_image }}" alt=""  id="">
+                          <div class="pro_img_slider">
+                                    
+                            {% for img in product.images.all  %}
+                            <img  src="{{ img.images.url }}" alt=""  id="product_image_{{ product.id }}"> 
+                            {% endfor %}
+                                
+                          </div>
                         </a>
                         <!-- Elave olundu  img_icons-->
                         <div class="img_icons">
-                            <i class="fa-regular fa-star product_icon_home" ></i>
-                            <i class="fa-solid fa-right-left product_icon_home"></i>
-                            <i class="fa-regular fa-eye product_icon_home" ></i>
+                          <i class="fa-regular fa-star product_icon_home"></i>
+                          <i onmouseenter="pro_img_slider(event)" onmouseleave="pro_img_slider_stop(event)" class="fa-solid fa-right-left product_icon_home"></i>
+                          <i  class="fa-regular fa-eye product_icon_home" onclick="toggleFullscreen(event,'product_image_{{ product.id }}')"></i>
                         </div>   
                     
                 </div>
@@ -503,7 +510,7 @@
                 <div class="card_header">
                   
                     <div class="card_count">
-                      You have <b><input type='number' readonly value='' id='card_count_inp' class="card_count_items"> items</b> in your card
+                      You have <b><input type='number' readonly value='' id='card_count_inp' class="card_count_items">{{order_count}} items</b> in your card
                     </div>
                     
                     <div id='card_products' class="card_products">
@@ -532,7 +539,7 @@
                 
                 <div class="card_footer">
                     <h3 class="card_subtotal">
-                      <span>Subtotal:</span>  <span>$<span id='card_subtotal'></span></span>
+                      <span>Subtotal:</span>  <span>$<span id='card_subtotal'>{{user_order_summary.subtotal}}</span></span>
                     </h3>
                     <div>
                       <a href="{% url 'checkout' %}">
