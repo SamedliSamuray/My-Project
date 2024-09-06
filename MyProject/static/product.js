@@ -447,6 +447,7 @@ choices_right.addEventListener("click",()=>{
 
 
 // related product  slider 
+
 let rel_detail = document.getElementById('rel_detail')
 document.addEventListener('DOMContentLoaded',()=>{
     if (rel_detail) {
@@ -455,16 +456,11 @@ document.addEventListener('DOMContentLoaded',()=>{
 })
     
 let rel_slider;
-if (rel_detail) {
+
+function sliderStart(){
     let computedStyle = window.getComputedStyle(rel_detail);
     let gap = computedStyle.gap;
     let width = computedStyle.width;
-}
-
-
-
-
-function sliderStart(){
         rel_slider =  setInterval(() => {
             if (rel_detail.scrollLeft >= rel_detail.scrollWidth-rel_detail.clientWidth-40) {
                 rel_detail.scrollLeft = 0;
