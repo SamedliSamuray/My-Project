@@ -180,14 +180,15 @@ a{
     outline: none;
     font-size: 16px;
     position: relative;
-    width: 50%;
-    display: inline;
+    display:inline;
     border-radius: 5px;
+    width:42px;
     border: none;
     -moz-appearance: textfield;
   }
-.field span{
+.field > span{
     padding-left: 2px;
+    display:contents;
 }
 
 input[type="number"]::-webkit-outer-spin-button,
