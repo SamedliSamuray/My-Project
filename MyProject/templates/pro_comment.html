@@ -1,71 +1,83 @@
 <div style="display: none;" id="comment_div">
-<div id='comments' class="commments">
-    <h3 class="customers_h3">Customers Reviews</h2>
-    
-    {% if comments %}
-    {% for comment in comments %}
-    <div class="pro_comment">
-        <div class="comment_header">
-            <p class="comment_img"><img src="https://lh5.googleusercontent.com/proxy/9vqIPeIeHQHyGEo43DlSgD-DUtidieclv56O6UoAcYNGPXGNnZwFJL2V7oSodehCB1YT28jit7pMSVjNTnrBOnlBxW0CiRmOeH22FlPockzEbfdQPHLkDMPcgMwWdNfVHF1r2QpUk6W_aY_J87A9lFtYKMHf8_xhkMB7l_4=w1200-h630-p-k-no-nu" alt=""></p>
-            <span class="comment_name">
-                <h3>{{comment.comment_name}}</h3>
-        <input class="comment_rating" type="hidden" name="rating" value="{{comment.rating}}">       
-        <div   class="comments_rating">
-            
-            <i title="s" class="fa-regular fa-star" style="color: #d1d1d1;"></i>
-            <i title="s" class="fa-regular fa-star" style="color: #d1d1d1;"></i>
-            <i title="s" class="fa-regular fa-star" style="color: #d1d1d1;"></i>
-            <i title="s" class="fa-regular fa-star" style="color: #d1d1d1;"></i>
-            <i title="s" class="fa-regular fa-star" style="color: #d1d1d1;"></i>
-        </div><input type="number" name="rate" title="rate" style="display: none;" value="{{comment.rating}}" class="rate_number">
-            </span>
-</div>
-        <div class="comment_detail">
-            <div>{{comment.comment_content}}</div>
-        <div class="comment_created">Review by <b>Melta</b> Posted on <b>{{comment.created_at|date:"d F Y"}}</b></div>
-        </div>
-    </div>
-    <hr>
-{% endfor %}
-    {% else %}
-    <p style="color:grey;text-align:center;padding:20px 0px">These products have no reviews.</p>
-    {% endif %}
+    <div id='comments' class="commments">
+        <h3 class="customers_h3">Customers Reviews</h2>
         
-</div>
-<form action="" class="review_form"  method="post">
-    <h2>Add your review</h2>
-    {% csrf_token %}
-    <div class="comment_rating">
-        <p>Your Rating : </p>
-        <div class="comment_stars">
-            <label for="rating1"><input title="s" style="display: none;" type="radio" name="rating" value="1" class="rating_radio" id="rating1">
-            <i title="s" class="fa-regular fa-star" style="color: #d1d1d1;"></i>
-            </label>
-            
-            <label for="rating2"><input title="s" style="display: none;" type="radio" name="rating" value="2" class="rating_radio" id="rating2">
-                <i title="s" class="fa-regular fa-star" style="color: #d1d1d1;"></i>
-                </label>
-            <label for="rating3"><input title="s" style="display: none;" type="radio" name="rating" value="3" class="rating_radio" id="rating3">
-                    <i title="s" class="fa-regular fa-star" style="color: #d1d1d1;"></i>
-            </label>
-            <label for="rating4"><input title="s" style="display: none;" type="radio" name="rating" value="4" class="rating_radio" id="rating4">
-                <i title="s" class="fa-regular fa-star" style="color: #d1d1d1;"></i>
-                </label>
-                <label for="rating5"><input title="s" style="display: none;" type="radio" name="rating" value="5" class="rating_radio" id="rating5">
-                    <i title="s" class="fa-regular fa-star" style="color: #d1d1d1;"></i>
-                </label>
-        </div>
+        {% if comments %}
+        {% for comment in comments %}
+        <div class="pro_comment">
+
+            <div class="comment_header">
+                <p class="comment_img">
+                    
+                    {% if request.user.is_authenticated %}
+                        <img src="{{ request.user.images.url}}" alt="">
+                    {% else %}
+                    <img src="https://lh5.googleusercontent.com/proxy/9vqIPeIeHQHyGEo43DlSgD-DUtidieclv56O6UoAcYNGPXGNnZwFJL2V7oSodehCB1YT28jit7pMSVjNTnrBOnlBxW0CiRmOeH22FlPockzEbfdQPHLkDMPcgMwWdNfVHF1r2QpUk6W_aY_J87A9lFtYKMHf8_xhkMB7l_4=w1200-h630-p-k-no-nu" alt="">
+                    {% endif %}
+                        
+                </p>
+                <span class="comment_name">
+                            <h3>{{comment.comment_name}}</h3>
+                    <input class="comment_rating" type="hidden" name="rating" value="{{comment.rating}}">       
+                    <div   class="comments_rating">
+                        
+                        <i title="s" class="fa-regular fa-star" style="color: #d1d1d1;"></i>
+                        <i title="s" class="fa-regular fa-star" style="color: #d1d1d1;"></i>
+                        <i title="s" class="fa-regular fa-star" style="color: #d1d1d1;"></i>
+                        <i title="s" class="fa-regular fa-star" style="color: #d1d1d1;"></i>
+                        <i title="s" class="fa-regular fa-star" style="color: #d1d1d1;"></i>
+                        
+                    </div>
+                    <input type="number" required name="rate" title="rate" style="display: none;" value="{{comment.rating}}" class="rate_number">
+                </span>
     </div>
-    {% if request.user.is_authenticated  %}
-    <input placeholder="Enter Your Name" type="hidden" value={{request.user.username}}  name="comment_name" id="comment_name">
-    {% else %}
-    <label for="comment_name">Name :</label> <input placeholder="Enter Your Name" type="text"  name="comment_name" id="comment_name">
-    <label for="comment_email">Email address :</label><input placeholder="Enter Your Email" type="email" name="comment_email" id="comment_email">
-    {% endif %}
-    
-    <label for="comment_content">Review :</label><textarea style="height: 100px;" placeholder="Enter Your Review" name="comment_content" id="comment_content"></textarea>
-    <button  type="submit">Submit</button>
-</form>
+            <div class="comment_detail">
+                <div>{{comment.comment_content}}</div>
+            <div class="comment_created">Review by <b>Melta</b> Posted on <b>{{comment.created_at|date:"d F Y"}}</b></div>
+            </div>
+        </div>
+        <hr>
+    {% endfor %}
+        {% else %}
+        <p style="color:grey;text-align:center;padding:20px 0px">These products have no reviews.</p>
+        {% endif %}
+            
+    </div>
+
+    <form action="" class="review_form"  method="post">
+        <h2>Add your review</h2>
+        {% csrf_token %}
+        <div class="comment_rating">
+            <p>Your Rating : </p>
+            <div class="comment_stars">
+                <label for="rating1"><input required title="s" style="display: none;" type="radio" name="rating" value="1" class="rating_radio" id="rating1">
+                <i title="s" class="fa-regular fa-star" style="color: #d1d1d1;"></i>
+                </label>
+                
+                <label for="rating2"><input title="s" style="display: none;" type="radio" name="rating" value="2" class="rating_radio" id="rating2">
+                    <i title="s" class="fa-regular fa-star" style="color: #d1d1d1;"></i>
+                    </label>
+                <label for="rating3"><input title="s" style="display: none;" type="radio" name="rating" value="3" class="rating_radio" id="rating3">
+                        <i title="s" class="fa-regular fa-star" style="color: #d1d1d1;"></i>
+                </label>
+                <label for="rating4"><input title="s" style="display: none;" type="radio" name="rating" value="4" class="rating_radio" id="rating4">
+                    <i title="s" class="fa-regular fa-star" style="color: #d1d1d1;"></i>
+                    </label>
+                    <label for="rating5"><input title="s" style="display: none;" type="radio" name="rating" value="5" class="rating_radio" id="rating5">
+                        <i title="s" class="fa-regular fa-star" style="color: #d1d1d1;"></i>
+                    </label>
+            </div>
+        </div>
+        {% if request.user.is_authenticated  %}
+        <input placeholder="Enter Your Name" type="hidden" value={{request.user.username}}  name="comment_name" id="comment_name">
+        {% else %}
+        <label for="comment_name">Name :</label> <input required placeholder="Enter Your Name" type="text"  name="comment_name" id="comment_name">
+        <label for="comment_email">Email address :</label><input required placeholder="Enter Your Email" type="email" name="comment_email" id="comment_email">
+        {% endif %}
+        
+        <label for="comment_content">Review :</label><textarea style="height: 100px;" placeholder="Enter Your Review" required name="comment_content" id="comment_content"></textarea>
+        <button  type="submit">Submit</button>
+    </form>
 
 
 </div>

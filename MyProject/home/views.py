@@ -10,9 +10,13 @@ from PIL import Image, ImageChops, ImageStat
 # Create your views here.
 
 def home_view(request):
-    user_order_summary = UserOrderSummary.objects.get(user=request.user)
-    order = Order.objects.filter(customers=request.user, status=False)
-    order_count = order.count()
+    user_order_summary = None 
+    order = None
+    order_count = 0
+    if request.user.is_authenticated:
+        user_order_summary = UserOrderSummary.objects.get(user=request.user)
+        order = Order.objects.filter(customers=request.user, status=False)
+        order_count = order.count()
     products = Products.objects.all().annotate(average_rating=Avg('comments__rating'))
     products =  products.annotate(review_count=Count('comments')).order_by('-average_rating')[:8]
     products_category = Products_Categories.objects.annotate( items_count = Count('products') )
@@ -20,9 +24,13 @@ def home_view(request):
     return render(request,'homepage.html',context)
 
 def products_view(request):
-    user_order_summary = UserOrderSummary.objects.get(user=request.user)
-    order = Order.objects.filter(customers=request.user, status=False)
-    order_count = order.count()
+    user_order_summary = None 
+    order = None
+    order_count = 0
+    if request.user.is_authenticated:
+        user_order_summary = UserOrderSummary.objects.get(user=request.user)
+        order = Order.objects.filter(customers=request.user, status=False)
+        order_count = order.count()
     products_category = Products_Categories.objects.annotate( items_count = Count('products') ).order_by('name')
     brands = Brand.objects.annotate( items_count = Count('products') ).order_by('brand')
     colors = Color.objects.annotate( items_count = Count('products') ).order_by('clName')
@@ -94,9 +102,13 @@ def product_details(request, id):
     product_materials = set(product.material.values_list('id', flat=True))
     related = Products.objects.filter(Q(brand=product.brand) | Q(material__in=product_materials) | Q(category=product.category)).exclude(id=id).distinct()
     colors = Color.objects.all()
-    user_order_summary = UserOrderSummary.objects.get(user=request.user)
-    orders = Order.objects.filter(customers=request.user, status=False)
-    order_count = orders.count()
+    user_order_summary = None 
+    orders = None
+    order_count = 0
+    if request.user.is_authenticated:
+        user_order_summary = UserOrderSummary.objects.get(user=request.user)
+        orders = Order.objects.filter(customers=request.user, status=False)
+        order_count = orders.count()
     comments = product.comments.all()
     average_rating = comments.aggregate(Avg('rating'))['rating__avg'] or 0
     
@@ -158,7 +170,6 @@ def product_details(request, id):
     }
     return render(request, 'product_details.html', context)
 
-@login_required
 def delete_order(request,id):
     order = get_object_or_404(Order,id=id)
     order.delete() 
@@ -419,6 +430,10 @@ def find_similar_products(filter_upload_img, products):
     
     
     return [product for rms, product in similarities]
+
+
+def custom_404(request, exception):
+    return render(request, '404.html', status=404)
 
 
 

@@ -17,6 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from home.views import *
+from django.conf.urls import handler404
 from django.conf.urls.static import static
 from django.conf import settings
 
@@ -41,6 +42,8 @@ urlpatterns = [
     path('my-order/',my_order_view, name='my-order'),
     path("admin/", admin.site.urls),
 ]
+
+handler404 = 'home.views.custom_404'
 
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

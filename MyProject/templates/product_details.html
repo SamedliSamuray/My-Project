@@ -111,7 +111,15 @@
                         {% csrf_token %}
                         <!-- Selected product -->
                         <input type="hidden" value="{{product.id}}" form="checking_form" name="product_id">
-                        <button type="submit" form="checking_form" class="pro_btn">Add To Card</button>
+                        <button
+                        
+                        {% if not request.user.is_authenticated %}
+                            disabled
+                        {% endif %}
+                            
+                         type="submit" form="checking_form" class="pro_btn">
+                            Add To Card
+                        </button>
                     </form>
                     
                     <!-- Favorites add -->

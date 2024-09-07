@@ -45,6 +45,16 @@ body {
   padding: 0;
   margin: 0;
 }
+.header_menu li{
+  transition: 0.5s ease;
+  padding: 2px 4px;
+  border-radius: 5px;
+}
+.header_menu li:hover{
+  background-color: whitesmoke;
+
+}
+
 .navbar {
   height: 100px;
   display: flex;
@@ -281,6 +291,10 @@ footer {
   display: flex;
   align-items: center;
   padding-top: 10px;
+}
+.media_icon a{
+  display: flex;
+  align-items: center;
 }
 
 .gmail {

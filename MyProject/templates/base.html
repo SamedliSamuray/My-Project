@@ -86,7 +86,7 @@
                 </button>
               </li>
             </ul>
-            <!--  -->
+            <!-- Login -->
             {% if request.user.is_authenticated %}
             <div class="user_navbar">
               <a href="{% url 'my-order' %}">
@@ -127,16 +127,22 @@
             </a>
             
             <li class="media_icon">
-              <img src="/media/navbar-footer_img/calling.svg" alt="">
-              <span>(602) 462-0127</span>
-            </li>
+              <a href="tel:+16024620127">
+                  <img src="/media/navbar-footer_img/calling.svg" alt="">
+                  <span>(602) 462-0127</span>
+              </a>
+          </li>
             <li class="media_icon">
-              <img src="/media/navbar-footer_img/gmail.svg" alt="">
-              <span>melta@example.com</span>
-            </li>
+              <a href="mailto:melta@example.com">
+                  <img src="/media/navbar-footer_img/gmail.svg" alt="">
+                  <span>melta@example.com</span>
+              </a>
+          </li>
             <li class="media_icon">
-              <img src="/media/navbar-footer_img/location.svg" alt="">
-              <span>1901 Thornridge Cir. Shiloh</span>
+              <a target="_blank" href="https://maps.app.goo.gl/EhKsEKHYkaUzpPF66">
+                <img src="/media/navbar-footer_img/location.svg" alt="">
+                <span>1901 Thornridge Cir. Shiloh</span>
+              </a>
             </li>
           </ul>
         
@@ -144,19 +150,83 @@
             <li><span class="bold">Information</span></li>
             <li><a href="">My Account</a></li>
             <li><a href="">Login</a></li>
-            <li><a href="{% url 'checkout' %}">My Cart</a></li>
-            <li><a href="">My Wishlist</a></li>
-            <li><a href="{% url 'shipping' %}">Checkout</a></li>
+            <li><a 
+            {% if request.user.is_authenticated %}
+              href="{% url 'checkout' %}"
+            {% else %}
+              href=""
+            {% endif %}
+              >My Cart</a></li>
+            <li>
+              <a 
+            {% if request.user.is_authenticated %}
+              href=""
+            {% else %}
+              href=""
+            {% endif %}
+            >My Wishlist</a>
+          </li>
+            <li><a 
+            {% if request.user.is_authenticated %}
+              href="{% url 'shipping' %}"
+            {% else %}
+              href=""
+            {% endif %}
+            >Checkout</a></li>
             
           </ul>
         
           <ul>
             <li><span class="bold">Service</span></li>
-            <li><a href="">About Us</a></li>
-            <li><a href="">Careers</a></li>
-            <li><a href="">Delivery Information</a></li>
-            <li><a href="">Privacy Policy</a></li>
-            <li><a href="">Terms and Conditions</a></li>
+            <li>
+              <a 
+                {% if request.user.is_authenticated %}
+                href=""
+              {% else %}
+                href=""
+              {% endif %}>
+              About Us
+              </a>
+            </li>
+
+            <li>
+                <a 
+                {% if request.user.is_authenticated %}
+                href=""
+              {% else %}
+                href=""
+              {% endif %}
+              >Careers</a>
+            </li>
+
+            <li>
+                <a 
+                {% if request.user.is_authenticated %}
+                href=""
+              {% else %}
+                href=""
+              {% endif %}>
+                
+                Delivery Information</a>
+            </li>
+            <li>
+              <a 
+              {% if request.user.is_authenticated %}
+              href=""
+            {% else %}
+              href=""
+            {% endif %}>
+              Privacy Policy</a>
+            </li>
+            <li>
+              <a 
+              {% if request.user.is_authenticated %}
+              href=""
+            {% else %}
+              href=""
+            {% endif %}>
+              Terms and Conditions</a>
+            </li>
           </ul>
         
           <ul>
@@ -167,7 +237,8 @@
             </li>
             <li class="gmail">
               <img src="/media/navbar-footer_img/gmail.svg" alt="gmail icon">
-              <span style="margin-right: 145px;">Your Email</span>
+              <!-- <span style="margin-right: 145px;">Your Email</span> -->
+               <input placeholder="Your Email" type="email" name="email" id="subscribe_email">
               <img src="/media/navbar-footer_img/right.svg" alt="right icon"></li>
           </ul>
         </div>
@@ -183,8 +254,10 @@
          
           <span>©2023 Melta All Rights are reserved️ </span>
           <ul class="social">
-              <li><img src="/media/navbar-footer_img/fb.svg" alt="facebook icon"></li>
-              <li><img src="/media/navbar-footer_img/instagram.svg" alt="instagram icon"></li>
+              <li><a target="_blank" href="https://www.facebook.com/codersaz">
+                <img src="/media/navbar-footer_img/fb.svg" alt="facebook icon">
+              </a></li>
+              <li><a target="_blank" href="https://www.instagram.com/codersazerbaijan?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="><img src="/media/navbar-footer_img/instagram.svg" alt="instagram icon"></a></li>
               <li><img src="/media/navbar-footer_img/twitter.svg" alt="twitter icon"></li>
           </ul>
         
@@ -204,6 +277,10 @@
                   You have <b><input type='number' readonly value='' id='card_count_inp' class="card_count_items">{{order_count}} items</b> in your card
                 </div>
                 
+                
+                {% if not request.user.is_authenticated %}
+                  <p class="not_account">You don't have an account . . .</p>
+                {% else %}
                 <div  class="card_products">
                   {% for ord in  order%}
                   <div data-price={{ord.price}} class="card_product">
@@ -227,6 +304,8 @@
                   {% endfor %}
 
                 </div>
+                {% endif %}
+                  
                 
             </div>
             
@@ -235,14 +314,28 @@
                   <span>Subtotal:</span>  <span>$<span id='card_subtotal'>{{user_order_summary.subtotal}}</span></span>
                 </h3>
                 <div>
-                  <a href="{% url 'checkout' %}">
+                  <a 
+                  {% if request.user.is_authenticated %}
+                    href="{% url 'checkout' %}"
+                  {% else %}
+                    href=""
+                  {% endif %}>
+                     
                     <button title="view" type="button" class="view_card">View Card</button>
                   </a>
                 </div>
                 <div>
-                  <a href="{% url 'shipping' %}">
-                    <button title="checkout" type="button" class="card_checkout">Checkout</button>
+                  <a 
+                  {% if request.user.is_authenticated %}
+                    href="{% url 'shipping' %}"
+                  {% else %}
+                     href=""
+                  {% endif %}>
+                     
+                  <button title="checkout" type="button" class="card_checkout">Checkout</button>
+
                   </a>
+
                 </div>
     
             </div>
