@@ -109,6 +109,26 @@ button:disabled{
     font-size: 14px;
 }
 
+.filtered_image{
+    width: 100px;
+    height: 100px;
+    position: relative;
+    border-radius: 5px;
+    border: 1px solid whitesmoke;
+}
+.filtered_image img{
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+.filtered_image i{
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    background-color: whitesmoke;
+    border-radius: 5px;
+    padding: 2px;
+}
 /* search */
 .searched_div{
     display:none;

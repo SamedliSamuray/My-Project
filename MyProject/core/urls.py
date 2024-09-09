@@ -40,6 +40,7 @@ urlpatterns = [
     path('update-card/<int:id>',update_card, name='update-card'),
     path('order-summary/',order_summary_view, name='order-summary'),
     path('my-order/',my_order_view, name='my-order'),
+    path('clear_filter_image_folder/',clear_filter_image_folder, name='clear_filter_image_folder'),
     path("admin/", admin.site.urls),
 ]
 

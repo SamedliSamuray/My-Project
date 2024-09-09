@@ -10,8 +10,9 @@
         <span class='shown_shop'>Shop <i class="fa-solid fa-angle-right"></i></span> 
         <span class="searched_values">
             {% if filter_upload_img %}
-            <div class="pro_image">                          
-                            <img  src="{{ filter_upload_img.images.url }}" alt=""  id=""> 
+            <div class="filtered_image">                          
+                    <img  src="{{ filter_upload_img }}" alt=""  id="">
+                    <a href="{% url 'clear_filter_image_folder'%}"><i class="fa-solid fa-xmark"></i></a>
             </div>
             {% endif %}
             {% if search %}

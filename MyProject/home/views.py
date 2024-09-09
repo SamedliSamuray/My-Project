@@ -7,6 +7,10 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from PIL import Image, ImageChops, ImageStat
+from django.core.files.storage import FileSystemStorage
+import os
+import shutil
+from core import settings
 # Create your views here.
 
 def home_view(request):
@@ -53,7 +57,13 @@ def products_view(request):
         if 'upload_img' in request.FILES:
             filter_upload_img = request.FILES['upload_img']
             if filter_upload_img:
+                fs = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'filter_image'))
+                filename = fs.save(filter_upload_img.name, filter_upload_img)
+                
+                uploaded_image_url = os.path.join(settings.MEDIA_URL, 'filter_image', filename)
+
                 products = find_similar_products(filter_upload_img, products)
+                filter_upload_img = uploaded_image_url
         
     
     if filter_category or filter_brand or filter_color or filter_price_min or filter_price_max or search or filter_sorter or filter_materials:
@@ -434,6 +444,20 @@ def find_similar_products(filter_upload_img, products):
 
 def custom_404(request, exception):
     return render(request, '404.html', status=404)
+
+def clear_filter_image_folder(request):
+    filter_image_folder = os.path.join(settings.MEDIA_ROOT, 'filter_image')
+    
+    if os.path.exists(filter_image_folder):
+    
+        for filename in os.listdir(filter_image_folder):
+            file_path = os.path.join(filter_image_folder, filename)
+            if os.path.isfile(file_path) or os.path.islink(file_path):
+                    os.unlink(file_path)  
+            elif os.path.isdir(file_path):
+                    shutil.rmtree(file_path)
+                    
+    return redirect('products')
 
 
 
