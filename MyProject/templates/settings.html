@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+
+{% block body %}
+<div class="">
+  <h1 class="my_profile_text">My Profile</h1>
+  <div class="keep">
+    <div class="sidebar">
+      <div class="profile_setings">
+        <div class="profile_img_sidebar">
+          <img src="{{ request.user.profilpicture.image.url}}" alt="Profile Picture" />
+        </div>
+        <div class="greeting">
+          <p>Hello <span class="wave">👋</span></p>
+          <h2>{{request.user.first_name}} {{request.user.last_name}}</h2>
+        </div>
+      </div>
+      <ul class="menu">
+        <a href="{% url 'my-profil' %}"><li ><img src="/media/login/user.svg" alt=""><span>Personal Information</span></li></a>
+        <a href="{% url 'my-order'%}"><li ><img src="/media/login/box.svg" alt=""><span>My Orders</span></li></a>
+        <a href="{% url 'my-wishlist'%}"><li ><img src="/media/login/heart.svg" alt=""><span>My Wishlists</span></li></a>
+        <a href="{% url 'manage-address'%}"><li ><img src="/media/login/location.svg" alt=""><span>Manage Addresses</span></li></a>
+        <a href="{% url 'saved-cards'%}"><li><img src="/media/login/card.svg" alt=""><span>Saved Cards</span></li></a>
+        <a href="{% url 'notifications'%}"><li ><img src="/media/login/notification.svg" alt=""><span>Notifications</span></li></a>
+        <a href="{% url 'my-settings'%}"><li class="active"><img src="/media/login/setting.svg" alt=""><span>Settings</span></li></a>
+      </ul>
+    </div>
+    <div class="settings-container">
+      <div class="setting">
+       <div class="settings_txt">
+        <h3>Appearance</h3>
+        <small>Customize how your theme looks on your device</small>
+       </div>
+        <select>
+          <option>Light</option>
+          <option>Dark</option>
+        </select>
+      </div>
+      <div class="setting">
+        <div class="settings_txt">
+            <h3>Language</h3>
+            <small>Select your language</small>
+        </div>
+        <select>
+          <option>English</option>
+          <option>Spanish</option>
+        </select>
+      </div>
+      <div class="setting">
+        <div class="settings_txt">
+            <h3>Two-factor Authentication</h3>
+            <small>Keep your account secure by enabling 2FA via mail</small>
+        </div>
+        <div class="toggle-switch" onclick="toggleSwitch(this)">
+          <label class="switch">
+            <input type="checkbox" />
+            <span class="slider round"></span>
+          </label>
+        </div>
+      </div>
+      <div class="setting">
+        <div class="settings_txt">
+            <h3>Push Notifications</h3>
+            <small>Receive push notification</small>
+        </div>
+        <div class="toggle-switch active" onclick="toggleSwitch(this)">
+          <label class="switch">
+            <input type="checkbox" />
+            <span class="slider round"></span>
+          </label>
+        </div>
+      </div>
+      <div class="setting">
+        <div class="settings_txt">
+            <h3>Desktop Notifications</h3>
+            <small>Receive push notification  in desktop</small>
+        </div>
+        <div class="toggle-switch active" onclick="toggleSwitch(this)">
+          <label class="switch">
+            <input type="checkbox" />
+            <span class="slider round"></span>
+          </label>
+        </div>
+      </div>
+      <div class="setting">
+        <div class="settings_txt">
+            <h3>Email Notifications</h3>
+            <small>Receive email notification</small>
+        </div>
+        <div class="toggle-switch active" onclick="toggleSwitch(this)">
+          <label class="switch">
+            <input type="checkbox" />
+            <span class="slider round"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock body %}
+  
+

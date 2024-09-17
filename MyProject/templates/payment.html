@@ -205,9 +205,15 @@
               
                   
                   
-              <a href="{% url 'order-summary' %}">
-                 <button type="button" style="height: 60px;width:300px;margin-top:10px"  class="pro_btn">Continue</button>
-              </a>  
+            
+            {% if user_order_summary.payments %}
+            <a href="{% url 'order-summary' %}">
+              <button type="button" style="height: 60px;width:300px;margin-top:10px"  class="pro_btn">Continue</button>
+           </a>  
+           {% else %}
+           <button type="button" disabled style="height: 60px;width:300px;margin-top:10px"  class="pro_btn">Continue</button>
+          {% endif %}
+              
         
             </div>
 

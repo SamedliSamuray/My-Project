@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+
+{% block body %}
+    
+<div class="">
+
+    <div class="">
+      <div class="profile_head">
+        <div class="profile_head_text">
+          <h1>My Profile</h1>
+        </div>
+      </div>
+    </div>
+
+    <div class="profile_content">
+      <div class="sidebar">
+        <div class="profile_setings">
+          <div class="profile_img_sidebar">
+            <img src="{{ request.user.profilpicture.image.url}}" alt="Profile Picture" />
+          </div>
+            <div class="greeting">
+                <p>Hello <span class="wave">👋</span></p>
+                <h2>{{request.user.first_name}} {{request.user.last_name}}</h2>
+            </div>
+        </div>
+        <ul class="menu">
+          <a href="{% url 'my-profil' %}"><li ><img src="/media/login/user.svg" alt=""><span>Personal Information</span></li></a>
+          <a href="{% url 'my-order'%}"><li ><img src="/media/login/box.svg" alt=""><span>My Orders</span></li></a>
+          <a href="{% url 'my-wishlist'%}"><li ><img src="/media/login/heart.svg" alt=""><span>My Wishlists</span></li></a>
+          <a href="{% url 'manage-address'%}"><li class="active"><img src="/media/login/location.svg" alt=""><span>Manage Addresses</span></li></a>
+          <a href="{% url 'saved-cards'%}"><li><img src="/media/login/card.svg" alt=""><span>Saved Cards</span></li></a>
+          <a href="{% url 'notifications'%}"><li ><img src="/media/login/notification.svg" alt=""><span>Notifications</span></li></a>
+          <a href="{% url 'my-settings'%}"><li ><img src="/media/login/setting.svg" alt=""><span>Settings</span></li></a>
+        </ul>
+
+    </div>
+
+      <div class="profile_right manage_address">
+        {% if address %}
+            {% for add in address %}
+            <div class="ship_adress">
+
+                <h3 class="ship_user"><span>{{add.name}}</span>
+
+                {% if add.default_address %}
+                <input  checked type="radio"  form="deliver" class="input_check" value="{{add.id}}" name="default_adress" id="{{add.id}}">
+                {% else %}
+                <input  form="deliver"  type="radio"  value="{{add.id}}" class="input_check" name="default_adress" id="{{add.id}}">
+                {% endif %}
+            </h3>
+                
+                
+
+            
+            <div class="address_details"><span>{{add.flat}}</span><span>{{add.Area}}</span><span>{{add.city}}</span><span>{{add.country}}</span><span>{{add.pin}}</span></div>
+            <div class="address_update">
+                <a class="address_change" href="{% url 'update-address' add.id %}"><i class="fa-regular fa-pen-to-square" style="color: #000000;"></i></a>
+                <a class="address_delete" href="{% url 'delete-address' add.id %} "><i class="fa-regular fa-trash-can" style="color: #ff0000;"></i></a>
+            </div>
+
+                </div>
+            {% endfor %}
+          {% else %}
+          <p class="notProducts" >You do not have any address.</p>
+        {% endif %}
+      </div>
+  </div>
+{% endblock body %}
+    

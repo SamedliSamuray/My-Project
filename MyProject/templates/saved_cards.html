@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+
+{% block body %}
+    
+<div class="">
+
+    <div class="">
+      <div class="profile_head">
+        <div class="profile_head_text">
+          <h1>My Profile</h1>
+        </div>
+      </div>
+    </div>
+
+    <div class="profile_content">
+      <div class="sidebar">
+        <div class="profile_setings">
+          <div class="profile_img_sidebar">
+            <img src="{{ request.user.profilpicture.image.url}}" alt="Profile Picture" />
+          </div>
+            <div class="greeting">
+                <p>Hello <span class="wave">👋</span></p>
+                <h2>{{request.user.first_name}} {{request.user.last_name}}</h2>
+            </div>
+        </div>
+        <ul class="menu">
+          <a href="{% url 'my-profil' %}"><li ><img src="/media/login/user.svg" alt=""><span>Personal Information</span></li></a>
+          <a href="{% url 'my-order'%}"><li ><img src="/media/login/box.svg" alt=""><span>My Orders</span></li></a>
+          <a href="{% url 'my-wishlist'%}"><li ><img src="/media/login/heart.svg" alt=""><span>My Wishlists</span></li></a>
+          <a href="{% url 'manage-address'%}"><li ><img src="/media/login/location.svg" alt=""><span>Manage Addresses</span></li></a>
+          <a href="{% url 'saved-cards'%}"><li class='active'><img src="/media/login/card.svg" alt=""><span>Saved Cards</span></li></a>
+          <a href="{% url 'notifications'%}"><li ><img src="/media/login/notification.svg" alt=""><span>Notifications</span></li></a>
+          <a href="{% url 'my-settings'%}"><li ><img src="/media/login/setting.svg" alt=""><span>Settings</span></li></a>
+        </ul>
+
+    </div>
+
+      <div class="profile_right">
+        {% if payments %}
+            
+            
+        {% for pay in payments %}
+        <div class="payment_info">
+                    
+            <h4 >
+              {{pay.name}}   |   {{pay.get_payment_method_display}}   |   (.... .... .... ..{{pay.transaction_id|slice:'-2:'}})
+            </h4>
+            
+            <a href="{% url 'update-card' pay.id %}">
+              <button class="payment_card_edit">
+                <i class="fa-regular fa-pen-to-square"></i>
+              </button>
+            </a>
+          </div> 
+          {% endfor %}
+          {% else %}
+          <p class="notProducts" >You do not have any cards.</p>
+        {% endif %}
+      </div>
+  </div>
+{% endblock body %}
+    

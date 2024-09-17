@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% block body %}
+
+<div class="">
+  <h1 class="my_profile_text">My Profile</h1>
+  <div class="keep">
+    <div class="sidebar">
+      <div class="profile_setings">
+        <div class="profile_img_sidebar">
+            <img src="{{ request.user.profilpicture.image.url}}" alt="Profile Picture" />
+        </div>
+        <div class="greeting">
+          <p>Hello <span class="wave">👋</span></p>
+          <h2>{{request.user.first_name}} {{request.user.last_name}}</h2>
+        </div>
+      </div>
+      <ul class="menu">
+        <a href="{% url 'my-profil' %}"><li ><img src="/media/login/user.svg" alt=""><span>Personal Information</span></li></a>
+        <a href="{% url 'my-order'%}"><li ><img src="/media/login/box.svg" alt=""><span>My Orders</span></li></a>
+        <a href="{% url 'my-wishlist'%}"><li ><img src="/media/login/heart.svg" alt=""><span>My Wishlists</span></li></a>
+        <a href="{% url 'manage-address'%}"><li ><img src="/media/login/location.svg" alt=""><span>Manage Addresses</span></li></a>
+        <a href="{% url 'saved-cards'%}"><li><img src="/media/login/card.svg" alt=""><span>Saved Cards</span></li></a>
+        <a href="{% url 'notifications'%}"><li class="active"><img src="/media/login/notification.svg" alt=""><span>Notifications</span></li></a>
+        <a href="{% url 'my-settings'%}"><li ><img src="/media/login/setting.svg" alt=""><span>Settings</span></li></a>
+      </ul>
+    </div>
+    <div class="notification_table">
+        <div class="notification">
+            <div class="notification_img">
+                <img src="{{ request.user.profilpicture.image.url}}" alt="Profile Picture" />
+
+            </div>
+
+            <div class="notification_txt">
+                <h3>Profile update</h3>
+                <div class="notification_date">
+                    <small>You just update your profile picture</small>
+                    <small>Just Now</small>      
+                </div>
+            </div>
+            </div>
+
+        <div class="notification">
+            <div class="notification_img_icon">
+                <img src="/media/login/box.svg" alt="">
+            </div>
+            <div class="notification_txt">
+                <h3>Your order placed succesfully</h3>
+                <div class="notification_date">
+                <small>You place a new order</small>    
+                <small>11:15 AM</small>
+                </div>
+            </div>
+            </div>
+
+        <div class="notification">
+            <div class="notification_img_icon">
+                <img src="/media/login/open box-done.svg" alt="">
+            </div>
+            <div class="notification_txt">
+                <h3>Order delivered</h3>
+                <div class="notification_date">
+                <small>Your order has been delivered successfully</small>    
+                <small>09:00 AM</small>
+                </div>
+            </div>
+            </div>
+
+        <div class="notification">
+            <div class="notification_img">
+                <img src="{{ request.user.profilpicture.image.url}}" alt="Profile Picture" />
+            </div>
+            <div class="notification_txt">
+                <h3>You share your feedback</h3>
+                <div class="notification_date">
+                <small>It was an amazing experience with your company</small>   
+                <small>Yesterday</small>
+                </div>            
+            </div>
+            </div>
+
+        <div class="notification">
+            <div class="notification_img_icon">
+                <img src="/media/login/lock.svg" alt="">
+            </div>
+            <div class="notification_txt">
+                <h3>Password Update successfully</h3>
+                <div class="notification_date">
+                    <small>Your password has been updated successfully</small>
+                    <small>Yesterday</small>
+                </div>
+                        
+            </div>
+            </div>
+
+        </div>
+    </div>
+    </div>
+
+</div>
+{% endblock body %}

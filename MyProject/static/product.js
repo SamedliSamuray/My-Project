@@ -502,7 +502,8 @@ let slider_interval;
 function pro_img_slider(e){
     let closestElement = e.target.closest('.pro_image') ||
                          e.target.closest('.rel_image') ||
-                         e.target.closest('.trending_img');
+                         e.target.closest('.trending_img') ||
+                         e.target.closest('.pro_small_img');
     let pro_img = closestElement ? closestElement.querySelector('.pro_img_slider') : null;
     if (pro_img) {
         let img= pro_img.querySelector('img')
@@ -523,12 +524,16 @@ function pro_img_slider_stop(e) {
     clearInterval(slider_interval);
     let closestElement = e.target.closest('.pro_image') ||
                          e.target.closest('.rel_image') ||
-                         e.target.closest('.trending_img');
+                         e.target.closest('.trending_img')||
+                         e.target.closest('.pro_small_img');
     let pro_img = closestElement ? closestElement.querySelector('.pro_img_slider') : null;
     pro_img.scrollLeft = 0;
 }
 
-
+function place_reset(){
+    document.getElementById('search_place').value=''
+    
+}
 
 
 // Dark Mode on Site

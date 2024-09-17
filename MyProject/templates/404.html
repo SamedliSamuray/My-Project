@@ -1,15 +1,27 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Page Not Found</title>
-    <link rel="stylesheet" href="{%static 'style.css'%}">
+    <link rel="stylesheet" href="{%static 'product.css'%}">
     <link rel="icon" href="/media/navbar-footer_img/melta-logo.png" type="png/x-icon">
 </head>
 <body>
-    <div class="container">
-        Page Not Found   . . .
-    </div>
+    
+        <div class="custom_body">
+            <div class="container">
+                <div class="custom_card">
+                    <h2>Page Not Found</h2>
+                    <p>We're sorry, but the page you're looking for cannot be found. It might have been moved, deleted, or the URL could be incorrect. Please check the URL and try again. You can return to the homepage or use the navigation menu to find what you're looking for. If you need further assistance, feel free to contact our support team.</p>
+                    <div class="custom_button">
+                        <a href="{% url 'home' %}">Go To Home</a>
+                        <a href="javascript:void(0)" onclick="window.history.back()">Back to Page</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
 </body>
 </html>

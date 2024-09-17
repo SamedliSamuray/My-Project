@@ -1,0 +1,38 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link rel="stylesheet" href="{%static 'My_wishlist.css'%}">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Forget_Page</title>
+        <link rel="icon" href="/media/navbar-footer_img/melta-logo.png" type="png/x-icon">
+
+  </head>
+  <body>
+    <div class="Forget__container">
+      <div class="Forget__left-side">
+        <img src="/media/login/Forget_password.png" alt="No Photo" />
+      </div>
+      <div class="Forget__right-side">
+        <div class="Forget__forms"> 
+            <h5 onclick='window.history.back();'>< Back </h5>
+          <h1>Forget Password</h1>
+          <p>Enter your registered email address. we’ll send you a code to reset your password.</p>
+          <form action="/signup" method="POST">  
+            <div class="Forget__Email">
+              <label for="username">Email Address</label>
+              <br />
+              <input type="text" id="username" name="username" required />
+            </div>
+            <div class="Forget_button">
+              <button type="submit">Send OTP</button>
+            </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
+

@@ -10,7 +10,8 @@ admin.site.register(Color, ColorAdmin)
 admin.site.register(Products_Categories)
 admin.site.register(Brand)
 admin.site.register(Comment)
-
+admin.site.register(MyWishList)
+admin.site.register(OrdersPlace)
 class CommentAdmin(admin.ModelAdmin):
     list_display = ('product', 'comment_name', 'comment_email', 'comment_content', 'created_at')
     search_fields = ('comment_name', 'comment_email', 'comment_content')

@@ -49,7 +49,15 @@
           
       </div>
       <div class="">
-        <a style="cursor: pointer;" href="{% url 'payments' %}"><button type="submit" form="deliver" id="proceed-to-checkout">Deliver Here</button></a>
+        
+        {% if address %}
+        <a style="cursor: pointer;" href="{% url 'payments' %}">
+          <button type="submit" form="deliver" id="proceed-to-checkout">Deliver Here</button>
+        </a>
+        {% else %}
+        <button type="submit" disabled form="deliver" id="proceed-to-checkout">Deliver Here</button>
+        {% endif %}
+          
       </div>
       <form action="" id="deliver" method="post"> {% csrf_token %}</form>
     </div>

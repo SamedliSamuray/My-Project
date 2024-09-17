@@ -1,10 +1,12 @@
 from django.http import HttpResponseRedirect
 from django.shortcuts import render,redirect , get_object_or_404
 from .models import *
+from account.models import *
 from django.db.models import Q , Avg , Count
 from .forms import *
 from django.contrib import messages 
 from django.contrib.auth.decorators import login_required
+from urllib.parse import urlparse
 from django.core.paginator import Paginator
 from PIL import Image, ImageChops, ImageStat
 from django.core.files.storage import FileSystemStorage
@@ -17,24 +19,79 @@ def home_view(request):
     user_order_summary = None 
     order = None
     order_count = 0
+    wishlist = None
+    wish_pro = None
+    wish_count = 0
     if request.user.is_authenticated:
-        user_order_summary = UserOrderSummary.objects.get(user=request.user)
+        user_order_summary, created = UserOrderSummary.objects.get_or_create(user=request.user)
+        wishlist , created = MyWishList.objects.get_or_create(user=request.user)
+        wish_pro = set(wishlist.products.values_list('id', flat=True))
+        wish_count = len(wish_pro)
+        user = ProfilPicture.objects.get_or_create(user=request.user)
+        if created:
+            user_order_summary.save()
         order = Order.objects.filter(customers=request.user, status=False)
         order_count = order.count()
     products = Products.objects.all().annotate(average_rating=Avg('comments__rating'))
     products =  products.annotate(review_count=Count('comments')).order_by('-average_rating')[:8]
     products_category = Products_Categories.objects.annotate( items_count = Count('products') )
-    context = {'user_order_summary':user_order_summary,'order':order,'order_count':order_count,"products":products,'products_category':products_category}
+    context = {'user_order_summary':user_order_summary,'order':order,'order_count':order_count,"products":products,'products_category':products_category,'wish_pro':wish_pro,
+    'wish_count':wish_count}
     return render(request,'homepage.html',context)
+
+def about_view(request):
+    order = Order.objects.filter(customers=request.user, status=False)
+    order_count = order.count()
+    user_order_summary, created = UserOrderSummary.objects.get_or_create(user=request.user)
+    user_order_summary.get_orders_by_customer(request.user)
+    wishlist = MyWishList.objects.get(user=request.user)
+    wish_pro = set(wishlist.products.values_list('id', flat=True))
+    wish_count = len(wish_pro)
+    if user_order_summary.discounts:
+        user_order_summary.get_orders_discount(user_order_summary.discounts)
+    context={
+        'user_order_summary':user_order_summary,
+        'order':order,
+        'order_count':order_count,
+        'wish_pro':wish_pro,
+        'wish_count':wish_count
+    }
+    return render(request,'about.html',context)
+
+def blogs_view(request):
+    order = Order.objects.filter(customers=request.user, status=False)
+    order_count = order.count()
+    user_order_summary, created = UserOrderSummary.objects.get_or_create(user=request.user)
+    user_order_summary.get_orders_by_customer(request.user)
+    wishlist = MyWishList.objects.get(user=request.user)
+    wish_pro = set(wishlist.products.values_list('id', flat=True))
+    wish_count = len(wish_pro)
+    if user_order_summary.discounts:
+        user_order_summary.get_orders_discount(user_order_summary.discounts)
+    context={
+        'user_order_summary':user_order_summary,
+        'order':order,
+        'order_count':order_count,
+        'wish_pro':wish_pro,
+        'wish_count':wish_count
+    }
+    return render(request,'blogs.html',context)
+
 
 def products_view(request):
     user_order_summary = None 
     order = None
     order_count = 0
+    wishlist = None
+    wish_pro = None
+    wish_count = 0
     if request.user.is_authenticated:
-        user_order_summary = UserOrderSummary.objects.get(user=request.user)
+        user_order_summary, created = UserOrderSummary.objects.get_or_create(user=request.user)
         order = Order.objects.filter(customers=request.user, status=False)
         order_count = order.count()
+        wishlist = MyWishList.objects.get(user=request.user)
+        wish_pro = set(wishlist.products.values_list('id', flat=True))
+        wish_count = len(wish_pro)
     products_category = Products_Categories.objects.annotate( items_count = Count('products') ).order_by('name')
     brands = Brand.objects.annotate( items_count = Count('products') ).order_by('brand')
     colors = Color.objects.annotate( items_count = Count('products') ).order_by('clName')
@@ -101,7 +158,7 @@ def products_view(request):
     page_obj = paginator.get_page(page_number)
     
     
-    context={'user_order_summary':user_order_summary,'products_count':products_count,'order':order,'order_count':order_count,'products_category':products_category,'brands':brands,"colors":colors,'materials':materials,'products':page_obj,'filter_price_min':filter_price_min,'filter_price_max':filter_price_max,'filter_category':filter_category,'filter_brand':filter_brand,'filter_color':filter_color,'filter_materials':filter_materials,'search':search,'filter_sorter':filter_sorter,'filter_upload_img':filter_upload_img,'params':params}
+    context={'user_order_summary':user_order_summary,'products_count':products_count,'order':order,'order_count':order_count,'products_category':products_category,'brands':brands,"colors":colors,'materials':materials,'products':page_obj,'filter_price_min':filter_price_min,'filter_price_max':filter_price_max,'filter_category':filter_category,'filter_brand':filter_brand,'filter_color':filter_color,'filter_materials':filter_materials,'search':search,'filter_sorter':filter_sorter,'filter_upload_img':filter_upload_img,'params':params,'wish_pro':wish_pro,'wish_count':wish_count}
     
     return render(request,'products.html',context)
 
@@ -115,14 +172,25 @@ def product_details(request, id):
     user_order_summary = None 
     orders = None
     order_count = 0
+    wishlist = None
+    wish_pro = None
+    wish_count =0
+    
     if request.user.is_authenticated:
-        user_order_summary = UserOrderSummary.objects.get(user=request.user)
+        user_order_summary, created = UserOrderSummary.objects.get_or_create(user=request.user)
         orders = Order.objects.filter(customers=request.user, status=False)
         order_count = orders.count()
+        wishlist = MyWishList.objects.get(user=request.user)
+        wish_pro = set(wishlist.products.values_list('id', flat=True))
+        wish_count = len(wish_pro)
     comments = product.comments.all()
     average_rating = comments.aggregate(Avg('rating'))['rating__avg'] or 0
-    
-    
+    profil_image =''
+    if request.user.is_authenticated:
+        user_profile = ProfilPicture.objects.get(user=request.user)
+        profil_image = user_profile.image
+    else:
+        profil_image = '/profil_picture/unnamed.jpg'
     if request.method == 'POST':
        if 'comment_name' in request.POST:
             comment_content = request.POST.get('comment_content')
@@ -132,6 +200,7 @@ def product_details(request, id):
 
             new_comment = Comment(
             comment_name=comment_name,
+            image=profil_image,
             comment_content=comment_content,
             rating=rating,
             product=product
@@ -168,6 +237,7 @@ def product_details(request, id):
             return redirect('products-details', id=product.id)
 
     context = {
+        'wish_pro':wish_pro,
         'order':orders,
         'user_order_summary':user_order_summary,
         'order_count':order_count,
@@ -177,13 +247,15 @@ def product_details(request, id):
         'related': related,
         'comments': comments,
         'average_rating': average_rating,
+        'wish_count':wish_count,
+        'profil_image':profil_image
     }
     return render(request, 'product_details.html', context)
 
 def delete_order(request,id):
     order = get_object_or_404(Order,id=id)
     order.delete() 
-    user_order_summary = UserOrderSummary.objects.get(user=request.user)
+    user_order_summary, created = UserOrderSummary.objects.get_or_create(user=request.user)
     user_order_summary.get_orders_by_customer(request.user)
     if user_order_summary.discounts:
        user_order_summary.get_orders_discount(user_order_summary.discounts)
@@ -202,7 +274,7 @@ def update_order(request,id):
     
         order.price = order.quantity * order.product.price
         order.save()
-        user_order_summary = UserOrderSummary.objects.get(user=request.user)
+        user_order_summary, created = UserOrderSummary.objects.get_or_create(user=request.user)
         user_order_summary.get_orders_by_customer(request.user)
         if user_order_summary.discounts:
            user_order_summary.get_orders_discount(user_order_summary.discounts)
@@ -216,8 +288,11 @@ def checkout_view(request):
    
     order = Order.objects.filter(customers=request.user, status=False)
     order_count = order.count()
-    user_order_summary = UserOrderSummary.objects.get(user=request.user)
+    user_order_summary, created = UserOrderSummary.objects.get_or_create(user=request.user)
     user_order_summary.get_orders_by_customer(request.user)
+    wishlist = MyWishList.objects.get(user=request.user)
+    wish_pro = set(wishlist.products.values_list('id', flat=True))
+    wish_count = len(wish_pro)
     if user_order_summary.discounts:
         user_order_summary.get_orders_discount(user_order_summary.discounts)
       
@@ -225,26 +300,31 @@ def checkout_view(request):
         'user_order_summary':user_order_summary,
         'order':order,
         'order_count':order_count,
+        'wish_pro':wish_pro,
+        'wish_count':wish_count
     }
     return render(request,'checkout.html',context)
 
 def shipping_view(request):
     order = Order.objects.filter(customers=request.user, status=False)
     order_count = order.count()
-    user_order_summary = UserOrderSummary.objects.get(user=request.user)
+    user_order_summary, created = UserOrderSummary.objects.get_or_create(user=request.user)
     address = UserAddress.objects.filter(user=request.user)
+    wishlist = MyWishList.objects.get(user=request.user)
+    wish_pro = set(wishlist.products.values_list('id', flat=True))
+    wish_count = len(wish_pro)
     if request.method == 'POST':
         id=request.POST.get('default_adress')
         default_address = UserAddress.objects.get(id=id)
         user_order_summary.address = default_address
         user_order_summary.save()
         return redirect('payments')
-    context={'address':address,'user_order_summary':user_order_summary,'order':order,'order_count':order_count}
+    context={'address':address,'user_order_summary':user_order_summary,'order':order,'order_count':order_count,'wish_pro':wish_pro,'wish_count':wish_count}
     return render(request,'shipping.html',context)
 
 def apply_discount(request):
     order = Order.objects.filter(customers=request.user, status=False)
-    user_order_summary = UserOrderSummary.objects.get(user=request.user)
+    user_order_summary, created = UserOrderSummary.objects.get_or_create(user=request.user)
     user_order_summary.get_orders_by_customer(request.user)
     discount_code = request.POST.get('discount_code')
     messages
@@ -274,7 +354,7 @@ def apply_discount(request):
 
 def delete_discount(request):
     
-    user_order_summary = UserOrderSummary.objects.get(user=request.user)
+    user_order_summary, created = UserOrderSummary.objects.get_or_create(user=request.user)
     user_order_summary.discounts = None
     user_order_summary.discount_value = 0
     user_order_summary.get_orders_by_customer(request.user)
@@ -305,7 +385,7 @@ def delete_address(request,id):
 def update_address(request,id):
     order = Order.objects.filter(customers=request.user, status=False)
     order_count = order.count()
-    user_order_summary = UserOrderSummary.objects.get(user=request.user)
+    user_order_summary, created = UserOrderSummary.objects.get_or_create(user=request.user)
     address = UserAddress.objects.filter(user=request.user)
     update_address = get_object_or_404(UserAddress, id=id)
     if request.method == 'POST':
@@ -334,9 +414,13 @@ def update_address(request,id):
 def payments_view(request):
     order = Order.objects.filter(customers=request.user, status=False)
     order_count = order.count()
-    user_order_summary = UserOrderSummary.objects.get(user=request.user)
+    user_order_summary, created = UserOrderSummary.objects.get_or_create(user=request.user)
     address = UserAddress.objects.filter(user=request.user)
-    context={'address':address,'user_order_summary':user_order_summary,'update_address': update_address,'order':order,'order_count':order_count}
+    wishlist = MyWishList.objects.get(user=request.user)
+    wish_pro = set(wishlist.products.values_list('id', flat=True))
+    wish_count = len(wish_pro)
+    context={'address':address,'user_order_summary':user_order_summary,'update_address': update_address,'order':order,'order_count':order_count,'wish_pro':wish_pro,
+    'wish_count':wish_count}
     return render(request, 'payment.html',context)
 
 def add_card(request):
@@ -397,8 +481,11 @@ def update_card(request ,id):
 def order_summary_view(request):
     order = Order.objects.filter(customers = request.user)
     order_count = order.count()
-    user_order_summary = UserOrderSummary.objects.get(user = request.user)
-    context ={'order':order,'user_order_summary':user_order_summary,'order_count':order_count}
+    user_order_summary, created = UserOrderSummary.objects.get_or_create(user=request.user)
+    wishlist = MyWishList.objects.get(user=request.user)
+    wish_pro = set(wishlist.products.values_list('id', flat=True))
+    wish_count = len(wish_pro)
+    context ={'order':order,'user_order_summary':user_order_summary,'order_count':order_count,'wish_pro':wish_pro,'wish_count':wish_count}
     if not user_order_summary.payments.transaction_id :
         messages.warning(request,'Please add your payment information . . .')
         return redirect('payments')
@@ -407,8 +494,27 @@ def order_summary_view(request):
 def my_order_view(request):
     order = Order.objects.filter(customers = request.user)
     order_count = order.count()
-    user_order_summary = UserOrderSummary.objects.get(user = request.user)
-    context ={'order':order,'user_order_summary':user_order_summary,'order_count':order_count}
+    place_order = OrdersPlace.objects.filter(customers = request.user)
+    user_order_summary, created = UserOrderSummary.objects.get_or_create(user=request.user)
+    wishlist = MyWishList.objects.get(user=request.user)
+    wish_pro = set(wishlist.products.values_list('id', flat=True))
+    wish_count = len(wish_pro)
+    search_place = request.GET.get('search_place','')  
+    if request.method == 'GET':
+        if search_place:
+            place_order = place_order.filter( 
+            Q(product__brand__brand__icontains = search_place) | Q(product__color__clName__icontains = search_place) | Q(product__category__name__icontains = search_place) | Q(product__name__icontains = search_place)
+            )
+    context = {
+    'order':order,
+    'user_order_summary':user_order_summary,
+    'order_count':order_count,
+    'wish_pro':wish_pro,
+    'wish_count':wish_count,
+    'place_order':place_order,
+    'search_place':search_place,
+    } 
+    
     return render(request,'myOrders.html',context)
 
 
@@ -442,8 +548,8 @@ def find_similar_products(filter_upload_img, products):
     return [product for rms, product in similarities]
 
 
-def custom_404(request, exception):
-    return render(request, '404.html', status=404)
+def custom_404(request):
+    return render(request, '404.html')
 
 def clear_filter_image_folder(request):
     filter_image_folder = os.path.join(settings.MEDIA_ROOT, 'filter_image')
@@ -460,9 +566,201 @@ def clear_filter_image_folder(request):
     return redirect('products')
 
 
+def my_wishlist(request):
+    order = Order.objects.filter(customers=request.user, status=False)
+    order_count = order.count()
+    user_order_summary, created = UserOrderSummary.objects.get_or_create(user=request.user)
+    user_order_summary.get_orders_by_customer(request.user)
+    wishlist = MyWishList.objects.get(user=request.user)
+    wish_pro = set(wishlist.products.values_list('id', flat=True))
+    products = wishlist.products.all()
+    wish_count = len(wish_pro)
+    if user_order_summary.discounts:
+        user_order_summary.get_orders_discount(user_order_summary.discounts)
+      
+    context={
+        'user_order_summary':user_order_summary,
+        'order':order,
+        'order_count':order_count,
+        'wish_pro':wish_pro,
+        'wish_count':wish_count,
+        'products':products,
+    }
+    return render(request,'My_wishlist.html',context)
+
+def add_wishlist(request,id):
+    product = get_object_or_404(Products, id=id)
+    wishlist, created = MyWishList.objects.get_or_create(user=request.user)
+    wishlist.products.add(product)
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+def remove_wishlist(request,id):
+    product = get_object_or_404(Products, id=id)
+    wishlist, created = MyWishList.objects.get_or_create(user=request.user)
+    wishlist.products.remove(product)
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+def my_profil(request):
+    order = Order.objects.filter(customers=request.user, status=False)
+    order_count = order.count()
+    user_order_summary, created = UserOrderSummary.objects.get_or_create(user=request.user)
+    user_order_summary.get_orders_by_customer(request.user)
+    wishlist = MyWishList.objects.get(user=request.user)
+    wish_pro = set(wishlist.products.values_list('id', flat=True))
+    wish_count = len(wish_pro)
+    if user_order_summary.discounts:
+        user_order_summary.get_orders_discount(user_order_summary.discounts)
+    if request.method == 'POST':
+        profile_image = request.FILES.get('profil_img')
+        user_profile = ProfilPicture.objects.get(user=request.user)
+        
+        if profile_image:
+            user_profile.image = profile_image  
+            user_profile.save()  
+        
+        return redirect('my-profil') 
+    context={
+        'user_order_summary':user_order_summary,
+        'order':order,
+        'order_count':order_count,
+        'wish_pro':wish_pro,
+        'wish_count':wish_count
+    }
+    return render(request,'My_profile.html',context)
+
+def update_user(request):
+    user = request.user
+    
+    if request.method == 'POST':
+        name = request.POST.get('name','')
+        surname = request.POST.get('surname','')
+        address = request.POST.get('address','')
+        email = request.POST.get('email','')
+        phone = request.POST.get('phone','')
+        
+        user.first_name = name
+        user.last_name = surname
+        user.email = email
+        user.save()
+        userProfil, created = ProfilPicture.objects.get_or_create(user=request.user)
+        userProfil.user_address = address
+        userProfil.phone = phone
+        userProfil.save()
+        
+    return redirect('my-profil')
+
+def my_settings(request):
+    order = Order.objects.filter(customers=request.user, status=False)
+    order_count = order.count()
+    user_order_summary, created = UserOrderSummary.objects.get_or_create(user=request.user)
+    user_order_summary.get_orders_by_customer(request.user)
+    wishlist = MyWishList.objects.get(user=request.user)
+    wish_pro = set(wishlist.products.values_list('id', flat=True))
+    wish_count = len(wish_pro)
+    if user_order_summary.discounts:
+        user_order_summary.get_orders_discount(user_order_summary.discounts)
+      
+    context={
+        'user_order_summary':user_order_summary,
+        'order':order,
+        'order_count':order_count,
+        'wish_pro':wish_pro,
+        'wish_count':wish_count,
+    }
+    return render(request,'settings.html',context)
+def notifications(request):
+    order = Order.objects.filter(customers=request.user, status=False)
+    order_count = order.count()
+    user_order_summary, created = UserOrderSummary.objects.get_or_create(user=request.user)
+    user_order_summary.get_orders_by_customer(request.user)
+    wishlist = MyWishList.objects.get(user=request.user)
+    wish_pro = set(wishlist.products.values_list('id', flat=True))
+    wish_count = len(wish_pro)
+    if user_order_summary.discounts:
+        user_order_summary.get_orders_discount(user_order_summary.discounts)
+      
+    context={
+        'user_order_summary':user_order_summary,
+        'order':order,
+        'order_count':order_count,
+        'wish_pro':wish_pro,
+        'wish_count':wish_count
+    }
+    return render(request,'notifications.html',context)
+
+def add_place_order(request):
+    order = Order.objects.filter(customers=request.user)
+    place = OrdersPlace.objects.filter(customers=request.user,status=False) 
+    user_order_summary, created = UserOrderSummary.objects.get_or_create(user=request.user)
+    for ord in order:
+        place = OrdersPlace(
+            customers = request.user,
+            product = ord.product,
+            quantity = ord.quantity,
+            price = ord.price,
+            delivery = ord.delivery,
+            discounts = ord.discounts,
+            status = False
+            
+        )
+        place.save()
+        ord.delete()
+    user_order_summary.discount_value = 0
+    user_order_summary.discounts = None
+    user_order_summary.subtotal = 0
+    user_order_summary.total_delivery_cost = 0
+    user_order_summary.grand_total = 0 
+    user_order_summary.save()
+
+    
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
+def manage_address_view(request):
+    address = UserAddress.objects.filter(user=request.user)
+    order = Order.objects.filter(customers=request.user, status=False)
+    order_count = order.count()
+    user_order_summary, created = UserOrderSummary.objects.get_or_create(user=request.user)
+    user_order_summary.get_orders_by_customer(request.user)
+    wishlist = MyWishList.objects.get(user=request.user)
+    wish_pro = set(wishlist.products.values_list('id', flat=True))
+    wish_count = len(wish_pro)
+    if user_order_summary.discounts:
+        user_order_summary.get_orders_discount(user_order_summary.discounts)
+      
+    context={
+        'user_order_summary':user_order_summary,
+        'order':order,
+        'order_count':order_count,
+        'wish_pro':wish_pro,
+        'wish_count':wish_count,
+        'address':address,
+    }
+    return render(request,'manage_address.html',context)
 
+def saved_cards_view(request):
+    
+    payments = Payments.objects.filter(user=request.user)
+    order = Order.objects.filter(customers=request.user, status=False)
+    order_count = order.count()
+    user_order_summary, created = UserOrderSummary.objects.get_or_create(user=request.user)
+    user_order_summary.get_orders_by_customer(request.user)
+    wishlist = MyWishList.objects.get(user=request.user)
+    wish_pro = set(wishlist.products.values_list('id', flat=True))
+    wish_count = len(wish_pro)
+    if user_order_summary.discounts:
+        user_order_summary.get_orders_discount(user_order_summary.discounts)
+      
+    context={
+        'user_order_summary':user_order_summary,
+        'order':order,
+        'order_count':order_count,
+        'wish_pro':wish_pro,
+        'wish_count':wish_count,
+        'payments':payments,
+    }
+    
+    return render(request,'saved_cards.html',context)
 
 
 

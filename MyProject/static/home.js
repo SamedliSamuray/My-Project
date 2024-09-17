@@ -86,6 +86,29 @@ scrollFunction()
 mybutton.addEventListener('click',()=>{
   document.body.scrollTop = 0; 
   document.documentElement.scrollTop = 0;
+
 })
 
-    
+document.addEventListener('DOMContentLoaded',()=>{
+    if (localStorage.getItem('confirmed_message') == 'true') {
+        confirmed_view()
+      }
+})
+
+let confirmed_messages = document.querySelector('.confirmed_messages')
+
+function confirmed_view(){
+    confirmed_messages.style.display = 'inline-block'
+    confirmed_messages.style.height = document.body.offsetHeight + 'px'
+    localStorage.setItem('confirmed_message','true')
+}
+
+function confirmed_false(){
+    localStorage.setItem('confirmed_message','false')
+}
+
+function order_search(e){
+    if (e.keyCode === 13) {
+        document.getElementById('order_search').submit()
+    }
+}

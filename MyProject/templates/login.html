@@ -1,0 +1,74 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="{%static 'My_wishlist.css'%}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="/media/navbar-footer_img/melta-logo.png" type="png/x-icon">
+    <title>Login</title>
+  </head>
+  <body>
+    <div class="login__container">
+      <div class="login__left-side">
+        <img src="/media/login/background_image.png" alt="No Photo" />
+      </div>
+      <div class="login__right-side">
+        <div class="login__forms">
+          <h1>Welcome 👋</h1>
+          <p>Please login here</p>
+          <form action="" method="POST">
+            {% csrf_token %}
+            <div class="login__Email">
+              <label for="username">Email Address</label>
+              <br/>
+              <input {% if username %} value={{username}} {% endif %} type="text" id="username" name="username" required />
+              <span class="err_messages">
+                {% for message in messages %}
+                    
+                    {% if 'username'   in message.tags %}
+                        {{message}}
+                    {% endif %}
+                        
+                {% endfor %}
+                    
+              </span>
+            </div>
+            <div class="login__Password">
+              <label for="password">Password</label>
+              <br />
+              <div class="login__password-wrapper">
+                <input type="password" id="password" name="password" required />
+                <i onclick="togglePassword(event)" class="fa-regular fa-eye signup__eye" id="toggleEye"></i>
+              </div>
+              <span class="err_messages">
+                {% for message in messages %}
+                    
+                    {% if 'password'   in message.tags %}
+                        {{message}}
+                    {% endif %}
+                        
+                {% endfor %}
+                    
+              </span>
+              <br />
+              <div class="login__add">
+                <input type="checkbox" name="remember" id="check" />
+                <label for="check">Remember me</label>
+                <h4><a href="{% url 'account:forget' %}">Forget Password?</a></h4>
+              </div>
+            </div>
+            
+            <div class="login__button">
+              <button type="submit">Login</button>
+              <a class="login_choices" href="{% url 'account:signup'%}"><span>Don't have an account?</span></a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <script src="{% static 'wishlist.js'%}"></script>
+  </body>
+</html>

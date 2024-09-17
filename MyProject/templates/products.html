@@ -264,7 +264,21 @@
                         </div>
 
                         <div class="img_icons">            
-                            <i class="fa-regular fa-star product_icon_home"></i>
+                            {% if request.user.is_authenticated %}
+                                {% if product.id in wish_pro %}
+                                <a href="{% url 'remove-wishlist' product.id %}">
+                                <i style="color: gold;" class="fa-solid fa-star product_icon_home wishlist_add"></i>
+                                </a>
+                                {% else %}
+                                    <a href="{% url 'add-wishlist' product.id %}">
+                                        <i class="fa-regular fa-star product_icon_home"></i>
+                                    </a>
+                                {% endif %}
+                            {% else %}
+                            <a href="{% url 'account:login'  %}">
+                                <i class="fa-regular fa-star product_icon_home"></i>
+                            </a>
+                            {% endif %}
                             <i onmouseenter="pro_img_slider(event)" onmouseleave="pro_img_slider_stop(event)" class="fa-solid fa-right-left product_icon_home"></i>
                             <i  class="fa-regular fa-eye product_icon_home" onclick="toggleFullscreen(event,'product_image_{{ product.id }}')"></i>
                         </div>

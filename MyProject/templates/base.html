@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="{% static 'product.css'%}">
     <link rel="stylesheet" href="{%static 'style.css'%}">
+    <link rel="stylesheet" href="{%static 'My_wishlist.css'%}">
     <link rel="icon" href="/media/navbar-footer_img/melta-logo.png" type="png/x-icon">
     <title>
         Meta
@@ -37,12 +38,14 @@
                 <a href="{% url 'products' %}">Shop <img src="/media/navbar-footer_img/down.svg" alt="down" /></a>
                 <ul class="dropdown">
                   <li><a href="{% url 'products' %}">Products</a></li>
-                  <li><a href="{% url 'checkout' %}">Checkout </a></li>
-                  <li><a href="{% url 'checkout' %}">Default </a></li>
+                  <li><a href="{% url 'my-profil' %}">My Profile </a></li>
+                  <li><a href="{% url 'my-wishlist' %}">My Wishlist </a></li>
+                  <li><a href="{% url 'my-order' %}">My Orders </a></li>
+  
                 </ul>
               </li>
-              <li><a href="">About Us</a></li>
-              <li><a href="">Blog</a></li>
+              <li><a href="{% url 'about'%}">About Us</a></li>
+              <li><a href="{% url 'blogs'%}">Blog</a></li>
             </ul>
           </div>
           <div class="nav_login">
@@ -74,15 +77,28 @@
 
                   <img onclick='searchClick(event)' style='margin-left:10px;width:25px;height:25px'  src="/media/navbar-footer_img/search_icon.svg" alt="" />
               </li>
-              <li>
+              <li> 
+                <a 
                 
+                {% if request.user.is_authenticated %}
+                  href="{% url 'my-wishlist'%}"
+                {% else %}
+                  href="{% url 'account:login'%}"
+                {% endif %}
+                  
+                style="position: relative;display:flex;">
                   <img src="/media/navbar-footer_img/fav_icon.svg" alt="" />
-                
+                  {% if wish_pro %}
+                    <span id="shopcount">{{wish_count}}</span>
+                  {% endif %}
+                </a>
               </li>
               <li>
                 <button id="shop_btn" onclick="card_view()" class="icon_button">
                   <img src="/media/navbar-footer_img/shopbuy_icon.svg" alt="" />
-                  <span id="shopcount">{{order_count}}</span>
+                  {% if order %}
+                    <span id="shopcount">{{order_count}}</span>
+                  {% endif %}
                 </button>
               </li>
             </ul>
@@ -91,14 +107,17 @@
             <div class="user_navbar">
               <a href="{% url 'my-order' %}">
                 <div class="user_img">
-                  <img src="https://static.vecteezy.com/system/resources/previews/005/129/844/non_2x/profile-user-icon-isolated-on-white-background-eps10-free-vector.jpg" alt="">
+                  <img src="{{ request.user.profilpicture.image.url}}" alt="Profile Picture" />
                 </div>
-                <h6>{{request.user.first_name|title}} {{request.user.last_name|title}}</h6>
+                <h5>{{request.user.first_name|title}}</h5>
               </a>
               
             </div>
+            <div>
+              <a href="{% url 'account:logout'%}"><i class="fa-solid fa-arrow-right-from-bracket"></i></a>
+            </div>
               {% else %}
-              <button class="login-button"><span>Login</span></button>
+              <a href="{% url 'account:login'%}"><button class="login-button"><span>Login</span></button></a>
             {% endif %}
               
           </div>
@@ -148,21 +167,34 @@
         
           <ul>
             <li><span class="bold">Information</span></li>
-            <li><a href="">My Account</a></li>
-            <li><a href="">Login</a></li>
+            <li><a 
+            {% if request.user.is_authenticated %}
+              href="{% url 'my-profil' %}"
+            {% else %}
+              href="{% url 'account:login'%}"
+            {% endif %}
+              
+              >My Account</a></li>
+            <li><a 
+              {% if request.user.is_authenticated %}
+              href="{% url 'home' %}"
+            {% else %}
+              href="{% url 'account:login'%}"
+            {% endif %}
+              >Login</a></li>
             <li><a 
             {% if request.user.is_authenticated %}
               href="{% url 'checkout' %}"
             {% else %}
-              href=""
+              href="{% url 'account:login'%}"
             {% endif %}
               >My Cart</a></li>
             <li>
               <a 
             {% if request.user.is_authenticated %}
-              href=""
+              href="{% url 'my-wishlist' %}"
             {% else %}
-              href=""
+              href="{% url 'account:login'%}"
             {% endif %}
             >My Wishlist</a>
           </li>
@@ -170,7 +202,7 @@
             {% if request.user.is_authenticated %}
               href="{% url 'shipping' %}"
             {% else %}
-              href=""
+              href="{% url 'account:login'%}"
             {% endif %}
             >Checkout</a></li>
             
@@ -179,12 +211,7 @@
           <ul>
             <li><span class="bold">Service</span></li>
             <li>
-              <a 
-                {% if request.user.is_authenticated %}
-                href=""
-              {% else %}
-                href=""
-              {% endif %}>
+              <a href="">
               About Us
               </a>
             </li>
@@ -318,7 +345,7 @@
                   {% if request.user.is_authenticated %}
                     href="{% url 'checkout' %}"
                   {% else %}
-                    href=""
+                    href="{% url 'account:login' %}"
                   {% endif %}>
                      
                     <button title="view" type="button" class="view_card">View Card</button>
@@ -329,7 +356,7 @@
                   {% if request.user.is_authenticated %}
                     href="{% url 'shipping' %}"
                   {% else %}
-                     href=""
+                     href="{% url 'account:login' %}"
                   {% endif %}>
                      
                   <button title="checkout" type="button" class="card_checkout">Checkout</button>
@@ -347,6 +374,7 @@
       <button id="up_icon" type="button" ><i id="up_i"  class="fa-solid fa-hand-point-up"></i></button>
     <script src="{% static 'product.js'%}"></script>
     <script src="{% static 'home.js'%}"></script>
+    <script src="{% static 'wishlist.js'%}"></script>
 </body>
 </html>
 

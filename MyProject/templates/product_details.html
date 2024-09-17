@@ -111,19 +111,41 @@
                         {% csrf_token %}
                         <!-- Selected product -->
                         <input type="hidden" value="{{product.id}}" form="checking_form" name="product_id">
-                        <button
                         
-                        {% if not request.user.is_authenticated %}
-                            disabled
+                        {% if request.user.is_authenticated %}
+                        <button type="submit" form="checking_form" class="pro_btn">
+                           Add To Card
+                       </button>
+                        {% else %}
+                            <a style="height: 100%;" href="{% url 'account:login' %}">
+                                <button type="" disabled class="pro_btn">
+                                    Add To Card
+                                </button>
+                            </a>
                         {% endif %}
                             
-                         type="submit" form="checking_form" class="pro_btn">
-                            Add To Card
-                        </button>
                     </form>
                     
                     <!-- Favorites add -->
-                    <div class="pro_heart"><i class="fa-regular fa-heart"></i></div>
+                    <div class="pro_heart">
+                        
+                        {% if request.user.is_authenticated %}
+                            {% if product.id in wish_pro %}
+                            <a href="{% url 'remove-wishlist' product.id %}">
+                                <i style='color:red;' class="fa-solid fa-heart"></i>
+                            </a>
+                            {% else %}
+                                <a href="{% url 'add-wishlist' product.id %}">
+                                    <i class="fa-regular fa-heart"></i>
+                                </a>
+                            {% endif %}
+                        {% else %}
+                        <a href="{% url 'account:login'%}">
+                            <i class="fa-regular fa-heart"></i>
+                        </a> 
+                        {% endif %}
+                            
+                    </div>
                 </div>
 
                 <!-- Products shared social -->
@@ -186,7 +208,23 @@
                                 {% endfor %}                                   
                             </div>
                             <div class="rel_img_icons">
-                                <i class="fa-regular fa-star"></i>
+                                
+                                {% if request.user.is_authenticated %}
+                                    {% if rel.id in wish_pro %}
+                                    <a href="{% url 'remove-wishlist' product.id %}">
+                                    <i style="color: gold;" class="fa-solid fa-star  wishlist_add"></i>
+                                    </a>
+                                    {% else %}
+                                        <a href="{% url 'add-wishlist' product.id %}">
+                                            <i class="fa-regular fa-star "></i>
+                                        </a>
+                                    {% endif %}
+                                {% else %}
+                                <a href="{% url 'account:login'  %}">
+                                    <i class="fa-regular fa-star "></i>
+                                    </a> 
+                                {% endif %}
+                                    
                                 <i onmouseenter="pro_img_slider(event)" onmouseleave="pro_img_slider_stop(event)" class="fa-solid fa-right-left"></i>
                                 <i class="fa-regular fa-eye" onclick="toggleFullscreen(event,'rel_image_{{ rel.id }}')"></i>
                             </div>

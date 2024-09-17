@@ -91,6 +91,7 @@ class UserAddress(models.Model):
 class Comment(models.Model):
     product = models.ForeignKey(Products,related_name='comments', on_delete=models.CASCADE)
     comment_name = models.CharField(max_length=50,verbose_name=_('Name:'))
+    image = models.ImageField(blank=True)
     rating = models.IntegerField(
         verbose_name=_('Rating'),
         default=0,
@@ -177,4 +178,21 @@ class UserOrderSummary(models.Model):
             self.discounts = None
         self.save()
 
-
+class MyWishList(models.Model):
+    user = models.OneToOneField(User,on_delete=models.CASCADE)
+    products = models.ManyToManyField(Products, related_name='wishlist')
+    
+    def __str__(self) :
+        return self.user.username
+class OrdersPlace(models.Model):
+    product = models.ForeignKey(Products,related_name='place', on_delete=models.CASCADE)
+    customers = models.ForeignKey(User,on_delete=models.CASCADE)
+    quantity = models.IntegerField(default=1)
+    price = models.IntegerField()
+    date = models.DateTimeField(auto_now_add=True)
+    status = models.BooleanField(default=False)
+    delivery = models.IntegerField(default=5,blank=True)
+    discounts= models.ForeignKey(Discounts,null=True,db_constraint=False,on_delete=models.CASCADE,blank=True )
+    def __str__(self):
+        return self.product.name
+    

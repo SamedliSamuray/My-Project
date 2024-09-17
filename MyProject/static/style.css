@@ -18,9 +18,7 @@ body {
   width: 1140px;
   max-width: 95%;
   margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 100px;
+
 }
 
 /* -------------------------------------------------------------------------------------------------------------- */
@@ -93,7 +91,7 @@ body {
   height: 25px;
   position: relative;
   border-radius: 50%;
-  border: 1px solid black;
+  border: 1px solid gainsboro;
 
 }
 .user_navbar a{
@@ -105,7 +103,8 @@ body {
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  object-fit: contain;
+  object-fit: cover;
+  object-position: top;
 }
 
 
@@ -773,6 +772,9 @@ footer {
   align-items: flex-start;
   gap: 50px;
 }
+.checkout>a{
+  width: 100%;
+}
 
 .checkout h1 {
   padding-bottom: 50px;
@@ -866,7 +868,6 @@ footer {
   width: 51px;
   height: 48.96px;
   flex-shrink: 0;
-  padding: 10px;
 
 }
 /* .media_text{
@@ -1309,13 +1310,15 @@ input[name='payment_method']:checked+form{
 
 .order_pro_img {
   border-radius: 5px;
+  width: 60px;
+  position: relative;
   border: 0.585px solid var(--gray-gray-20, rgba(163, 170, 171, 0.2));
 }
 
 .order_pro_img img {
-  width: 57.557px;
-  height: 55.255px;
-  padding: 10px;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .order_pro_detail {
@@ -1340,22 +1343,98 @@ input[name='payment_method']:checked+form{
   padding-bottom: 10px;
   border-bottom: 1px solid rgba(163, 170, 171, 0.2);
 }
+/* confirmed message */
+.confirmed_messages{
+  display: none;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0px;
+  right: 0px;
+  background-color: rgba(73, 71, 71, 0.253);
+  z-index: 5;
+}
+.confirmed_card{
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  text-align: center;
+  width: 25%;
+  background-color: white;
+  border-radius: 5px;
+  left: 40%;
+  top: 200px;
+  position: absolute;
+  padding: 20px;
+}
+.confirmed_detail{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.confirmed_icon{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.confirmed_icon i{
+  background:radial-gradient(circle at center,#088395 0% 40%,#DBEEF0 40% 55%,#F2F9F9 55% 100%);
+  border-radius: 50%;
+  padding: 40px;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.confirmed_button{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
 
+.confirmed_button button{
+  height: 50px;
+  width: 100%;
+  border-radius: 10px;
+  cursor: pointer;
+}
+.confirmed_view{
+  background-color: #088395;
+  color: white;
+}
+.confirmed_back{
+  border: 1px solid #088395;
+  color: #088395;
+}
+
+
+
+
+
+/*  */
+.buy_details_order{
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.shipping_address_content{
+  border-bottom: 1px solid whitesmoke;
+  padding: 10px 0px;
+}
 .shipping_add_text {
   padding-bottom: 20px;
 }
 
 .adress_edit_name span {
-  line-height: 30px;
   margin-top: 10px;
 }
 
-.address_edit {
-  width: calc(50%-100px * 0.5);
+.adress_edit {
+  width: 100%;
   display: flex;
   align-items: center;
-  gap: 100px;
-
+  justify-content: space-between;
 }
 
 
@@ -1376,12 +1455,18 @@ input[name='payment_method']:checked+form{
 /* yazilmali */
 /* .adress_edit_btn{} */
 .adress_edit_btn i {
+
+}
+.adress_edit_btn a {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.adress_edit_btn{
   width: 40px;
   height: 40px;
-  padding: 20px;
-}
-
-.adreess_edit_btn button {
   border-radius: 10px;
   background: var(--gray-gray-10, rgba(163, 170, 171, 0.1));
 }
@@ -1418,6 +1503,43 @@ input[name='payment_method']:checked+form{
   gap: 30px;
 }
 
+.profile_head{
+  display: flex;
+  justify-content: space-between;
+  padding: 20px 0px;
+}
+.profile_search {
+  display: flex;
+  gap: 10px;
+}
+.profile_search form{
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.profile_search form input{
+  position: relative;
+  outline: none;
+  border: 1px solid gainsboro;
+  height: 45px;
+  border-radius: 10px;
+  padding: 0px 30px;
+}
+.profile_search form i{
+  position: absolute;
+  top: auto;
+  left: 5px;
+  font-size: 20px;
+}
+
+.filter_btn button{
+  cursor: pointer;
+  background-color: #088395;
+  padding: 0px 20px;
+  color: white;
+  height: 100%;
+  border-radius: 10px;
+}
 .profile_left {
   width: calc(25% - 10px * 0.25);
   display: flex;
@@ -1432,9 +1554,17 @@ input[name='payment_method']:checked+form{
   display: flex;
   flex-direction: column;
   gap: 20px;
-  border: 1px solid rgba(163, 170, 171, 0.2);
-}
+  padding: 10px 5px;
 
+}
+.notProducts{
+  color: grey;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  width:100%;
+  margin-top:20%;
+}
 .profile_detail {
   display: flex;
   align-items: center;
@@ -1499,12 +1629,15 @@ input[name='payment_method']:checked+form{
 .my_order_pro_img {
   border-radius: 5px;
   border: 0.585px solid var(--gray-gray-20, rgba(163, 170, 171, 0.2));
+  position: relative;
+  width: 60px;
 }
 
 .my_order_pro_img img {
-  width: 57.557px;
-  height: 55.255px;
-  padding: 10px;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  height: 100%;
 }
 
 .my_order_pro_detail {
@@ -1550,6 +1683,12 @@ input[name='payment_method']:checked+form{
   border-radius: 4px;
   background: rgba(60, 209, 57, 0.1);
   color: #3cd139;
+  padding: 10px 10px;
+}
+#process_effect{
+  border-radius: 4px;
+  background: rgba(176, 209, 57, 0.1);
+  color: #d1d139;
   padding: 10px 10px;
 }
 
@@ -1682,6 +1821,7 @@ input[name='payment_method']:checked+form{
 }
 #up_icon:hover{
   box-shadow: 0px 0px 10px 10px #08829545;
+  filter: brightness(1.3);
 }
 
 @keyframes reverse-up {
@@ -1696,4 +1836,33 @@ input[name='payment_method']:checked+form{
   100% {
       transform: translateY(0px);
   }
+}
+
+.manage_address{
+  display: flex;
+  gap: 20px;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  height: 100%;
+}
+
+
+/* Messages */
+
+.messages{
+  text-align: center;
+  display: flex;
+  align-items: center;
+  border-radius: 10px;
+  padding: 50px;
+  position: absolute;
+  top: 200px;
+  left: 40%;
+}
+.message_success{
+  border: 1px solid #28a745;
+  background-color:#d4edda;
+  color: #155724;
+
 }

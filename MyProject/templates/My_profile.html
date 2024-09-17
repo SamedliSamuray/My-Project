@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block body %}
+
+<div class="">
+
+    <h1 class="my_profile_text">My Profile</h1>
+    <div class="keep">
+        <div class="sidebar">
+            <div class="profile_setings">
+                <div class="profile_img_sidebar">
+                    <img src="{{ request.user.profilpicture.image.url}}" alt="Profile Picture" />
+                </div>
+                <div class="greeting">
+                    <p>Hello <span class="wave">👋</span></p>
+                    <h2>{{request.user.first_name}} {{request.user.last_name}}</h2>
+                </div>
+            </div>
+            <ul class="menu">
+                <a href="{% url 'my-profil' %}"><li class="active"><img src="/media/login/user.svg" alt=""><span>Personal Information</span></li></a>
+                <a href="{% url 'my-order'%}"><li ><img src="/media/login/box.svg" alt=""><span>My Orders</span></li></a>
+                <a href="{% url 'my-wishlist'%}"><li ><img src="/media/login/heart.svg" alt=""><span>My Wishlists</span></li></a>
+                <a href="{% url 'manage-address'%}"><li ><img src="/media/login/location.svg" alt=""><span>Manage Addresses</span></li></a>
+                <a href="{% url 'saved-cards'%}"><li><img src="/media/login/card.svg" alt=""><span>Saved Cards</span></li></a>
+                <a href="{% url 'notifications'%}"><li ><img src="/media/login/notification.svg" alt=""><span>Notifications</span></li></a>
+                <a href="{% url 'my-settings'%}"><li ><img src="/media/login/setting.svg" alt=""><span>Settings</span></li></a>
+              </ul>
+        </div>
+        <div class="message">
+            <div class="profile">
+                <div class="profile_img">
+                                  
+                <img src="{{ request.user.profilpicture.image.url}}" alt="Profile Picture" />         
+               <span class="edit_icon">
+                 <form class="" action="" enctype="multipart/form-data" method="post">
+                    {% csrf_token %}
+  
+                    <label  for="profil_image">
+                      <input type="file" style='display:none' onchange="this.form.submit()" id="profil_image" class="" accept="image/*"  src="" name="profil_img" alt="">
+  
+                      <i class="fa-regular fa-pen-to-square"></i>
+  
+                  </label>
+                  </form>
+                </span>
+                </div>
+
+                <div class="edit_btn">
+                    <a href="{% url 'update-user'%}"><button form='user_form'  type='this.form.submit'><i class="fa-regular fa-pen-to-square"></i>Edit Profile</button></a>
+                </div>
+            </div>
+            <form action="{% url 'update-user' %}" id='user_form' method="POST">
+                {% csrf_token %}
+                <label for="username">First Name
+                    <input type="text" value='{{request.user.first_name}}' id="username" name="name" required /></label>
+                <label for="username">Surname
+                    <input type="text" value='{{request.user.last_name}}' id="surname" name="surname" required />
+                </label>
+                <label for="username">Address
+                    <input type="text" value='{{request.user.profilpicture.user_address}}' id="username" name="address"  /></label>
+                <label for="username">Email Address
+                    <input type="text" value='{{request.user.email}}' id="username" name="email" required />
+                </label>
+                <label for="Phone">Phone Number
+                    <input type="text" value='{{request.user.profilpicture.phone}}' id="Phone" name="phone"  />
+                </label>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock body %}
+

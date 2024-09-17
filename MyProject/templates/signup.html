@@ -1,0 +1,107 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="{%static 'My_wishlist.css'%}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="/media/navbar-footer_img/melta-logo.png" type="png/x-icon">
+    <title>Signup</title>
+  </head>
+  <body>
+    <div class="signup__container">
+      <div class="signup__left-side">
+        <img src="/media/login/signup_image.png" alt="No Photo" />
+      </div>
+      <div class="signup__right-side">
+        <div class="signup__forms">
+          <h1>Create New Account</h1>
+          <p>Please enter details</p>
+          <form action="" method="POST">
+            {% csrf_token %}
+            <div class="signup__Name">
+              <label for="Name">First Name</label>
+              <br />
+              <input {% if name %} value = {{name}} {% endif %} type="text" id="Name" name="name" required />
+            </div>
+            <div class="signup__Surname">
+              <label for="Last_Name">Last Name</label>
+              <br />
+              <input {% if surname %} value = {{surname}} {% endif %} type="text" id="Last_Name" name="surname" required />
+            </div>
+            <div class="signup__Email">
+              <label for="username">Email Address</label>
+              <br />
+              <input {% if email %} value = {{email}} {% endif %} type="email" id="username" name="email" required />
+              <span class="err_messages">
+                {% for message in messages %}
+                    
+                    {% if 'email'   in message.tags %}
+                        {{message}}
+                    {% endif %}
+                        
+                {% endfor %}
+                    
+            </span>
+            </div>
+            <div class="signup__Email">
+              <label for="username">Username</label>
+              <br />
+              <input {% if username %} value = {{username}} {% endif %} type="text" id="username" name="username" required />
+              <span class="err_messages">
+                {% for message in messages %}
+                    
+                    {% if 'username'   in message.tags %}
+                        {{message}}
+                    {% endif %}
+                        
+                {% endfor %}
+                    
+            </span>
+            </div>
+            <div class="signup__Password">
+              <label for="password">
+                <span>Password</span>
+                <div>
+                  <input type="password" id="password" name="password" required />
+                  <i onclick="togglePassword(event)" class="fa-regular fa-eye signup__eye" id="toggleEye"></i>
+                </div>
+              </label>
+              
+              <span class="err_messages">
+                {% for message in messages %}
+                    
+                    {% if 'password'  in message.tags %}
+                        {{message}}
+                    {% endif %}
+                        
+                {% endfor %}
+                    
+              </span>
+              <label for="confirm">
+                <span>Confirm</span>
+                <div>
+                  <input type="password" id="password" name="confirm" required />
+                  <i onclick="togglePassword(event)" class="fa-regular fa-eye signup__eye" id="toggleEye"></i>
+                </div>
+              </label>
+              <div class="signup__add">
+                <input type="checkbox" name="terms" id="check"  />
+                <label for="check"
+                  > I agree to the <a href="#">Terms & Conditions</a></label
+                >
+              </div>
+            </div>
+            <div class="signup__button">
+              <button type="submit">Sign up</button>
+              <a class="login_choices" href="{% url 'account:login'%}"><span>Do you have an account?</span></a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    
+    <script src="{% static 'wishlist.js'%}"></script>
+  </body>
+</html>

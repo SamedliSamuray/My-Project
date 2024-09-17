@@ -40,51 +40,54 @@
 
                 </div>
 
-                <div class="shipping_address_content">
+                <div class="buy_details_order">
+                  <div class="shipping_address_content">
                   <div class="shipping_add_text">
                     <h3>Shipping Address</h3>
                   </div>
+                  <div class="adress_edit">
+
+                  {% if user_order_summary %}
+
+                    <div class="adress_edit_name">
+                      <h4>{{user_order_summary.address.name}}</h4>
+                      <span class="address_details">
+                        <span>{{user_order_summary.address.flat}}</span><span>{{user_order_summary.address.Area}}</span><span>{{user_order_summary.address.city}}</span><span>{{user_order_summary.address.country}}</span><span>{{user_order_summary.address.pin}}</span>
+                      </span>
+                    </div>
+
+                    <div>
+                      <button class="adress_edit_btn">
+                        <a href="{% url 'update-address' user_order_summary.address.id %}">
+                          <i class="fa-regular fa-pen-to-square"></i>
+                        </a>
+                      </button>                      
+                    </div>
+                  {% endif %}
                 </div>
+              </div>
 
-                
-                {% if user_order_summary %}
-                <div class="adress_edit">
-                  <div class="adress_edit_name">
-                    <h4>{{user_order_summary.address.name}}</h4>
-                    <span class="address_details">
-                      <span>{{user_order_summary.address.flat}}</span><span>{{user_order_summary.address.Area}}</span><span>{{user_order_summary.address.city}}</span><span>{{user_order_summary.address.country}}</span><span>{{user_order_summary.address.pin}}</span>
-                    </span>
-                  </div>
-                  <div>
+                  <div class="shipping_address_content">
 
-                 
-                    <button class="adress_edit_btn">
-                      <a href="{% url 'update-address' user_order_summary.address.id %}">
-                        <i class="fa-regular fa-pen-to-square"></i>
-                      </a>
-                      
-                    </button>
-                    
-                  </div>
-                {% endif %}
-                  <div class="payment_meth">
                     <div class="payment_meth_text">
-                      <h4>Payment Method</h4>
+                      <h3>Payment Method</h3>
                     </div>
 
                     <div class="payment_info">
                         
                       {% if user_order_summary %}
                       <h4>Debit Card (.... .... .... ..{{user_order_summary.payments.transaction_id|slice:'-2:'}})</h4>
-                      
-                      <a href="{% url 'update-card' user_order_summary.payments.id %}">
-                        <button class="debit_card_edit">
+                      <button class="adress_edit_btn">
+                        <a href="{% url 'update-card' user_order_summary.payments.id %}">
                           <i class="fa-regular fa-pen-to-square"></i>
-                        </button>
-                      </a>
+                        </a>
+                      </button>     
                       {% endif %}
                     </div>
+
                   </div>
+
+                  
                 </div>
               </div>
             </div>
@@ -160,10 +163,33 @@
               </div>
 
               <div class="checkout">
-                <button id="place_order_btn">Place order</button>
+                <a href="{% url 'add-place' %}">
+                  <button onclick="confirmed_view()" id="place_order_btn">Place order</button>
+                </a>
               </div>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="confirmed_messages">
+      <div class="confirmed_card">
+        <div class="confirmed_icon">
+          <i class="fa-solid fa-bag-shopping"></i>
+        </div>
+        <div class="confirmed_detail">
+          <h2>Your order is confirmed</h2>
+          <p>
+            Thanks for shopping! 
+            your order hasn’t shipped yet, 
+            but we will send you and email when it done.
+          </p>
+        </div>
+        <div class="confirmed_button">
+          <a onclick='confirmed_false()' href="{% url 'my-order' %}"><button class="confirmed_view">View Order</button></a>
+          <a onclick='confirmed_false()' href="{% url 'home' %}"><button class="confirmed_back">Back to Home</button></a>
         </div>
       </div>
     </div>

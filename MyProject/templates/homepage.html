@@ -40,12 +40,13 @@
                   <a href="{% url 'products' %}">Shop <img src="/media/navbar-footer_img/down.svg" alt="down" /></a>
                   <ul class="dropdown">
                     <li><a href="{% url 'products' %}">Products</a></li>
-                    <li><a href="{% url 'checkout' %}">Checkout </a></li>
-                    <li><a href="{% url 'checkout' %}">Default </a></li>
+                    <li><a href="{% url 'my-profil' %}">My Profile </a></li>
+                    <li><a href="{% url 'my-wishlist' %}">My Wishlist </a></li>
+                    <li><a href="{% url 'my-order' %}">My Orders </a></li>
                   </ul>
                 </li>
-                <li><a href="">About Us</a></li>
-                <li><a href="">Blog</a></li>
+                <li><a href="{% url 'about'%}">About Us</a></li>
+                <li><a href="{% url 'blogs'%}">Blog</a></li>
               </ul>
             </div>
             <div class="nav_login">
@@ -79,29 +80,62 @@
                 </li>
                 
                 <li>
+                  {% if request.user.is_authenticated %}
+                  <a href="{% url 'my-wishlist' %}" style="position: relative;display:flex;">
                     <img class="filter_icons_header" src="/media/navbar-footer_img/fav_icon.svg" alt="" />
+                    {% if wish_pro %}
+                      <span id="shopcount">{{wish_count}}</span>
+                    {% endif %}
+                  </a>
+                  {% else %}
+                  <a href="{% url 'account:login' %}" style="position: relative;display:flex;">
+                    <img class="filter_icons_header" src="/media/navbar-footer_img/fav_icon.svg" alt="" />
+                    {% if wish_pro %}
+                      <span id="shopcount">{{wish_count}}</span>
+                    {% endif %}
+                  </a>
+                  {% endif %}
                 </li>
 
                 <li>
                   <button id="shop_btn" onclick="card_view()" class="icon_button">
                     <img class="filter_icons_header" src="/media/navbar-footer_img/shopbuy_icon.svg" alt="" />
+                    
+                    {% if order_count %}
                     <span id="shopcount">{{order_count}}</span>
+                      
+                    {% endif %}
+                      
                   </button>
                 </li>
               </ul>
               
               {% if request.user.is_authenticated %}
               <div class="user_navbar">
+                
+                {% if request.user.is_authenticated %}
                 <a href="{% url 'my-order' %}">
                   <div class="user_img">
-                    <img src="https://static.vecteezy.com/system/resources/previews/005/129/844/non_2x/profile-user-icon-isolated-on-white-background-eps10-free-vector.jpg" alt="">
+                    <img src="{{ request.user.profilpicture.image.url}}" alt="Profile Picture" />
                   </div>
-                  <h6>{{request.user.first_name|title}} {{request.user.last_name|title}}</h6>
+                  <h5>{{request.user.first_name|title}}</h5>
                 </a>
+                {% else %}
+                <a href="{% url 'account:login' %}">
+                  <div class="user_img">
+                    <img src="{{ request.user.profilpicture.image.url}}" alt="Profile Picture" />
+                  </div>
+                  <h6>{{request.user.first_name|title}}</h6>
+                </a>
+                {% endif %}
+                  
+              </div>
+              <div>
+                <a href="{% url 'account:logout'%}"><i class="fa-solid fa-arrow-right-from-bracket"></i></a>
               </div>
                 {% else %}
-                <button class="login-button"><span>Login</span></button>
-              {% endif %}
+                <a href="{% url 'account:login'%}"><button class="login-button"><span>Login</span></button></a>
+              {% endif %} 
                 
             </div>
           </div>
@@ -267,7 +301,27 @@
                         </a>
                         <!-- Elave olundu  img_icons-->
                         <div class="img_icons">
-                          <i class="fa-regular fa-star product_icon_home"></i>
+
+
+                          
+                          {% if request.user.is_authenticated %}
+                              {% if product.id in wish_pro %}
+                              <a href="{% url 'remove-wishlist' product.id %}">
+                                <i style="color: gold;" class="fa-solid fa-star product_icon_home wishlist_add"></i>
+                              </a>
+                              {% else %}
+                                <a href="{% url 'add-wishlist' product.id %}">
+                                  <i class="fa-regular fa-star product_icon_home"></i>
+                                </a>
+                            {% endif %}
+                          {% else %}
+                          <a href="{% url 'account:login' %}">
+                            <i class="fa-regular fa-star product_icon_home"></i>
+                          </a>
+                          {% endif %}
+                            
+
+                            
                           <i onmouseenter="pro_img_slider(event)" onmouseleave="pro_img_slider_stop(event)" class="fa-solid fa-right-left product_icon_home"></i>
                           <i  class="fa-regular fa-eye product_icon_home" onclick="toggleFullscreen(event,'product_image_{{ product.id }}')"></i>
                         </div>   
@@ -459,21 +513,27 @@
           
             <ul>
               <li><span class="bold">Information</span></li>
-              <li><a href="">My Account</a></li>
+              <li><a 
+                {% if request.user.is_authenticated %}
+                href="{% url 'checkout' %}"
+              {% else %}
+                href="{% url 'account:login' %}"
+              {% endif %}
+                >My Account</a></li>
               <li><a href="">Login</a></li>
               <li><a 
               {% if request.user.is_authenticated %}
                 href="{% url 'checkout' %}"
               {% else %}
-                href=""
+                href="{% url 'account:login' %}"
               {% endif %}
                 >My Cart</a></li>
               <li>
                 <a 
-              {% if request.user.is_authenticated %}
-                href=""
+                {% if request.user.is_authenticated %}
+                href="{% url 'my-wishlist' %}"
               {% else %}
-                href=""
+                href="{% url 'account:login' %}"
               {% endif %}
               >My Wishlist</a>
             </li>
@@ -481,7 +541,7 @@
               {% if request.user.is_authenticated %}
                 href="{% url 'shipping' %}"
               {% else %}
-                href=""
+                href="{% url 'account:login' %}"
               {% endif %}
               >Checkout</a></li>
               
@@ -628,7 +688,7 @@
                 {% if request.user.is_authenticated %}
                   href="{% url 'checkout' %}"
                 {% else %}
-                  href=""
+                  href="{% url 'account:login' %}"
                 {% endif %}>
                    
                   <button title="view" type="button" class="view_card">View Card</button>
@@ -639,7 +699,7 @@
                 {% if request.user.is_authenticated %}
                   href="{% url 'shipping' %}"
                 {% else %}
-                   href=""
+                   href="{% url 'account:login' %}"
                 {% endif %}>
                    
                 <button title="checkout" type="button" class="card_checkout">Checkout</button>
@@ -653,7 +713,13 @@
       </div>
     </div>
     
-    {% comment %}up icon   {% endcomment %}
+    {% for message in messages %}
+    {% if 'success' in message.tags %}
+        <div class="message_success messages">
+            {{message}}
+        </div>
+    {% endif %}
+    {% endfor %}
   <button id="up_icon" type="button" ><i id="up_i"  class="fa-solid fa-hand-point-up"></i></button>  
 <script src="{% static 'product.js'%}"></script>
 <script src="{% static 'home.js'%}"></script>
