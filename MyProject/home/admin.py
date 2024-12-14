@@ -6,6 +6,7 @@ class ColorAdmin(admin.ModelAdmin):
     form = ColorForm
     list_display = ('clName', 'color_code')
 
+admin.site.register(UserNotifications)
 admin.site.register(Color, ColorAdmin)
 admin.site.register(Products_Categories)
 admin.site.register(Brand)

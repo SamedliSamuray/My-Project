@@ -196,3 +196,21 @@ class OrdersPlace(models.Model):
     def __str__(self):
         return self.product.name
     
+class NotificationsMethod(models.TextChoices):
+    Password = 'PS', 'Password'
+    ProfilImage = 'IMG', 'ProfilImage'
+    OrderPlaced = 'OP', 'Order Placed'
+    OrderDilvered = 'OD', 'Order Delivered'
+    Name = 'NM' , 'Name'
+    Surname = 'SN' , 'Surname'
+    Email = 'EM' , 'Email'
+    Address = 'ADR' , 'Address'
+    Phone = 'PH' , 'Phone'
+class UserNotifications(models.Model):
+    user = models.ForeignKey(User , on_delete=models.CASCADE)
+    method = models.CharField(max_length=3 , choices=NotificationsMethod.choices)
+    date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.user.username
+    

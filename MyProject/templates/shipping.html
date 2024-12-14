@@ -52,10 +52,10 @@
         
         {% if address %}
         <a style="cursor: pointer;" href="{% url 'payments' %}">
-          <button type="submit" form="deliver" id="proceed-to-checkout">Deliver Here</button>
+          <button type="submit" class='adress_deliver' form="deliver" id="">Deliver Here</button>
         </a>
         {% else %}
-        <button type="submit" disabled form="deliver" id="proceed-to-checkout">Deliver Here</button>
+        <button type="submit" disabled form="deliver" class='adress_deliver' >Deliver Here</button>
         {% endif %}
           
       </div>

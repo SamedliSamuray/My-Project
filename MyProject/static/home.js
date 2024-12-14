@@ -32,25 +32,27 @@ fetch("https://countriesnow.space/api/v0.1/countries/population/cities", request
         const stateSelect = document.getElementById('state');
 
         
-        cities.forEach(city => {
-            const option = document.createElement('option');
-            option.value = city;
-            city=='BAKU'?option.setAttribute('selected',''):null
-            option.textContent = city;
-            citySelect.appendChild(option);
-        });
-
-        
-        countries.forEach(country => {
-            if (country!=13) {
+        if (citySelect) {
+            cities.forEach(city => {
                 const option = document.createElement('option');
-                option.value = country;
-                country=='Azerbaijan'?option.setAttribute('selected',''):null
-                option.textContent = country;
-                stateSelect.appendChild(option);
-            }
+                option.value = city;
+                city=='BAKU'?option.setAttribute('selected',''):null
+                option.textContent = city;
+                citySelect.appendChild(option);
+            });
+    
             
-        });
+            countries.forEach(country => {
+                if (country!=13) {
+                    const option = document.createElement('option');
+                    option.value = country;
+                    country=='Azerbaijan'?option.setAttribute('selected',''):null
+                    option.textContent = country;
+                    stateSelect.appendChild(option);
+                }
+                
+            });
+        }
     })
     .catch(error => console.log('error', error));
 

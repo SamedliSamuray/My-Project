@@ -40,15 +40,25 @@ def home_view(request):
     return render(request,'homepage.html',context)
 
 def about_view(request):
-    order = Order.objects.filter(customers=request.user, status=False)
-    order_count = order.count()
-    user_order_summary, created = UserOrderSummary.objects.get_or_create(user=request.user)
-    user_order_summary.get_orders_by_customer(request.user)
-    wishlist = MyWishList.objects.get(user=request.user)
-    wish_pro = set(wishlist.products.values_list('id', flat=True))
-    wish_count = len(wish_pro)
-    if user_order_summary.discounts:
-        user_order_summary.get_orders_discount(user_order_summary.discounts)
+    user_order_summary = None 
+    order = None
+    order_count = 0
+    wishlist = None
+    wish_pro = None
+    wish_count = 0
+    if request.user.is_authenticated:
+        user_order_summary, created = UserOrderSummary.objects.get_or_create(user=request.user)
+        
+        wishlist , created = MyWishList.objects.get_or_create(user=request.user)
+        wish_pro = set(wishlist.products.values_list('id', flat=True))
+        wish_count = len(wish_pro)
+        user = ProfilPicture.objects.get_or_create(user=request.user)
+        if created:
+            user_order_summary.save()
+        order = Order.objects.filter(customers=request.user, status=False)
+        order_count = order.count()
+        if user_order_summary.discounts:
+            user_order_summary.get_orders_discount(user_order_summary.discounts)
     context={
         'user_order_summary':user_order_summary,
         'order':order,
@@ -59,15 +69,24 @@ def about_view(request):
     return render(request,'about.html',context)
 
 def blogs_view(request):
-    order = Order.objects.filter(customers=request.user, status=False)
-    order_count = order.count()
-    user_order_summary, created = UserOrderSummary.objects.get_or_create(user=request.user)
-    user_order_summary.get_orders_by_customer(request.user)
-    wishlist = MyWishList.objects.get(user=request.user)
-    wish_pro = set(wishlist.products.values_list('id', flat=True))
-    wish_count = len(wish_pro)
-    if user_order_summary.discounts:
-        user_order_summary.get_orders_discount(user_order_summary.discounts)
+    user_order_summary = None 
+    order = None
+    order_count = 0
+    wishlist = None
+    wish_pro = None
+    wish_count = 0
+    if request.user.is_authenticated:
+        user_order_summary, created = UserOrderSummary.objects.get_or_create(user=request.user)
+        wishlist , created = MyWishList.objects.get_or_create(user=request.user)
+        wish_pro = set(wishlist.products.values_list('id', flat=True))
+        wish_count = len(wish_pro)
+        user = ProfilPicture.objects.get_or_create(user=request.user)
+        if created:
+            user_order_summary.save()
+        order = Order.objects.filter(customers=request.user, status=False)
+        order_count = order.count()
+        if user_order_summary.discounts:
+            user_order_summary.get_orders_discount(user_order_summary.discounts)
     context={
         'user_order_summary':user_order_summary,
         'order':order,
@@ -283,7 +302,7 @@ def update_order(request,id):
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))    
 
 
-
+@login_required(login_url='account:login')
 def checkout_view(request):
    
     order = Order.objects.filter(customers=request.user, status=False)
@@ -305,6 +324,7 @@ def checkout_view(request):
     }
     return render(request,'checkout.html',context)
 
+@login_required(login_url='account:login')
 def shipping_view(request):
     order = Order.objects.filter(customers=request.user, status=False)
     order_count = order.count()
@@ -410,7 +430,8 @@ def update_address(request,id):
         return redirect('shipping')
     context={'address':address,'user_order_summary':user_order_summary,'update_address': update_address,'order':order,'order_count':order_count}
     return render(request, 'shipping.html',context)
-    
+
+@login_required(login_url='account:login')    
 def payments_view(request):
     order = Order.objects.filter(customers=request.user, status=False)
     order_count = order.count()
@@ -491,6 +512,7 @@ def order_summary_view(request):
         return redirect('payments')
     return render(request,'orderSummary.html',context)
 
+@login_required(login_url='account:login')
 def my_order_view(request):
     order = Order.objects.filter(customers = request.user)
     order_count = order.count()
@@ -565,7 +587,7 @@ def clear_filter_image_folder(request):
                     
     return redirect('products')
 
-
+@login_required(login_url='account:login')
 def my_wishlist(request):
     order = Order.objects.filter(customers=request.user, status=False)
     order_count = order.count()
@@ -600,11 +622,13 @@ def remove_wishlist(request,id):
     wishlist.products.remove(product)
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
+@login_required(login_url='account:login')
 def my_profil(request):
     order = Order.objects.filter(customers=request.user, status=False)
     order_count = order.count()
     user_order_summary, created = UserOrderSummary.objects.get_or_create(user=request.user)
     user_order_summary.get_orders_by_customer(request.user)
+    notifications = UserNotifications.objects.filter(user = request.user)
     wishlist = MyWishList.objects.get(user=request.user)
     wish_pro = set(wishlist.products.values_list('id', flat=True))
     wish_count = len(wish_pro)
@@ -617,9 +641,15 @@ def my_profil(request):
         if profile_image:
             user_profile.image = profile_image  
             user_profile.save()  
+            notifications = UserNotifications(
+            user = request.user,
+            method = NotificationsMethod.ProfilImage
+            )
+            notifications.save()
         
         return redirect('my-profil') 
     context={
+        'notifications':notifications,
         'user_order_summary':user_order_summary,
         'order':order,
         'order_count':order_count,
@@ -630,25 +660,56 @@ def my_profil(request):
 
 def update_user(request):
     user = request.user
-    
+    userProfil, created = ProfilPicture.objects.get_or_create(user=request.user)
+    notifications = UserNotifications.objects.filter(user = request.user)
     if request.method == 'POST':
         name = request.POST.get('name','')
+        if user.first_name != name:
+            notifications = UserNotifications(
+                user = request.user,
+                method = NotificationsMethod.Name
+            )
+            notifications.save()
         surname = request.POST.get('surname','')
+        if user.last_name != surname:
+            notifications = UserNotifications(
+                user = request.user,
+                method = NotificationsMethod.Surname
+            )
+            notifications.save()
         address = request.POST.get('address','')
+        if userProfil.user_address != address:
+            notifications = UserNotifications(
+                user = request.user,
+                method = NotificationsMethod.Address
+            )
+            notifications.save()
         email = request.POST.get('email','')
+        if user.email != email:
+            notifications = UserNotifications(
+                user = request.user,
+                method = NotificationsMethod.Email
+            )
+            notifications.save()
         phone = request.POST.get('phone','')
+        if userProfil.phone != phone:
+            notifications = UserNotifications(
+                user = request.user,
+                method = NotificationsMethod.Phone
+            )
+            notifications.save()
         
         user.first_name = name
         user.last_name = surname
         user.email = email
         user.save()
-        userProfil, created = ProfilPicture.objects.get_or_create(user=request.user)
         userProfil.user_address = address
         userProfil.phone = phone
         userProfil.save()
         
     return redirect('my-profil')
 
+@login_required(login_url='account:login')
 def my_settings(request):
     order = Order.objects.filter(customers=request.user, status=False)
     order_count = order.count()
@@ -668,7 +729,10 @@ def my_settings(request):
         'wish_count':wish_count,
     }
     return render(request,'settings.html',context)
+
+@login_required(login_url='account:login')
 def notifications(request):
+    notifications= UserNotifications.objects.filter(user=request.user)[:5]
     order = Order.objects.filter(customers=request.user, status=False)
     order_count = order.count()
     user_order_summary, created = UserOrderSummary.objects.get_or_create(user=request.user)
@@ -680,6 +744,7 @@ def notifications(request):
         user_order_summary.get_orders_discount(user_order_summary.discounts)
       
     context={
+        'notifications':notifications,
         'user_order_summary':user_order_summary,
         'order':order,
         'order_count':order_count,
@@ -689,6 +754,7 @@ def notifications(request):
     return render(request,'notifications.html',context)
 
 def add_place_order(request):
+    notifications = UserNotifications.objects.filter(user=request.user)
     order = Order.objects.filter(customers=request.user)
     place = OrdersPlace.objects.filter(customers=request.user,status=False) 
     user_order_summary, created = UserOrderSummary.objects.get_or_create(user=request.user)
@@ -711,11 +777,18 @@ def add_place_order(request):
     user_order_summary.total_delivery_cost = 0
     user_order_summary.grand_total = 0 
     user_order_summary.save()
-
+    
+    notifications = UserNotifications(
+        user = request.user,
+        method = NotificationsMethod.OrderPlaced,
+    )
+    notifications.save()
     
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
+
+@login_required(login_url='account:login')
 def manage_address_view(request):
     address = UserAddress.objects.filter(user=request.user)
     order = Order.objects.filter(customers=request.user, status=False)
@@ -738,6 +811,7 @@ def manage_address_view(request):
     }
     return render(request,'manage_address.html',context)
 
+@login_required(login_url='account:login')
 def saved_cards_view(request):
     
     payments = Payments.objects.filter(user=request.user)

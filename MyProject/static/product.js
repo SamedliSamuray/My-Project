@@ -192,7 +192,7 @@ document.addEventListener("DOMContentLoaded", function() {
             const starsValue = parseInt(this.value);
 
             
-            const allStars = document.querySelectorAll('.comment_stars i.fa-star');
+            const allStars = document.querySelectorAll('.comment_rating .comment_stars i.fa-star');
             allStars.forEach(function(star) {
                 star.style.color = '#d1d1d1';
                 star.classList.remove('fa-solid');
@@ -500,6 +500,7 @@ function search_reset(){
 let slider_interval;
 
 function pro_img_slider(e){
+
     let closestElement = e.target.closest('.pro_image') ||
                          e.target.closest('.rel_image') ||
                          e.target.closest('.trending_img') ||
@@ -508,27 +509,37 @@ function pro_img_slider(e){
     if (pro_img) {
         let img= pro_img.querySelector('img')
         let width = parseInt(window.getComputedStyle(img).width);
-    
+        
+        
         clearInterval(slider_interval)
         slider_interval = setInterval(() => {
                 if (pro_img.scrollLeft >= pro_img.scrollWidth-pro_img.clientWidth) {
                     pro_img.scrollLeft = 0;
+                    
                 } else {
-                    pro_img.scrollLeft += width+2;
+                    pro_img.scrollLeft += width + 2;
+                    console.log(pro_img.scrollLeft)
                 }
         }, 1000);
     }
 }
 
 function pro_img_slider_stop(e) {
-    clearInterval(slider_interval);
+    console.log('stop slider')
     let closestElement = e.target.closest('.pro_image') ||
                          e.target.closest('.rel_image') ||
                          e.target.closest('.trending_img')||
                          e.target.closest('.pro_small_img');
     let pro_img = closestElement ? closestElement.querySelector('.pro_img_slider') : null;
-    pro_img.scrollLeft = 0;
-}
+    if (pro_img) {
+        pro_img.scrollLeft = 0;
+    }
+    console.log(pro_img.scrollLeft)
+    clearInterval(slider_interval);
+
+
+    }
+    
 
 function place_reset(){
     document.getElementById('search_place').value=''

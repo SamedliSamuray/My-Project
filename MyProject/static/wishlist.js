@@ -1,8 +1,9 @@
 document.addEventListener('DOMContentLoaded', function() {
     const myList = document.querySelector('.menu');
-    const liItems = myList.querySelectorAll('li');
+    const liItems = myList?myList.querySelectorAll('li'):null;
     
-    liItems.forEach(function(li) {
+    if(liItems){
+      liItems.forEach(function(li) {
         li.addEventListener('click', function() {
 
             liItems.forEach(function(item) {
@@ -11,6 +12,7 @@ document.addEventListener('DOMContentLoaded', function() {
             li.classList.add('active');
         });
     });
+    }
 });
 
 function togglePassword(e) {

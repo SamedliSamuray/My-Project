@@ -24,78 +24,176 @@
         <a href="{% url 'my-settings'%}"><li ><img src="/media/login/setting.svg" alt=""><span>Settings</span></li></a>
       </ul>
     </div>
-    <div class="notification_table">
-        <div class="notification">
-            <div class="notification_img">
-                <img src="{{ request.user.profilpicture.image.url}}" alt="Profile Picture" />
-
-            </div>
-
-            <div class="notification_txt">
-                <h3>Profile update</h3>
-                <div class="notification_date">
-                    <small>You just update your profile picture</small>
-                    <small>Just Now</small>      
+        <div class="notification_table">
+            
+            {% if notifications %}
+                {% for note in notifications %}
+                    
+                {% if note.method == 'PS' %}
+                <div class="notification">
+                    <div class="notification_img_icon">
+                        <img src="/media/login/lock.svg" alt="">
+                    </div>
+                    <div class="notification_txt">
+                        <h3>Password Update successfully</h3>
+                        <div class="notification_date">
+                            <small>Your password has been updated successfully</small>
+                            <small>{{note.date}}</small>
+                        </div>
+                                
+                    </div>
                 </div>
-            </div>
-            </div>
-
-        <div class="notification">
-            <div class="notification_img_icon">
-                <img src="/media/login/box.svg" alt="">
-            </div>
-            <div class="notification_txt">
-                <h3>Your order placed succesfully</h3>
-                <div class="notification_date">
-                <small>You place a new order</small>    
-                <small>11:15 AM</small>
+                {% elif note.method == 'OD' %}
+                <div class="notification">
+                    <div class="notification_img_icon">
+                        <img src="/media/login/open box-done.svg" alt="">
+                    </div>
+                    <div class="notification_txt">
+                        <h3>Order delivered</h3>
+                        <div class="notification_date">
+                        <small>Your order has been delivered successfully</small>    
+                        <small>{{note.date}}</small>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            </div>
-
-        <div class="notification">
-            <div class="notification_img_icon">
-                <img src="/media/login/open box-done.svg" alt="">
-            </div>
-            <div class="notification_txt">
-                <h3>Order delivered</h3>
-                <div class="notification_date">
-                <small>Your order has been delivered successfully</small>    
-                <small>09:00 AM</small>
+                {% elif note.method == 'OP' %}
+                <div class="notification">
+                    <div class="notification_img_icon">
+                        <img src="/media/login/box.svg" alt="">
+                    </div>
+                    <div class="notification_txt">
+                        <h3>Your order placed succesfully</h3>
+                        <div class="notification_date">
+                        <small>You place a new order</small>    
+                        <small>{{note.date}}</small>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            </div>
-
-        <div class="notification">
-            <div class="notification_img">
-                <img src="{{ request.user.profilpicture.image.url}}" alt="Profile Picture" />
-            </div>
-            <div class="notification_txt">
-                <h3>You share your feedback</h3>
-                <div class="notification_date">
-                <small>It was an amazing experience with your company</small>   
-                <small>Yesterday</small>
-                </div>            
-            </div>
-            </div>
-
-        <div class="notification">
-            <div class="notification_img_icon">
-                <img src="/media/login/lock.svg" alt="">
-            </div>
-            <div class="notification_txt">
-                <h3>Password Update successfully</h3>
-                <div class="notification_date">
-                    <small>Your password has been updated successfully</small>
-                    <small>Yesterday</small>
+                {% elif note.method == 'IMG' %}
+                <div class="notification">
+                    <div class="notification_img">
+                        <img src="{{ request.user.profilpicture.image.url}}" alt="Profile Picture" />
+                
+                    </div>
+                
+                    <div class="notification_txt">
+                        <h3>Profile update</h3>
+                        <div class="notification_date">
+                            <small>You just update your profile picture</small>
+                            <small>{{note.date}}</small>      
+                        </div>
+                    </div>
                 </div>
-                        
-            </div>
-            </div>
-
+                {% elif note.method == 'NM' %}
+                <div class="notification">
+                    <div class="notification_img">
+                        <img src="{{ request.user.profilpicture.image.url}}" alt="Profile Picture" />
+                
+                    </div>
+                
+                    <div class="notification_txt">
+                        <h3>Profile update</h3>
+                        <div class="notification_date">
+                            <small>You just update your profile name</small>
+                            <small>{{note.date}}</small>      
+                        </div>
+                    </div>
+                </div>
+                {% elif note.method == 'SN' %}
+                <div class="notification">
+                    <div class="notification_img">
+                        <img src="{{ request.user.profilpicture.image.url}}" alt="Profile Picture" />
+                
+                    </div>
+                
+                    <div class="notification_txt">
+                        <h3>Profile update</h3>
+                        <div class="notification_date">
+                            <small>You just update your profile surname</small>
+                            <small>{{note.date}}</small>      
+                        </div>
+                    </div>
+                </div>
+                {% elif note.method == 'EM' %}
+                <div class="notification">
+                    <div class="notification_img">
+                        <img src="{{ request.user.profilpicture.image.url}}" alt="Profile Picture" />
+                
+                    </div>
+                
+                    <div class="notification_txt">
+                        <h3>Profile update</h3>
+                        <div class="notification_date">
+                            <small>You just update your profile email</small>
+                            <small>{{note.date}}</small>      
+                        </div>
+                    </div>
+                </div>
+                {% elif note.method == 'PH' %}
+                <div class="notification">
+                    <div class="notification_img">
+                        <img src="{{ request.user.profilpicture.image.url}}" alt="Profile Picture" />
+                
+                    </div>
+                
+                    <div class="notification_txt">
+                        <h3>Profile update</h3>
+                        <div class="notification_date">
+                            <small>You just update your profile phone</small>
+                            <small>{{note.date}}</small>      
+                        </div>
+                    </div>
+                </div>
+                {% elif note.method == 'ADR' %}
+                <div class="notification">
+                    <div class="notification_img">
+                        <img src="{{ request.user.profilpicture.image.url}}" alt="Profile Picture" />
+                
+                    </div>
+                
+                    <div class="notification_txt">
+                        <h3>Profile update</h3>
+                        <div class="notification_date">
+                            <small>You just update your profile address</small>
+                            <small>{{note.date}}</small>      
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="notification">
+                    <div class="notification_img">
+                        <img src="{{ request.user.profilpicture.image.url}}" alt="Profile Picture" />
+                    </div>
+                    <div class="notification_txt">
+                        <h3>You share your feedback</h3>
+                        <div class="notification_date">
+                        <small>It was an amazing experience with your company</small>   
+                        <small>{{note.date}}</small>
+                        </div>            
+                    </div>
+                </div> 
+                {% endif %}
+                    
+            {% endfor %}
+        {% else %}
+        <div class="product_wish">
+            <p class="notProducts" >You do not have any notifications.</p>
+          </div>
+        {% endif %}
+            
         </div>
     </div>
     </div>
 
 </div>
 {% endblock body %}
+
+
+
+
+
+
+
+
+
+

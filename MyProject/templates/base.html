@@ -105,7 +105,7 @@
             <!-- Login -->
             {% if request.user.is_authenticated %}
             <div class="user_navbar">
-              <a href="{% url 'my-order' %}">
+              <a href="{% url 'my-profil' %}">
                 <div class="user_img">
                   <img src="{{ request.user.profilpicture.image.url}}" alt="Profile Picture" />
                 </div>
