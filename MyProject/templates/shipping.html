@@ -28,9 +28,9 @@
               <h3 class="ship_user"><span>{{add.name}}</span>
   
                 {% if add.default_address %}
-                <input  checked type="radio"  form="deliver" class="input_check" value="{{add.id}}" name="default_adress" id="{{add.id}}">
+                <input   checked type="radio"  form="deliver" class="input_check" value="{{add.id}}" name="default_adress" id="{{add.id}}">
                 {% else %}
-                <input  form="deliver"  type="radio"  value="{{add.id}}" class="input_check" name="default_adress" id="{{add.id}}">
+                <input  required form="deliver"  type="radio"  value="{{add.id}}" class="input_check" name="default_adress" id="{{add.id}}">
                 {% endif %}
             </h3>
               
