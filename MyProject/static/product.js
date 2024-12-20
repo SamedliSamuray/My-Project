@@ -525,16 +525,18 @@ function pro_img_slider(e){
 }
 
 function pro_img_slider_stop(e) {
-    console.log('stop slider')
+    
     let closestElement = e.target.closest('.pro_image') ||
                          e.target.closest('.rel_image') ||
                          e.target.closest('.trending_img')||
                          e.target.closest('.pro_small_img');
+    console.log(closestElement.className)
     let pro_img = closestElement ? closestElement.querySelector('.pro_img_slider') : null;
     if (pro_img) {
         pro_img.scrollLeft = 0;
+        console.log(pro_img.scrollLeft)
     }
-    console.log(pro_img.scrollLeft)
+    
     clearInterval(slider_interval);
 
 

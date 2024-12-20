@@ -18,7 +18,7 @@ def login_view(request):
         
         if user is not None:
             login(request,user)
-            messages.success(request, f'{username}, you are successfully logged in...',extra_tags='login_success')
+            messages.success(request, f'{request.user.first_name} {request.user.last_name}, you are successfully logged in...',extra_tags='login_success')
             return redirect('home')
         
         else:

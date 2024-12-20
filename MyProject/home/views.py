@@ -516,7 +516,7 @@ def order_summary_view(request):
 def my_order_view(request):
     order = Order.objects.filter(customers = request.user)
     order_count = order.count()
-    place_order = OrdersPlace.objects.filter(customers = request.user)
+    place_order = OrdersPlace.objects.filter(customers = request.user).order_by('-date')
     user_order_summary, created = UserOrderSummary.objects.get_or_create(user=request.user)
     wishlist = MyWishList.objects.get(user=request.user)
     wish_pro = set(wishlist.products.values_list('id', flat=True))
@@ -732,7 +732,7 @@ def my_settings(request):
 
 @login_required(login_url='account:login')
 def notifications(request):
-    notifications= UserNotifications.objects.filter(user=request.user)[:5]
+    notifications= UserNotifications.objects.filter(user=request.user).order_by('-date')
     order = Order.objects.filter(customers=request.user, status=False)
     order_count = order.count()
     user_order_summary, created = UserOrderSummary.objects.get_or_create(user=request.user)
